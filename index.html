@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Pana · Pared de clientes</title>
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --paper:#F4F4F1;
+    --tile:#FFFFFF;
+    --tile-edge:#E7E7E2;
+    --ink:#17171B;
+    --ink-soft:#6B6B72;
+    --ink-faint:#9A9AA1;
+    --accent:#6B4EFF;      /* hoy / activo — violeta */
+    --accent-soft:#EEEAFF;
+    --fav:#FF5A36;         /* estrella / favorito — coral */
+    --fav-soft:#FFE9E3;
+    --shadow:0 1px 2px rgba(20,20,26,.05), 0 8px 24px rgba(20,20,26,.06);
+    --radius:16px;
+    --radius-sm:10px;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#0F0F12; --tile:#1A1A1F; --tile-edge:#2A2A31;
+      --ink:#F1F1EE; --ink-soft:#A0A0A8; --ink-faint:#6C6C75;
+      --accent:#9D86FF; --accent-soft:#241E3F;
+      --fav:#FF7A5C; --fav-soft:#3A211A;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F4F4F1; --tile:#FFFFFF; --tile-edge:#E7E7E2;
+    --ink:#17171B; --ink-soft:#6B6B72; --ink-faint:#9A9AA1;
+    --accent:#6B4EFF; --accent-soft:#EEEAFF; --fav:#FF5A36; --fav-soft:#FFE9E3;
+    --shadow:0 1px 2px rgba(20,20,26,.05), 0 8px 24px rgba(20,20,26,.06);
+  }
+  :root[data-theme="dark"]{
+    --paper:#0F0F12; --tile:#1A1A1F; --tile-edge:#2A2A31;
+    --ink:#F1F1EE; --ink-soft:#A0A0A8; --ink-faint:#6C6C75;
+    --accent:#9D86FF; --accent-soft:#241E3F; --fav:#FF7A5C; --fav-soft:#3A211A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100%;
+  }
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+  /* ---------- top bar ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; gap:18px;
+    padding:14px 22px;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:saturate(1.4) blur(10px);
+    border-bottom:1px solid var(--tile-edge);
+  }
+  .brand{display:flex; align-items:baseline; gap:10px; user-select:none}
+  .brand b{font-size:19px; letter-spacing:-.02em; font-weight:750}
+  .brand .today{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--ink-soft);
+    padding:3px 8px; border:1px solid var(--tile-edge); border-radius:100px;
+  }
+  .spacer{flex:1}
+  .filters{display:flex; gap:4px; background:var(--tile); border:1px solid var(--tile-edge); padding:4px; border-radius:100px}
+  .filters button{
+    font-family:var(--sans); font-size:12.5px; font-weight:600;
+    color:var(--ink-soft); background:none; border:0; cursor:pointer;
+    padding:6px 13px; border-radius:100px; transition:all .15s;
+  }
+  .filters button:hover{color:var(--ink)}
+  .filters button.on{background:var(--accent); color:#fff}
+  .iconbtn{
+    display:grid; place-items:center; width:36px; height:36px;
+    background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px;
+    color:var(--ink); cursor:pointer; transition:all .15s; font-size:16px;
+  }
+  .iconbtn:hover{border-color:var(--ink-faint)}
+  .add-client{
+    display:flex; align-items:center; gap:7px; font-family:var(--sans);
+    font-size:13px; font-weight:650; cursor:pointer;
+    background:var(--ink); color:var(--paper); border:0;
+    padding:9px 15px; border-radius:10px; transition:transform .12s;
+  }
+  .add-client:hover{transform:translateY(-1px)}
+  .search{
+    font-family:var(--sans); font-size:13px; color:var(--ink);
+    background:var(--tile); border:1px solid var(--tile-edge);
+    padding:9px 13px; border-radius:10px; width:150px; transition:width .18s, border-color .15s;
+  }
+  .search:focus{outline:none; border-color:var(--accent); width:210px}
+  .search::placeholder{color:var(--ink-faint)}
+
+  .sync-dot{display:flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); cursor:default}
+  .sync-dot i{width:8px; height:8px; border-radius:50%; background:var(--ink-faint); display:inline-block}
+  .sync-dot.live i{background:#2ecc71}
+  .sync-dot.local i{background:#f5a623}
+
+  /* ---------- board ---------- */
+  main{
+    flex:1; padding:22px;
+    display:grid; gap:18px; align-content:start;
+    grid-template-columns:repeat(auto-fill, minmax(310px, 1fr));
+  }
+
+  .card{
+    background:var(--tile); border:1px solid var(--tile-edge);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; overflow:hidden;
+    max-height:64vh; min-height:190px;
+    transition:box-shadow .2s;
+  }
+  .card:hover{box-shadow:0 4px 12px rgba(20,20,26,.08), 0 16px 40px rgba(20,20,26,.1)}
+  .card-head{
+    display:flex; align-items:center; gap:10px;
+    padding:14px 16px 12px; border-bottom:1px solid var(--tile-edge);
+  }
+  .avatar{width:30px; height:30px; border-radius:9px; flex:none; display:grid; place-items:center; font-size:16px; line-height:1; background:color-mix(in srgb,var(--c) 16%, var(--tile)); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 30%, transparent)}
+  .card-name{font-weight:700; font-size:15px; letter-spacing:-.01em; flex:1; cursor:text; border-radius:6px; padding:2px 4px; margin:-2px -4px}
+  .card-name:focus{outline:2px solid var(--accent); outline-offset:1px}
+  .count{font-family:var(--mono); font-size:11px; color:var(--ink-faint); font-variant-numeric:tabular-nums}
+  .card-menu{opacity:0; transition:opacity .15s; background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:16px; padding:2px 4px; border-radius:6px}
+  .card:hover .card-menu{opacity:1}
+  .card-menu:hover{color:var(--ink)}
+
+  .notes{flex:1; overflow-y:auto; padding:6px 10px 4px; display:flex; flex-direction:column; gap:5px}
+  .notes::-webkit-scrollbar{width:8px}
+  .notes::-webkit-scrollbar-thumb{background:var(--tile-edge); border-radius:8px}
+
+  .note{
+    display:flex; align-items:flex-start; gap:8px;
+    padding:9px 8px 9px 10px; border-radius:var(--radius-sm);
+    position:relative; transition:background .12s;
+  }
+  .note:hover{background:color-mix(in srgb,var(--ink) 4%, transparent)}
+  .note.fav{background:var(--fav-soft)}
+  .note.today::before{content:""; position:absolute; left:2px; top:11px; bottom:11px; width:3px; border-radius:3px; background:var(--accent)}
+  .star{
+    flex:none; background:none; border:0; cursor:pointer; padding:0; margin-top:1px;
+    color:var(--ink-faint); font-size:15px; line-height:1; transition:transform .12s, color .12s;
+  }
+  .star:hover{transform:scale(1.2)}
+  .note.fav .star{color:var(--fav)}
+  .note-body{flex:1; min-width:0}
+  .note-text{font-size:13.5px; line-height:1.42; color:var(--ink); word-wrap:break-word; white-space:pre-wrap; cursor:text; border-radius:5px}
+  .note-text:focus{outline:2px solid var(--accent); outline-offset:2px}
+  .note-meta{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); margin-top:4px}
+  .note.today .note-meta{color:var(--accent)}
+  .note-del{
+    flex:none; opacity:0; background:none; border:0; color:var(--ink-faint);
+    cursor:pointer; font-size:13px; padding:0 2px; transition:opacity .12s, color .12s;
+  }
+  .note:hover .note-del{opacity:1}
+  .note-del:hover{color:var(--fav)}
+
+  .card-add{padding:9px 12px 12px; border-top:1px solid var(--tile-edge)}
+  .card-add input{
+    width:100%; font-family:var(--sans); font-size:13px; color:var(--ink);
+    background:color-mix(in srgb,var(--ink) 4%, transparent);
+    border:1px solid transparent; border-radius:9px; padding:9px 11px; transition:all .15s;
+  }
+  .card-add input:focus{outline:none; background:var(--tile); border-color:var(--accent)}
+  .card-add input::placeholder{color:var(--ink-faint)}
+
+  .empty-notes{color:var(--ink-faint); font-size:12.5px; font-style:italic; padding:14px 10px; text-align:center}
+
+  /* add-client ghost tile */
+  .ghost{
+    border:2px dashed var(--tile-edge); border-radius:var(--radius); background:none;
+    display:grid; place-items:center; min-height:190px; cursor:pointer;
+    color:var(--ink-faint); font-weight:650; font-size:14px; gap:6px; transition:all .15s;
+  }
+  .ghost:hover{border-color:var(--accent); color:var(--accent)}
+  .ghost span{font-size:26px; line-height:1}
+
+  .board-empty{grid-column:1/-1; text-align:center; color:var(--ink-faint); padding:60px 20px; font-size:14px}
+
+  /* color picker popover for new/edit client */
+  dialog{
+    border:1px solid var(--tile-edge); border-radius:16px; background:var(--tile); color:var(--ink);
+    padding:0; box-shadow:0 20px 60px rgba(0,0,0,.3); max-width:340px; width:90vw;
+  }
+  dialog::backdrop{background:rgba(10,10,14,.45); backdrop-filter:blur(2px)}
+  .dlg-in{padding:22px}
+  .dlg-in h3{margin:0 0 4px; font-size:16px}
+  .dlg-in p{margin:0 0 16px; font-size:12.5px; color:var(--ink-soft)}
+  .dlg-in input[type=text]{width:100%; font-family:var(--sans); font-size:14px; color:var(--ink); background:color-mix(in srgb,var(--ink) 5%,transparent); border:1px solid var(--tile-edge); border-radius:9px; padding:10px 12px; margin-bottom:14px}
+  .dlg-in input:focus{outline:none; border-color:var(--accent)}
+  .swatches{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px}
+  .swatch{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .1s}
+  .swatch:hover{transform:scale(1.12)}
+  .swatch.sel{border-color:var(--ink); box-shadow:0 0 0 2px var(--tile)}
+  .dlg-actions{display:flex; gap:8px; justify-content:flex-end}
+  .dlg-actions button{font-family:var(--sans); font-size:13px; font-weight:650; padding:8px 15px; border-radius:9px; cursor:pointer; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink)}
+  .dlg-actions .primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .dlg-actions .danger{color:var(--fav); border:0; margin-right:auto; background:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <b>Pana</b>
+    <span class="today" id="today">—</span>
+  </div>
+  <div class="spacer"></div>
+  <input class="search" id="search" placeholder="Buscar…" />
+  <div class="filters" id="filters">
+    <button data-f="all" class="on">Todos</button>
+    <button data-f="today">Hoy</button>
+    <button data-f="fav">Favoritos</button>
+  </div>
+  <button class="add-client" id="addClient">＋ Cliente</button>
+  <button class="iconbtn" id="theme" title="Cambiar tema">◐</button>
+  <div class="sync-dot local" id="sync" title="Guardado local (esta compu)"><i></i><span>local</span></div>
+</header>
+
+<main id="board"></main>
+
+<dialog id="clientDlg">
+  <div class="dlg-in">
+    <h3 id="dlgTitle">Nuevo cliente</h3>
+    <p>Emoji, nombre y color de la etiqueta.</p>
+    <div style="display:flex; gap:10px; margin-bottom:14px">
+      <input type="text" id="dlgEmoji" placeholder="🙂" maxlength="4" style="width:56px; text-align:center; font-size:20px; margin:0" autocomplete="off" />
+      <input type="text" id="dlgName" placeholder="Ej: Cantina Bernardo" autocomplete="off" style="flex:1; margin:0" />
+    </div>
+    <div class="swatches" id="dlgSwatches"></div>
+    <div class="dlg-actions">
+      <button class="danger" id="dlgDelete" style="display:none">Borrar cliente</button>
+      <button id="dlgCancel">Cancelar</button>
+      <button class="primary" id="dlgSave">Guardar</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* ============================================================
+   CONFIG DE FIREBASE  —  para sincronizar entre PCs
+   ------------------------------------------------------------
+   Mientras esto esté vacío, el tablero guarda SOLO en esta compu.
+   Cuando pegues acá los datos de tu Firebase, se sincroniza solo.
+   (Los conseguimos juntos: consola de Firebase → Realtime Database)
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDOO8I1vEghkARrgKXALa55a8q9XTFgJBg",
+  authDomain: "pana-clientes.firebaseapp.com",
+  databaseURL: "https://pana-clientes-default-rtdb.firebaseio.com",
+  projectId: "pana-clientes",
+  storageBucket: "pana-clientes.firebasestorage.app",
+  messagingSenderId: "782717934210",
+  appId: "1:782717934210:web:c439e2ca44f9a87942329b",
+};
+
+const SWATCHES = ["#6B4EFF","#FF5A36","#2ECC71","#F5A623","#0FB5C9","#E84393","#111318","#8E7CFF","#C0392B","#16A085"];
+
+/* roster semilla (todo editable después) — [emoji, nombre, color] */
+const SEED_CLIENTS = [
+  ["💉","AP","#0FB5C9"],
+  ["👜","Aurelia","#8E7CFF"],
+  ["🍅","Bodegón Co Palan´t","#C0392B"],
+  ["🍅","Bodegón Co","#E74C3C"],
+  ["🍸","Chinita","#E84393"],
+  ["🦴","Clínica de Fracturas","#16A085"],
+  ["🍺","Cantina Bernardo","#F5A623"],
+  ["🏠","De Gennaro Giaccone","#2ECC71"],
+  ["🍝","Pasta Co","#F39C12"],
+  ["🐟","Pasta Mar & Vino","#2980B9"],
+  ["🥩","Parrilla Co","#A93226"],
+  ["🍽️","Solgast","#6B4EFF"],
+  ["⚡","Thunder","#F1C40F"],
+  ["🏗️","Vialmaq","#E67E22"],
+  ["🖌️","Proyectos","#111318"],
+];
+
+/* ---------------- STORE (Firebase o local, misma cara) ---------------- */
+const hasFirebase = Object.values(FIREBASE_CONFIG).some(v => v);
+let store;
+
+function makeId(){ return "id"+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+
+function LocalStore(){
+  const KEY="panaDashboard.v2";
+  let data = JSON.parse(localStorage.getItem(KEY) || "null");
+  if(!data){
+    data = {clients:{}, notes:{}};
+    SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+  const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
+  let cbC=()=>{}, cbN=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); };
+  return {
+    live:false,
+    onClients:cb=>{cbC=cb; cb({...data.clients});},
+    onNotes:cb=>{cbN=cb; cb({...data.notes});},
+    addClient:c=>{data.clients[makeId()]=c; save(); emit();},
+    updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
+    removeClient:id=>{ delete data.clients[id]; Object.keys(data.notes).forEach(n=>{if(data.notes[n].clientId===id) delete data.notes[n];}); save(); emit();},
+    addNote:n=>{data.notes[makeId()]=n; save(); emit();},
+    updateNote:(id,patch)=>{Object.assign(data.notes[id],patch); save(); emit();},
+    removeNote:id=>{delete data.notes[id]; save(); emit();},
+  };
+}
+
+function FirebaseStore(){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db = firebase.database();
+  const root = db.ref("panaDashboard");
+  // primera vez: si la nube está vacía, subo lo que tengas en esta compu (o el roster semilla)
+  root.child("clients").once("value").then(s=>{
+    if(s.exists()) return;
+    const local = JSON.parse(localStorage.getItem("panaDashboard.v2") || "null");
+    if(local && local.clients && Object.keys(local.clients).length){
+      root.child("clients").set(local.clients);
+      if(local.notes && Object.keys(local.notes).length) root.child("notes").set(local.notes);
+    }else{
+      const upd={};
+      SEED_CLIENTS.forEach((c,i)=>{ upd[makeId()]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
+      root.child("clients").set(upd);
+    }
+  });
+  return {
+    live:true,
+    onClients:cb=>root.child("clients").on("value",s=>cb(s.val()||{})),
+    onNotes:cb=>root.child("notes").on("value",s=>cb(s.val()||{})),
+    addClient:c=>root.child("clients").push(c),
+    updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
+    removeClient:id=>{ root.child("clients/"+id).remove();
+      root.child("notes").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("notes/"+k).remove();});}); },
+    addNote:n=>root.child("notes").push(n),
+    updateNote:(id,patch)=>root.child("notes/"+id).update(patch),
+    removeNote:id=>root.child("notes/"+id).remove(),
+  };
+}
+
+/* ---------------- estado en memoria ---------------- */
+let CLIENTS={}, NOTES={};
+let filter="all", query="";
+
+/* ---------------- fechas ---------------- */
+function dayKey(ts){ const d=new Date(ts); return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
+function isToday(ts){ return dayKey(ts)===dayKey(Date.now()); }
+function relDay(ts){
+  const t=dayKey(ts), today=dayKey(Date.now());
+  const y=new Date(Date.now()-864e5);
+  if(t===today) return "hoy";
+  if(t===dayKey(y.getTime())) return "ayer";
+  return new Date(ts).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
+}
+
+/* ---------------- render ---------------- */
+const board=document.getElementById("board");
+
+function notesFor(clientId){
+  return Object.entries(NOTES)
+    .filter(([id,n])=>n.clientId===clientId)
+    .map(([id,n])=>({id,...n}))
+    .filter(n=>{
+      if(filter==="fav" && !n.fav) return false;
+      if(filter==="today" && !isToday(n.createdAt)) return false;
+      if(query && !n.text.toLowerCase().includes(query)) return false;
+      return true;
+    })
+    .sort((a,b)=> (b.fav?1:0)-(a.fav?1:0) || b.createdAt-a.createdAt );
+}
+
+function render(){
+  const clients=Object.entries(CLIENTS)
+    .map(([id,c])=>({id,...c}))
+    .sort((a,b)=>(a.order??0)-(b.order??0) || (a.createdAt??0)-(b.createdAt??0));
+
+  board.innerHTML="";
+  if(!clients.length){
+    board.innerHTML='<div class="board-empty">Todavía no hay clientes.<br>Tocá “＋ Cliente” para arrancar.</div>';
+    return;
+  }
+
+  for(const c of clients){
+    const list=notesFor(c.id);
+    const total=Object.values(NOTES).filter(n=>n.clientId===c.id).length;
+    const card=document.createElement("section");
+    card.className="card";
+    card.style.setProperty("--c", c.color);
+
+    const notesHTML = list.length
+      ? list.map(n=>`
+        <div class="note ${n.fav?'fav':''} ${isToday(n.createdAt)?'today':''}" data-note="${n.id}">
+          <button class="star" data-act="star" title="Favorito">${n.fav?'★':'☆'}</button>
+          <div class="note-body">
+            <div class="note-text" contenteditable="true" data-act="edit" spellcheck="false">${escapeHtml(n.text)}</div>
+            <div class="note-meta">${relDay(n.createdAt)}</div>
+          </div>
+          <button class="note-del" data-act="del" title="Borrar">✕</button>
+        </div>`).join("")
+      : `<div class="empty-notes">${filter==="all"&&!query ? "Sin ideas todavía" : "Nada acá"}</div>`;
+
+    card.innerHTML=`
+      <div class="card-head">
+        <span class="avatar">${c.emoji||"◍"}</span>
+        <div class="card-name" contenteditable="true" spellcheck="false" data-rename="${c.id}">${escapeHtml(c.name)}</div>
+        <span class="count">${total}</span>
+        <button class="card-menu" data-edit="${c.id}" title="Editar cliente">⋯</button>
+      </div>
+      <div class="notes">${notesHTML}</div>
+      <div class="card-add"><input placeholder="＋ idea suelta…  (Enter)" data-add="${c.id}" /></div>`;
+    board.appendChild(card);
+  }
+
+  const ghost=document.createElement("button");
+  ghost.className="ghost";
+  ghost.innerHTML='<span>＋</span> Agregar cliente';
+  ghost.onclick=()=>openClientDlg();
+  board.appendChild(ghost);
+}
+
+function escapeHtml(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------------- interacciones ---------------- */
+board.addEventListener("keydown",e=>{
+  const add=e.target.closest("[data-add]");
+  if(add && e.key==="Enter"){
+    const txt=add.value.trim();
+    if(txt){ store.addNote({clientId:add.dataset.add, text:txt, fav:false, createdAt:Date.now()}); add.value=""; }
+    e.preventDefault();
+  }
+  if(e.target.classList.contains("note-text") && e.key==="Enter" && !e.shiftKey){ e.target.blur(); e.preventDefault(); }
+  if(e.target.classList.contains("card-name") && e.key==="Enter"){ e.target.blur(); e.preventDefault(); }
+});
+
+board.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-act]");
+  if(btn){
+    const wrap=btn.closest("[data-note]"); const id=wrap.dataset.note;
+    if(btn.dataset.act==="star") store.updateNote(id,{fav:!NOTES[id].fav});
+    if(btn.dataset.act==="del"){ if(confirm("¿Borrar esta nota?")) store.removeNote(id); }
+    return;
+  }
+  const edit=e.target.closest("[data-edit]");
+  if(edit) openClientDlg(edit.dataset.edit);
+});
+
+board.addEventListener("blur",e=>{
+  if(e.target.classList.contains("note-text")){
+    const id=e.target.closest("[data-note]").dataset.note;
+    const t=e.target.innerText.trim();
+    if(!NOTES[id]) return;
+    if(!t){ store.removeNote(id); }
+    else if(t!==NOTES[id].text) store.updateNote(id,{text:t});
+  }
+  if(e.target.classList.contains("card-name")){
+    const id=e.target.dataset.rename;
+    const t=e.target.innerText.trim();
+    if(CLIENTS[id] && t && t!==CLIENTS[id].name) store.updateClient(id,{name:t});
+    else e.target.innerText=CLIENTS[id]?.name||"";
+  }
+},true);
+
+/* ---------------- filtros / búsqueda / tema ---------------- */
+document.getElementById("filters").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  filter=b.dataset.f;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));
+  render();
+});
+document.getElementById("search").addEventListener("input",e=>{ query=e.target.value.trim().toLowerCase(); render(); });
+document.getElementById("addClient").onclick=()=>openClientDlg();
+
+const themeBtn=document.getElementById("theme");
+themeBtn.onclick=()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next = cur==="dark" ? "light" : cur==="light" ? "dark" : (matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark");
+  document.documentElement.setAttribute("data-theme",next);
+  localStorage.setItem("panaTheme",next);
+};
+const savedTheme=localStorage.getItem("panaTheme"); if(savedTheme) document.documentElement.setAttribute("data-theme",savedTheme);
+
+/* ---------------- dialog cliente ---------------- */
+const dlg=document.getElementById("clientDlg");
+let dlgColor=SWATCHES[0], dlgEditId=null;
+const swWrap=document.getElementById("dlgSwatches");
+SWATCHES.forEach(col=>{
+  const s=document.createElement("div"); s.className="swatch"; s.style.background=col; s.dataset.col=col;
+  s.onclick=()=>{ dlgColor=col; [...swWrap.children].forEach(x=>x.classList.toggle("sel",x===s)); };
+  swWrap.appendChild(s);
+});
+function selSwatch(col){ [...swWrap.children].forEach(x=>x.classList.toggle("sel",x.dataset.col===col)); }
+
+function openClientDlg(id){
+  dlgEditId=id||null;
+  const name=document.getElementById("dlgName");
+  const emoji=document.getElementById("dlgEmoji");
+  const del=document.getElementById("dlgDelete");
+  if(id){
+    document.getElementById("dlgTitle").innerText="Editar cliente";
+    name.value=CLIENTS[id].name; emoji.value=CLIENTS[id].emoji||""; dlgColor=CLIENTS[id].color; del.style.display="";
+  }else{
+    document.getElementById("dlgTitle").innerText="Nuevo cliente";
+    name.value=""; emoji.value=""; dlgColor=SWATCHES[0]; del.style.display="none";
+  }
+  selSwatch(dlgColor);
+  dlg.showModal(); setTimeout(()=>name.focus(),50);
+}
+document.getElementById("dlgCancel").onclick=()=>dlg.close();
+document.getElementById("dlgSave").onclick=()=>{
+  const name=document.getElementById("dlgName").value.trim();
+  const emoji=document.getElementById("dlgEmoji").value.trim();
+  if(!name) return;
+  if(dlgEditId) store.updateClient(dlgEditId,{name,emoji,color:dlgColor});
+  else store.addClient({name,emoji,color:dlgColor,order:Object.keys(CLIENTS).length,createdAt:Date.now()});
+  dlg.close();
+};
+document.getElementById("dlgDelete").onclick=()=>{
+  if(dlgEditId && confirm("¿Borrar el cliente y todas sus notas?")){ store.removeClient(dlgEditId); dlg.close(); }
+};
+document.getElementById("dlgName").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("dlgSave").click(); });
+
+/* ---------------- fecha de hoy ---------------- */
+(function(){
+  const d=new Date();
+  document.getElementById("today").innerText=d.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+})();
+
+/* ---------------- boot ---------------- */
+function boot(){
+  store = hasFirebase ? FirebaseStore() : LocalStore();
+  const sync=document.getElementById("sync");
+  if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
+  store.onClients(c=>{ CLIENTS=c||{}; render(); });
+  store.onNotes(n=>{ NOTES=n||{}; render(); });
+}
+
+if(hasFirebase){
+  const s1=document.createElement("script"); s1.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
+  const s2=document.createElement("script"); s2.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js";
+  s1.onload=()=>document.head.appendChild(s2); s2.onload=boot;
+  document.head.appendChild(s1);
+}else{ boot(); }
+</script>
+</body>
+</html>
