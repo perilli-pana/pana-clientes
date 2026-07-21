@@ -215,6 +215,126 @@
   .dlg-actions button{font-family:var(--sans); font-size:13px; font-weight:650; padding:8px 15px; border-radius:9px; cursor:pointer; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink)}
   .dlg-actions .primary{background:var(--accent); color:#fff; border-color:var(--accent)}
   .dlg-actions .danger{color:var(--fav); border:0; margin-right:auto; background:none}
+
+  /* ---------- efemérides (pill + modal) ---------- */
+  .efem-pill{display:flex; align-items:center; gap:9px; background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px; padding:5px 12px 5px 6px; cursor:pointer; color:var(--ink); transition:border-color .15s}
+  .efem-pill:hover{border-color:var(--accent)}
+  .efem-pill .ic{display:grid; place-items:center; width:26px; height:26px; border-radius:7px; background:var(--accent-soft); color:var(--accent); font-size:13px; font-weight:750; font-variant-numeric:tabular-nums}
+  .efem-pill .lbl{display:flex; flex-direction:column; line-height:1.15; text-align:left}
+  .efem-pill .lbl b{font-size:12.5px; text-transform:capitalize; font-weight:700}
+  .efem-pill .lbl small{font-size:10px; color:var(--ink-faint); font-family:var(--mono)}
+
+  .efem-modal{max-width:580px; width:94vw}
+  .efem-wrap{padding:20px 22px 22px}
+  .efem-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+  .efem-top h3{margin:0; font-size:18px; text-transform:capitalize; letter-spacing:-.01em}
+  .efem-nav{display:flex; gap:6px}
+  .efem-nav button{min-width:30px; height:30px; padding:0 9px; border-radius:8px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink); cursor:pointer; font-size:13px}
+  .efem-nav button:hover{border-color:var(--accent)}
+  .efem-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px}
+  .efem-grid .dow{font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); text-align:center; padding-bottom:2px}
+  .efem-cell{height:50px; border-radius:9px; border:1px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:13px; color:var(--ink); font-variant-numeric:tabular-nums}
+  .efem-cell.pad{visibility:hidden}
+  .efem-cell.has{background:color-mix(in srgb,var(--accent) 10%, var(--tile)); border-color:color-mix(in srgb,var(--accent) 25%, transparent)}
+  .efem-cell.today{outline:2px solid var(--accent); outline-offset:-2px; font-weight:750}
+  .efem-dot{width:5px; height:5px; border-radius:50%; background:var(--accent)}
+  .efem-list{display:flex; flex-direction:column; gap:8px; max-height:210px; overflow-y:auto}
+  .efem-item{display:flex; gap:10px; align-items:baseline; font-size:13px}
+  .efem-item .d{font-family:var(--mono); font-size:11px; color:var(--ink-soft); min-width:46px; font-weight:650; text-transform:capitalize}
+  .efem-item .n{color:var(--ink)}
+  .efem-item .tag{font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.06em; padding:2px 7px; border-radius:100px; margin-left:auto}
+  .tag.feriado{background:var(--fav-soft); color:var(--fav)}
+  .tag.gastro{background:color-mix(in srgb,#2ECC71 20%,transparent); color:#1a9c5b}
+  .tag.comercial{background:var(--accent-soft); color:var(--accent)}
+  .tag.mio{background:color-mix(in srgb,#2ECC71 20%,transparent); color:#1a9c5b}
+  .efem-cell.click{cursor:pointer; transition:background .12s}
+  .efem-cell.click:hover{background:color-mix(in srgb,var(--accent) 16%,var(--tile))}
+  .efem-cell.sel{outline:2px solid var(--accent); outline-offset:-2px; background:var(--accent-soft)}
+  .efem-dots{position:absolute; bottom:5px; left:0; right:0; display:flex; gap:2px; justify-content:center}
+  .efem-dot.mine{background:#2ECC71}
+  .efem-day{display:flex; flex-direction:column; gap:9px}
+  .efem-day-h{display:flex; align-items:center; gap:12px}
+  .efem-back{font-family:var(--sans); font-size:12px; font-weight:600; color:var(--accent); background:none; border:0; cursor:pointer; padding:0}
+  .efem-day-t{font-size:14px; font-weight:700; text-transform:capitalize}
+  .efem-builtin{display:flex; flex-wrap:wrap; gap:6px}
+  .efem-builtin .tag{margin:0}
+  .efem-item.mine{display:flex; align-items:flex-start; gap:8px; background:color-mix(in srgb,var(--ink) 4%,transparent); border-radius:8px; padding:9px 11px; font-size:13px}
+  .efem-item.mine .n{flex:1; line-height:1.35}
+  .efem-item.mine button{flex:none; background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:12px; margin-top:1px}
+  .efem-item.mine button:hover{color:var(--fav)}
+  .efem-addin{font-family:var(--sans); font-size:13px; color:var(--ink); background:color-mix(in srgb,var(--ink) 5%,transparent); border:1px solid var(--tile-edge); border-radius:9px; padding:10px 12px; margin-top:2px}
+  .efem-addin:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .efem-addin::placeholder{color:var(--ink-faint)}
+
+  /* ---------- mini-calendario por cliente ---------- */
+  .minical{padding:10px 14px 11px; border-bottom:1px solid var(--tile-edge)}
+  .mc-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+  .mc-title{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint)}
+  .mc-legend{display:flex; gap:9px; font-size:9.5px; color:var(--ink-soft); font-family:var(--mono)}
+  .mc-legend i{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:3px; vertical-align:middle}
+  .mc-legend .g{background:#2ECC71}
+  .mc-legend .r{background:var(--fav)}
+  .mc-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px}
+  .mc-dow{font-family:var(--mono); font-size:8px; color:var(--ink-faint); text-align:center; padding-bottom:1px}
+  .mc-day{height:17px; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); border-radius:4px; font-size:9px; color:var(--ink-soft); cursor:pointer; display:grid; place-items:center; font-family:var(--mono); padding:0; transition:transform .1s}
+  .mc-day:hover{transform:scale(1.15)}
+  .mc-empty{background:none; cursor:default; pointer-events:none}
+  .mc-plan{background:color-mix(in srgb,var(--fav) 80%, transparent); color:#fff}
+  .mc-done{background:#2ECC71; color:#fff}
+  .mc-today{outline:2px solid var(--accent); outline-offset:-1px}
+  .mc-caption{margin-top:7px; font-size:10.5px; color:var(--ink-soft); font-family:var(--mono); display:flex; gap:14px; flex-wrap:wrap}
+
+  /* ---------- categorías de notas ---------- */
+  .sec{padding:0 2px 4px}
+  .sec-h{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); padding:9px 8px 4px}
+  .sec-h span{opacity:.65}
+  .sec-empty{color:var(--ink-faint); font-size:11.5px; font-style:italic; padding:2px 10px 4px}
+  .chk{flex:none; background:none; border:0; cursor:pointer; padding:0; margin-top:1px; color:var(--ink-faint); font-size:15px; line-height:1; transition:color .12s}
+  .chk:hover{color:#2ECC71}
+  .note.done .chk{color:#2ECC71}
+  .note.done .note-text{text-decoration:line-through; color:var(--ink-faint)}
+
+  .cat-toggle{display:flex; gap:4px; margin-bottom:8px}
+  .cat-toggle button{flex:1; font-family:var(--sans); font-size:11.5px; font-weight:600; color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 4%,transparent); border:1px solid transparent; border-radius:8px; padding:6px; cursor:pointer; transition:all .12s}
+  .cat-toggle button.on{background:var(--tile); border-color:var(--accent); color:var(--accent)}
+
+  /* ---------- calendario desplegable ---------- */
+  .cal-toggle{display:flex; align-items:center; gap:7px; width:100%; text-align:left; font-family:var(--sans); font-size:12px; font-weight:650; color:var(--ink-soft); background:none; border:0; border-bottom:1px solid var(--tile-edge); padding:9px 14px; cursor:pointer; transition:color .15s}
+  .cal-toggle:hover{color:var(--ink)}
+  .cal-toggle .chev{display:inline-block; transition:transform .15s; font-size:10px; color:var(--ink-faint)}
+  .cal-toggle.open .chev{transform:rotate(90deg)}
+  .cal-toggle b{color:var(--accent); font-weight:700}
+  .cal-stats{margin-left:auto; display:flex; gap:9px; align-items:center; font-family:var(--mono); font-size:10.5px}
+  .cal-stats.sin{color:var(--ink-faint); font-style:italic; font-size:10px; font-family:var(--sans)}
+  .st-plan{color:var(--fav); font-weight:700}
+  .st-design{color:#1a9c5b; font-weight:700}
+  @media (prefers-color-scheme: dark){ .st-design{color:#3ddc84} }
+  :root[data-theme="dark"] .st-design{color:#3ddc84}
+  :root[data-theme="light"] .st-design{color:#1a9c5b}
+  .mc-nav{display:flex; align-items:center; gap:6px}
+  .mc-nav button{width:20px; height:20px; border:1px solid var(--tile-edge); background:var(--tile); border-radius:6px; color:var(--ink); cursor:pointer; font-size:12px; line-height:1; padding:0}
+  .mc-nav button:hover{border-color:var(--accent)}
+  .mc-nav .mc-title{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); min-width:82px; text-align:center}
+  .mc-day{position:relative}
+  .evt-dot{position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:currentColor; opacity:.9}
+
+  /* ---------- panel del día ---------- */
+  #dayMenu{position:fixed; z-index:60; background:var(--tile); border:1px solid var(--tile-edge); border-radius:12px; box-shadow:0 14px 40px rgba(0,0,0,.3); padding:8px; display:none; flex-direction:column; gap:3px; width:232px}
+  #dayMenu.show{display:flex}
+  .dm-date{font-family:var(--sans); font-size:12.5px; font-weight:700; text-transform:capitalize; color:var(--ink); padding:3px 6px 5px}
+  .dm-events{display:flex; flex-direction:column; gap:3px; max-height:150px; overflow-y:auto}
+  .dm-ev{display:flex; align-items:flex-start; gap:6px; font-size:12.5px; color:var(--ink); background:color-mix(in srgb,var(--ink) 4%,transparent); border-radius:7px; padding:6px 7px}
+  .dm-ev span{flex:1; word-break:break-word; line-height:1.35}
+  .dm-ev button{flex:none; background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:11px; padding:0; margin-top:1px}
+  .dm-ev button:hover{color:var(--fav)}
+  .dm-empty{color:var(--ink-faint); font-size:11.5px; font-style:italic; padding:3px 7px}
+  .dm-add{font-family:var(--sans); font-size:12.5px; color:var(--ink); background:color-mix(in srgb,var(--ink) 5%,transparent); border:1px solid transparent; border-radius:8px; padding:8px 9px; margin-top:2px}
+  .dm-add::placeholder{color:var(--ink-faint)}
+  .dm-add:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .dm-sep{height:1px; background:var(--tile-edge); margin:5px 2px}
+  #dayMenu>button{font-family:var(--sans); font-size:12px; text-align:left; background:none; border:0; color:var(--ink); padding:7px 8px; border-radius:7px; cursor:pointer}
+  #dayMenu>button:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  #dayMenu>button.clear{color:var(--ink-faint); font-size:11px}
 </style>
 </head>
 <body>
@@ -233,6 +353,10 @@
     <b>Pana</b>
     <span class="today" id="today">—</span>
   </div>
+  <button class="efem-pill" id="efemBtn" title="Efemérides del mes (clic para agrandar)">
+    <span class="ic" id="efemDay">–</span>
+    <span class="lbl"><b id="efemMonth">—</b><small id="efemCount"></small></span>
+  </button>
   <div class="spacer"></div>
   <input class="search" id="search" placeholder="Buscar…" />
   <div class="filters" id="filters">
@@ -263,6 +387,29 @@
     </div>
   </div>
 </dialog>
+
+<dialog id="efemDlg" class="efem-modal">
+  <div class="efem-wrap">
+    <div class="efem-top">
+      <h3 id="efemTitle">—</h3>
+      <div class="efem-nav">
+        <button id="efemPrev" title="Mes anterior">‹</button>
+        <button id="efemToday">hoy</button>
+        <button id="efemNext" title="Mes siguiente">›</button>
+        <button id="efemClose" title="Cerrar">✕</button>
+      </div>
+    </div>
+    <div class="efem-grid" id="efemGrid"></div>
+    <div class="efem-list" id="efemList"></div>
+  </div>
+</dialog>
+
+<div id="dayMenu">
+  <div class="dm-date" id="dmDate"></div>
+  <button id="fmDesign">✅ Diseñado hasta acá</button>
+  <button id="fmPlan">📋 Planificado hasta acá</button>
+  <button id="fmClear" class="clear">✕ Limpiar</button>
+</div>
 
 <script>
 /* ============================================================
@@ -313,23 +460,30 @@ function LocalStore(){
   const KEY="panaDashboard.v2";
   let data = JSON.parse(localStorage.getItem(KEY) || "null");
   if(!data){
-    data = {clients:{}, notes:{}};
+    data = {clients:{}, notes:{}, events:{}};
     SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
     localStorage.setItem(KEY, JSON.stringify(data));
   }
+  if(!data.events) data.events={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
-  let cbC=()=>{}, cbN=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); };
+  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); };
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
     onNotes:cb=>{cbN=cb; cb({...data.notes});},
+    onEvents:cb=>{cbE=cb; cb({...data.events});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
-    removeClient:id=>{ delete data.clients[id]; Object.keys(data.notes).forEach(n=>{if(data.notes[n].clientId===id) delete data.notes[n];}); save(); emit();},
+    removeClient:id=>{ delete data.clients[id];
+      Object.keys(data.notes).forEach(n=>{if(data.notes[n].clientId===id) delete data.notes[n];});
+      Object.keys(data.events).forEach(n=>{if(data.events[n].clientId===id) delete data.events[n];});
+      save(); emit();},
     addNote:n=>{data.notes[makeId()]=n; save(); emit();},
     updateNote:(id,patch)=>{Object.assign(data.notes[id],patch); save(); emit();},
     removeNote:id=>{delete data.notes[id]; save(); emit();},
+    addEvent:ev=>{data.events[makeId()]=ev; save(); emit();},
+    removeEvent:id=>{delete data.events[id]; save(); emit();},
   };
 }
 
@@ -350,23 +504,29 @@ function FirebaseStore(){
       root.child("clients").set(upd);
     }
   });
+  const cleanupChild=(coll,id)=>root.child(coll).once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child(coll+"/"+k).remove();});});
   return {
     live:true,
     onClients:cb=>root.child("clients").on("value",s=>cb(s.val()||{})),
     onNotes:cb=>root.child("notes").on("value",s=>cb(s.val()||{})),
+    onEvents:cb=>root.child("events").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
-    removeClient:id=>{ root.child("clients/"+id).remove();
-      root.child("notes").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("notes/"+k).remove();});}); },
+    removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); },
     addNote:n=>root.child("notes").push(n),
     updateNote:(id,patch)=>root.child("notes/"+id).update(patch),
     removeNote:id=>root.child("notes/"+id).remove(),
+    addEvent:ev=>root.child("events").push(ev),
+    removeEvent:id=>root.child("events/"+id).remove(),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={};
+let CLIENTS={}, NOTES={}, EVENTS={};
 let filter="all", query="";
+const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
+let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
+function saveCalOpen(){ localStorage.setItem("panaCalOpen", JSON.stringify([...calOpen])); }
 
 /* ---------------- fechas ---------------- */
 function dayKey(ts){ const d=new Date(ts); return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
@@ -382,17 +542,67 @@ function relDay(ts){
 /* ---------------- render ---------------- */
 const board=document.getElementById("board");
 
-function notesFor(clientId){
-  return Object.entries(NOTES)
-    .filter(([id,n])=>n.clientId===clientId)
-    .map(([id,n])=>({id,...n}))
-    .filter(n=>{
-      if(filter==="fav" && !n.fav) return false;
-      if(filter==="today" && !isToday(n.createdAt)) return false;
-      if(query && !n.text.toLowerCase().includes(query)) return false;
-      return true;
-    })
-    .sort((a,b)=> (b.fav?1:0)-(a.fav?1:0) || b.createdAt-a.createdAt );
+const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parseYmd(s){ if(!s) return null; const p=String(s).split("-").map(Number); return new Date(p[0],p[1]-1,p[2]); }
+function shortDate(d){ return d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3); }
+
+function passFilter(n){
+  if(filter==="fav" && !n.fav) return false;
+  if(filter==="today" && !isToday(n.createdAt)) return false;
+  if(query && !(n.text||"").toLowerCase().includes(query)) return false;
+  return true;
+}
+function notesForClient(clientId){
+  return Object.entries(NOTES).filter(([id,n])=>n.clientId===clientId).map(([id,n])=>({id,...n})).filter(passFilter);
+}
+
+function viewOf(id){ const now=new Date(); const v=calView[id]||{}; return {y:v.y??now.getFullYear(), m:v.m??now.getMonth()}; }
+function efemNotesFor(dateStr){ return Object.entries(EVENTS).filter(([k,e])=>e.date===dateStr).map(([k,e])=>({id:k,...e})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)); }
+function planStats(c){
+  const now=new Date(), y=now.getFullYear(), m=now.getMonth(), total=new Date(y,m+1,0).getDate();
+  const mStart=new Date(y,m,1), mEnd=new Date(y,m,total);
+  const clamp=dt=>{ if(!dt) return 0; if(dt<mStart) return 0; if(dt>=mEnd) return total; return dt.getDate(); };
+  return { plan:Math.round(clamp(parseYmd(c.planUntil))/total*100), design:Math.round(clamp(parseYmd(c.designUntil))/total*100) };
+}
+
+function miniCalHTML(c){
+  const now=new Date(), {y,m}=viewOf(c.id);
+  const first=new Date(y,m,1), ndays=new Date(y,m+1,0).getDate(), startDow=(first.getDay()+6)%7;
+  const design=parseYmd(c.designUntil), plan=parseYmd(c.planUntil);
+  const isCur=(y===now.getFullYear()&&m===now.getMonth()), todayD=now.getDate();
+  let cells=["L","M","M","J","V","S","D"].map(d=>`<div class="mc-dow">${d}</div>`).join("");
+  for(let i=0;i<startDow;i++) cells+=`<span class="mc-day mc-empty"></span>`;
+  for(let d=1; d<=ndays; d++){
+    const ds=ymd(new Date(y,m,d)), cur=new Date(y,m,d); let cls="";
+    if(design && cur<=design) cls="mc-done";
+    else if(plan && cur<=plan) cls="mc-plan";
+    if(isCur && d===todayD) cls+=" mc-today";
+    cells+=`<button class="mc-day ${cls}" data-day="${ds}">${d}</button>`;
+  }
+  return `<div class="minical">
+    <div class="mc-head">
+      <div class="mc-nav"><button data-cal="prev" title="Mes anterior">‹</button><span class="mc-title">${MONTHS[m]} ${y}</span><button data-cal="next" title="Mes siguiente">›</button></div>
+      <span class="mc-legend"><span><i class="g"></i>diseñado</span><span><i class="r"></i>planif.</span></span>
+    </div>
+    <div class="mc-grid">${cells}</div>
+    <div class="mc-caption"><span>✅ dis. ${design?shortDate(design):"—"}</span><span>📋 plan ${plan?shortDate(plan):"—"}</span><span>👆 clic en un día → verde/rojo</span></div>
+  </div>`;
+}
+
+function noteHTML(n){
+  const today=isToday(n.createdAt)?'today':'';
+  const body=`<div class="note-body">
+      <div class="note-text" contenteditable="true" data-act="edit" spellcheck="false">${escapeHtml(n.text)}</div>
+      <div class="note-meta">${relDay(n.createdAt)}</div>
+    </div>
+    <button class="note-del" data-act="del" title="Borrar">✕</button>`;
+  if(n.cat==='pend'){
+    return `<div class="note ${n.done?'done':''} ${today}" data-note="${n.id}">
+      <button class="chk" data-act="done" title="Marcar hecho">${n.done?'●':'○'}</button>${body}</div>`;
+  }
+  return `<div class="note ${n.fav?'fav':''} ${today}" data-note="${n.id}">
+    <button class="star" data-act="star" title="Favorito">${n.fav?'★':'☆'}</button>${body}</div>`;
 }
 
 function render(){
@@ -407,23 +617,22 @@ function render(){
   }
 
   for(const c of clients){
-    const list=notesFor(c.id);
+    const all=notesForClient(c.id);
+    const pend=all.filter(n=>n.cat==='pend').sort((a,b)=>(a.done?1:0)-(b.done?1:0) || (b.fav?1:0)-(a.fav?1:0) || b.createdAt-a.createdAt);
+    const ideas=all.filter(n=>n.cat!=='pend').sort((a,b)=>(b.fav?1:0)-(a.fav?1:0) || b.createdAt-a.createdAt);
     const total=Object.values(NOTES).filter(n=>n.clientId===c.id).length;
+    const open=calOpen.has(c.id);
+    const st=planStats(c);
+    const statsHTML=(c.planUntil||c.designUntil)
+      ? `<span class="cal-stats"><span class="st-plan">📋 ${st.plan}%</span><span class="st-design">✅ ${st.design}%</span></span>`
+      : `<span class="cal-stats sin">sin planificar</span>`;
+
     const card=document.createElement("section");
-    card.className="card";
+    card.className="card"; card.dataset.client=c.id;
     card.style.setProperty("--c", c.color);
 
-    const notesHTML = list.length
-      ? list.map(n=>`
-        <div class="note ${n.fav?'fav':''} ${isToday(n.createdAt)?'today':''}" data-note="${n.id}">
-          <button class="star" data-act="star" title="Favorito">${n.fav?'★':'☆'}</button>
-          <div class="note-body">
-            <div class="note-text" contenteditable="true" data-act="edit" spellcheck="false">${escapeHtml(n.text)}</div>
-            <div class="note-meta">${relDay(n.createdAt)}</div>
-          </div>
-          <button class="note-del" data-act="del" title="Borrar">✕</button>
-        </div>`).join("")
-      : `<div class="empty-notes">${filter==="all"&&!query ? "Sin ideas todavía" : "Nada acá"}</div>`;
+    const secPend=`<div class="sec"><div class="sec-h">📌 Pendientes <span>${pend.length||''}</span></div>${pend.length?pend.map(noteHTML).join(""):'<div class="sec-empty">—</div>'}</div>`;
+    const secIdea=`<div class="sec"><div class="sec-h">💡 Ideas <span>${ideas.length||''}</span></div>${ideas.length?ideas.map(noteHTML).join(""):'<div class="sec-empty">—</div>'}</div>`;
 
     card.innerHTML=`
       <div class="card-head">
@@ -432,8 +641,16 @@ function render(){
         <span class="count">${total}</span>
         <button class="card-menu" data-edit="${c.id}" title="Editar cliente">⋯</button>
       </div>
-      <div class="notes">${notesHTML}</div>
-      <div class="card-add"><input placeholder="＋ idea suelta…  (Enter)" data-add="${c.id}" /></div>`;
+      <button class="cal-toggle ${open?'open':''}" data-caltoggle="${c.id}"><span class="chev">▸</span> Calendario ${statsHTML}</button>
+      ${open?miniCalHTML(c):''}
+      <div class="notes">${secPend}${secIdea}</div>
+      <div class="card-add" data-cat="idea">
+        <div class="cat-toggle">
+          <button data-setcat="idea" class="on">💡 Idea</button>
+          <button data-setcat="pend">📌 Pendiente</button>
+        </div>
+        <input placeholder="＋ idea…  (Enter)" data-add="${c.id}" />
+      </div>`;
     board.appendChild(card);
   }
 
@@ -451,7 +668,11 @@ board.addEventListener("keydown",e=>{
   const add=e.target.closest("[data-add]");
   if(add && e.key==="Enter"){
     const txt=add.value.trim();
-    if(txt){ store.addNote({clientId:add.dataset.add, text:txt, fav:false, createdAt:Date.now()}); add.value=""; }
+    if(txt){
+      const cat=add.closest(".card-add").dataset.cat||"idea";
+      store.addNote({clientId:add.dataset.add, text:txt, cat, fav:false, done:false, createdAt:Date.now()});
+      add.value="";
+    }
     e.preventDefault();
   }
   if(e.target.classList.contains("note-text") && e.key==="Enter" && !e.shiftKey){ e.target.blur(); e.preventDefault(); }
@@ -459,10 +680,38 @@ board.addEventListener("keydown",e=>{
 });
 
 board.addEventListener("click",e=>{
+  // desplegar / plegar el calendario del cliente
+  const ct=e.target.closest("[data-caltoggle]");
+  if(ct){ const id=ct.dataset.caltoggle; calOpen.has(id)?calOpen.delete(id):calOpen.add(id); saveCalOpen(); closeDay(); render(); return; }
+
+  // navegar meses del calendario
+  const cn=e.target.closest("[data-cal]");
+  if(cn){ const id=cn.closest(".card").dataset.client; let {y,m}=viewOf(id);
+    if(cn.dataset.cal==="prev"){ m--; if(m<0){m=11;y--;} } else { m++; if(m>11){m=0;y++;} }
+    calView[id]={y,m}; closeDay(); render(); return; }
+
+  // clic en un día del mini-calendario → panel del día
+  const mday=e.target.closest(".mc-day[data-day]");
+  if(mday){ const cid=mday.closest(".card").dataset.client; openDay(mday, cid, mday.dataset.day); return; }
+
+  // toggle categoría del input (Idea / Pendiente)
+  const setcat=e.target.closest("[data-setcat]");
+  if(setcat){
+    const wrap=setcat.closest(".card-add");
+    wrap.dataset.cat=setcat.dataset.setcat;
+    [...setcat.parentElement.children].forEach(x=>x.classList.toggle("on",x===setcat));
+    const inp=wrap.querySelector("input");
+    inp.placeholder = setcat.dataset.setcat==="pend" ? "＋ pendiente…  (Enter)" : "＋ idea…  (Enter)";
+    inp.focus();
+    return;
+  }
+
   const btn=e.target.closest("[data-act]");
   if(btn){
-    const wrap=btn.closest("[data-note]"); const id=wrap.dataset.note;
+    const id=btn.closest("[data-note]").dataset.note;
+    if(!NOTES[id]) return;
     if(btn.dataset.act==="star") store.updateNote(id,{fav:!NOTES[id].fav});
+    if(btn.dataset.act==="done") store.updateNote(id,{done:!NOTES[id].done});
     if(btn.dataset.act==="del"){ if(confirm("¿Borrar esta nota?")) store.removeNote(id); }
     return;
   }
@@ -545,10 +794,136 @@ document.getElementById("dlgDelete").onclick=()=>{
 };
 document.getElementById("dlgName").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("dlgSave").click(); });
 
-/* ---------------- fecha de hoy ---------------- */
+/* ---------------- panel del día (fronteras verde/rojo) ---------------- */
+let dayCtx=null;
+const dMenu=document.getElementById("dayMenu");
+function openDay(el, clientId, day){
+  dayCtx={clientId, day};
+  document.getElementById("dmDate").innerText=parseYmd(day).toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+  const r=el.getBoundingClientRect();
+  dMenu.style.left=Math.min(r.left, window.innerWidth-212)+"px";
+  dMenu.style.top=Math.min(r.bottom+6, window.innerHeight-150)+"px";
+  dMenu.classList.add("show");
+}
+function closeDay(){ dMenu.classList.remove("show"); dayCtx=null; }
+document.getElementById("fmDesign").onclick=()=>{ if(dayCtx) store.updateClient(dayCtx.clientId,{designUntil:dayCtx.day}); closeDay(); };
+document.getElementById("fmPlan").onclick=()=>{ if(dayCtx) store.updateClient(dayCtx.clientId,{planUntil:dayCtx.day}); closeDay(); };
+document.getElementById("fmClear").onclick=()=>{ if(dayCtx) store.updateClient(dayCtx.clientId,{planUntil:null,designUntil:null}); closeDay(); };
+document.addEventListener("click",e=>{ if(dMenu.classList.contains("show") && !dMenu.contains(e.target) && !e.target.closest(".mc-day")) closeDay(); });
+
+/* ---------------- efemérides ---------------- */
+/* editá / agregá las que quieras: "MM-DD": [["nombre","feriado|comercial|gastro"]] */
+const EFEM={
+  "01-01":[["Año Nuevo","feriado"]],
+  "02-09":[["Día mundial de la pizza","gastro"]],
+  "02-14":[["San Valentín","comercial"]],
+  "02-16":[["Carnaval","feriado"]],
+  "02-17":[["Carnaval","feriado"]],
+  "03-08":[["Día de la mujer","comercial"]],
+  "03-24":[["Día de la memoria","feriado"]],
+  "04-02":[["Malvinas","feriado"]],
+  "04-03":[["Viernes Santo","feriado"]],
+  "04-17":[["Día mundial del Malbec","gastro"]],
+  "05-01":[["Día del trabajador","feriado"]],
+  "05-25":[["Revolución de Mayo","feriado"]],
+  "05-28":[["Día de la hamburguesa","gastro"]],
+  "06-17":[["Paso a la inmortalidad de Güemes","feriado"]],
+  "06-20":[["Día de la bandera","feriado"]],
+  "06-21":[["Día del padre","comercial"]],
+  "07-09":[["Día de la independencia","feriado"]],
+  "07-20":[["Día del amigo","comercial"]],
+  "08-07":[["Día internacional de la cerveza","gastro"]],
+  "08-16":[["Día del niño","comercial"]],
+  "08-17":[["Paso a la inmortalidad de San Martín","feriado"]],
+  "09-11":[["Día del maestro","comercial"]],
+  "09-21":[["Primavera / Día del estudiante","comercial"]],
+  "10-12":[["Día de la diversidad cultural","feriado"]],
+  "10-18":[["Día de la madre","comercial"]],
+  "10-31":[["Halloween","comercial"]],
+  "11-20":[["Día de la soberanía nacional","feriado"]],
+  "11-27":[["Black Friday","comercial"]],
+  "12-08":[["Inmaculada Concepción","feriado"]],
+  "12-24":[["Nochebuena","comercial"]],
+  "12-25":[["Navidad","feriado"]],
+  "12-31":[["Año nuevo (víspera)","comercial"]],
+};
+function efemFor(y,m,d){
+  const key=String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  const list=(EFEM[key]||[]).slice();
+  if(d===29) list.push(["Ñoquis del 29","gastro"]);
+  return list;
+}
+function monthEfem(y,m){
+  const out=[], nd=new Date(y,m+1,0).getDate();
+  for(let d=1; d<=nd; d++){ efemFor(y,m,d).forEach(e=>out.push({d,name:e[0],type:e[1]})); }
+  return out;
+}
+function updateEfemPill(){
+  const n=new Date();
+  document.getElementById("efemDay").innerText=n.getDate();
+  document.getElementById("efemMonth").innerText=MONTHS[n.getMonth()];
+  const c=monthEfem(n.getFullYear(),n.getMonth()).length;
+  document.getElementById("efemCount").innerText=c+(c===1?" fecha":" fechas");
+}
+let efemView=null, efemSelDay=null;
+function renderEfem(){
+  const {y,m}=efemView, now=new Date();
+  document.getElementById("efemTitle").innerText=MONTHS[m]+" "+y;
+  const first=new Date(y,m,1), nd=new Date(y,m+1,0).getDate(), startDow=(first.getDay()+6)%7;
+  let g=["lun","mar","mié","jue","vie","sáb","dom"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<startDow;i++) g+=`<div class="efem-cell pad"></div>`;
+  for(let d=1; d<=nd; d++){
+    const ds=ymd(new Date(y,m,d)), built=efemFor(y,m,d), mine=efemNotesFor(ds);
+    const isT=(y===now.getFullYear()&&m===now.getMonth()&&d===now.getDate());
+    const dots=(built.length?'<span class="efem-dot"></span>':'')+(mine.length?'<span class="efem-dot mine"></span>':'');
+    g+=`<div class="efem-cell click ${(built.length||mine.length)?'has':''} ${efemSelDay===ds?'sel':''} ${isT?'today':''}" data-efemday="${ds}" title="${built.map(e=>e[0]).concat(mine.map(e=>e.text)).join(', ')}">${d}<span class="efem-dots">${dots}</span></div>`;
+  }
+  document.getElementById("efemGrid").innerHTML=g;
+
+  const box=document.getElementById("efemList");
+  if(efemSelDay){
+    const dd=parseYmd(efemSelDay), built=efemFor(dd.getFullYear(),dd.getMonth(),dd.getDate()), mine=efemNotesFor(efemSelDay);
+    box.innerHTML=`<div class="efem-day">
+      <div class="efem-day-h"><button class="efem-back" id="efemBack">‹ volver al mes</button><span class="efem-day-t">${dd.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"})}</span></div>
+      ${built.length?`<div class="efem-builtin">${built.map(e=>`<span class="tag ${e[1]}">${e[0]}</span>`).join("")}</div>`:''}
+      ${mine.length?mine.map(e=>`<div class="efem-item mine"><span class="n">${escapeHtml(e.text)}</span><button data-delc="${e.id}" title="Borrar">✕</button></div>`).join(""):'<div class="sec-empty">Todavía no agregaste nada este día.</div>'}
+      <input class="efem-addin" id="efemAdd" placeholder="＋ agregar algo a este día…  (Enter)" autocomplete="off" />
+    </div>`;
+    setTimeout(()=>{ const a=document.getElementById("efemAdd"); if(a) a.focus(); },30);
+  }else{
+    const list=monthEfem(y,m);
+    Object.values(EVENTS).forEach(e=>{ const dt=parseYmd(e.date); if(dt&&dt.getFullYear()===y&&dt.getMonth()===m) list.push({d:dt.getDate(),name:e.text,type:'mio'}); });
+    list.sort((a,b)=>a.d-b.d);
+    box.innerHTML = list.length
+      ? list.map(e=>`<div class="efem-item"><span class="d">${e.d} ${MONTHS[m].slice(0,3)}</span><span class="n">${escapeHtml(e.name)}</span><span class="tag ${e.type}">${e.type==='mio'?'mío':e.type}</span></div>`).join("")
+      : '<div class="sec-empty">Sin efemérides este mes. Tocá un día para agregar algo.</div>';
+  }
+}
+function openEfem(){ const n=new Date(); efemView=efemView||{y:n.getFullYear(),m:n.getMonth()}; efemSelDay=null; renderEfem(); document.getElementById("efemDlg").showModal(); }
+document.getElementById("efemBtn").onclick=openEfem;
+document.getElementById("efemPrev").onclick=()=>{ let {y,m}=efemView; m--; if(m<0){m=11;y--;} efemView={y,m}; efemSelDay=null; renderEfem(); };
+document.getElementById("efemNext").onclick=()=>{ let {y,m}=efemView; m++; if(m>11){m=0;y++;} efemView={y,m}; efemSelDay=null; renderEfem(); };
+document.getElementById("efemToday").onclick=()=>{ const n=new Date(); efemView={y:n.getFullYear(),m:n.getMonth()}; efemSelDay=null; renderEfem(); };
+document.getElementById("efemClose").onclick=()=>document.getElementById("efemDlg").close();
+const efemDlgEl=document.getElementById("efemDlg");
+efemDlgEl.addEventListener("click",e=>{
+  if(e.target.closest("#efemBack")){ efemSelDay=null; renderEfem(); return; }
+  const del=e.target.closest("[data-delc]"); if(del){ store.removeEvent(del.dataset.delc); return; }
+  const cell=e.target.closest("[data-efemday]"); if(cell){ efemSelDay=cell.dataset.efemday; renderEfem(); return; }
+});
+efemDlgEl.addEventListener("keydown",e=>{
+  if(e.target.id==="efemAdd" && e.key==="Enter"){
+    const t=e.target.value.trim();
+    if(t && efemSelDay){ store.addEvent({date:efemSelDay, text:t, createdAt:Date.now()}); e.target.value=""; }
+    e.preventDefault();
+  }
+});
+
+/* ---------------- fecha de hoy + pill ---------------- */
 (function(){
   const d=new Date();
   document.getElementById("today").innerText=d.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+  updateEfemPill();
 })();
 
 /* ---------------- boot ---------------- */
@@ -558,6 +933,7 @@ function boot(){
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
   store.onClients(c=>{ CLIENTS=c||{}; render(); });
   store.onNotes(n=>{ NOTES=n||{}; render(); });
+  store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); });
 }
 
 function startApp(){
