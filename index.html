@@ -45,6 +45,17 @@
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
   }
 
+  /* candado de entrada */
+  #gate{position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:var(--paper)}
+  .gate-box{display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center; padding:34px 30px; background:var(--tile); border:1px solid var(--tile-edge); border-radius:18px; box-shadow:var(--shadow); width:min(300px,88vw)}
+  .gate-emoji{font-size:32px}
+  .gate-box b{font-size:16px; letter-spacing:-.01em}
+  .gate-box p{margin:0; font-size:12.5px; color:var(--ink-soft)}
+  .gate-box input{width:100%; font-family:var(--sans); font-size:15px; text-align:center; color:var(--ink); background:color-mix(in srgb,var(--ink) 5%,transparent); border:1px solid var(--tile-edge); border-radius:10px; padding:11px 12px}
+  .gate-box input:focus{outline:none; border-color:var(--accent)}
+  .gate-box button{width:100%; font-family:var(--sans); font-size:14px; font-weight:650; color:#fff; background:var(--accent); border:0; border-radius:10px; padding:11px; cursor:pointer}
+  #gateErr{font-size:12px; color:var(--fav); min-height:14px}
+
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
@@ -207,6 +218,16 @@
 </style>
 </head>
 <body>
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-emoji">🔒</div>
+    <b>Pana · pared de clientes</b>
+    <p>Poné la clave para entrar</p>
+    <input type="password" id="gateInput" placeholder="clave" autocomplete="off" />
+    <button id="gateBtn">Entrar</button>
+    <span id="gateErr"></span>
+  </div>
+</div>
 <header>
   <div class="brand">
     <b>Pana</b>
@@ -539,12 +560,30 @@ function boot(){
   store.onNotes(n=>{ NOTES=n||{}; render(); });
 }
 
-if(hasFirebase){
-  const s1=document.createElement("script"); s1.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
-  const s2=document.createElement("script"); s2.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js";
-  s1.onload=()=>document.head.appendChild(s2); s2.onload=boot;
-  document.head.appendChild(s1);
-}else{ boot(); }
+function startApp(){
+  if(hasFirebase){
+    const s1=document.createElement("script"); s1.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
+    const s2=document.createElement("script"); s2.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js";
+    s1.onload=()=>document.head.appendChild(s2); s2.onload=boot;
+    document.head.appendChild(s1);
+  }else{ boot(); }
+}
+
+/* ---------------- candado de entrada ---------------- */
+const CLAVE="pana2026";
+const gate=document.getElementById("gate");
+function unlock(){ gate.remove(); startApp(); }
+if(localStorage.getItem("panaAuth")==="ok"){ unlock(); }
+else{
+  const inp=document.getElementById("gateInput"), btn=document.getElementById("gateBtn"), err=document.getElementById("gateErr");
+  const tryClave=()=>{
+    if(inp.value.trim().toLowerCase()===CLAVE){ localStorage.setItem("panaAuth","ok"); unlock(); }
+    else{ err.innerText="Clave incorrecta"; inp.select(); }
+  };
+  btn.onclick=tryClave;
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter") tryClave(); });
+  setTimeout(()=>inp.focus(),60);
+}
 </script>
 </body>
 </html>
