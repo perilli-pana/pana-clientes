@@ -120,17 +120,19 @@
   /* ---------- board ---------- */
   main{
     flex:1; padding:22px;
-    display:grid; gap:18px; align-content:start;
-    grid-template-columns:repeat(auto-fill, minmax(310px, 1fr));
+    display:grid; gap:var(--board-gap,18px); align-content:start;
+    grid-template-columns:repeat(auto-fill, minmax(var(--tile-min,310px), 1fr));
   }
 
   .card{
     background:var(--tile); border:1px solid var(--tile-edge);
     border-radius:var(--radius); box-shadow:var(--shadow);
     display:flex; flex-direction:column; overflow:hidden;
-    max-height:64vh; min-height:190px;
-    transition:box-shadow .2s;
+    max-height:var(--card-max,64vh); min-height:var(--card-min,190px);
+    transition:box-shadow .2s, opacity .15s;
   }
+  .card.dragging{opacity:.4; box-shadow:0 8px 30px rgba(20,20,26,.18)}
+  main.dragging-active .card{transition:none}
   .card:hover{box-shadow:0 4px 12px rgba(20,20,26,.08), 0 16px 40px rgba(20,20,26,.1)}
   .card-head{
     display:flex; align-items:center; gap:10px;
@@ -143,6 +145,155 @@
   .card-menu{opacity:0; transition:opacity .15s; background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:16px; padding:2px 4px; border-radius:6px}
   .card:hover .card-menu{opacity:1}
   .card-menu:hover{color:var(--ink)}
+  .grip{
+    flex:none; opacity:0; background:none; border:0; cursor:grab;
+    color:var(--ink-faint); font-size:15px; line-height:1; padding:2px 3px;
+    margin:-2px -2px -2px -6px; border-radius:6px; transition:opacity .15s, color .12s;
+    touch-action:none;
+  }
+  .grip:active{cursor:grabbing}
+  .card:hover .grip{opacity:.9}
+  .grip:hover{color:var(--ink)}
+
+  /* ---------- control de zoom ---------- */
+  .zoom{display:flex; align-items:center; gap:2px; background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px; padding:3px}
+  .zoom button{width:26px; height:28px; display:grid; place-items:center; background:none; border:0; color:var(--ink); cursor:pointer; font-size:16px; border-radius:7px; line-height:1}
+  .zoom button:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .zoom button:disabled{opacity:.3; cursor:default}
+  .zoom .zlbl{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); min-width:26px; text-align:center; user-select:none}
+
+  /* nivel 75% — compacto: saca el pie de "agregar" para ganar altura */
+  body[data-zoom="3"] .card-name{font-size:13px}
+  body[data-zoom="3"] .note-text{font-size:12px; line-height:1.35}
+  body[data-zoom="3"] .note-meta{display:none}
+  body[data-zoom="3"] .card-add{display:none}
+  body[data-zoom="3"] .card-head{padding:11px 13px 9px}
+  body[data-zoom="3"] .cal-toggle{padding:7px 12px; font-size:11px}
+
+  /* nivel 55% — hoja de contactos: solo lo indispensable */
+  body[data-zoom="4"] .card-name{font-size:12px; line-height:1.2}
+  body[data-zoom="4"] .note-text{font-size:11px; line-height:1.3}
+  body[data-zoom="4"] .note-meta{display:none}
+  body[data-zoom="4"] .card-add{display:none}
+  body[data-zoom="4"] .cal-toggle{display:none}
+  body[data-zoom="4"] .minical{display:none}
+  body[data-zoom="4"] .sec-empty{display:none}
+  body[data-zoom="4"] .sec-h{padding:6px 8px 2px; font-size:9px}
+  body[data-zoom="4"] .card-head{padding:8px 10px 6px}
+  body[data-zoom="4"] .avatar{width:22px; height:22px; font-size:12px}
+  body[data-zoom="4"] .note{padding:5px 6px 5px 8px}
+  body[data-zoom="4"] .count{display:none}
+
+  /* ---------- pestañas ---------- */
+  nav.tabs{
+    position:sticky; top:57px; z-index:19;
+    display:flex; gap:2px; align-items:center;
+    padding:8px 22px 0; background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--tile-edge);
+  }
+  nav.tabs button{
+    font-family:var(--sans); font-size:13px; font-weight:650; color:var(--ink-soft);
+    background:none; border:0; border-bottom:2.5px solid transparent; cursor:pointer;
+    padding:9px 15px 11px; display:flex; align-items:center; gap:7px; transition:color .15s;
+  }
+  nav.tabs button .tico{font-size:15px; line-height:1}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.on{color:var(--accent); border-bottom-color:var(--accent)}
+
+  .view{flex:1; min-height:0; display:none; flex-direction:column}
+  .view.active{display:flex}
+  #view-ciclo{padding:0}
+  #cicloFrame{flex:1; width:100%; border:0; min-height:0; background:var(--paper)}
+
+  /* ---------- panel de ideas sueltas (tipo Keep) ---------- */
+  .ideas-wrap{flex:1; overflow-y:auto; padding:24px 22px 40px}
+  .ideas-compose{max-width:600px; margin:0 auto 26px; background:var(--tile); border:1px solid var(--tile-edge); border-radius:14px; box-shadow:var(--shadow); padding:12px 14px}
+  .ideas-compose textarea{width:100%; resize:none; font-family:var(--sans); font-size:14.5px; color:var(--ink); background:none; border:0; outline:none; line-height:1.45; min-height:24px}
+  .ideas-compose textarea::placeholder{color:var(--ink-faint)}
+  .ideas-compose .ic-bottom{display:flex; align-items:center; gap:8px; margin-top:8px; opacity:0; max-height:0; overflow:hidden; transition:opacity .15s, max-height .15s}
+  .ideas-compose.expanded .ic-bottom{opacity:1; max-height:44px}
+  .ic-colors{display:flex; gap:6px}
+  .ic-dot{width:20px; height:20px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .1s}
+  .ic-dot:hover{transform:scale(1.15)}
+  .ic-dot.sel{border-color:var(--ink)}
+  .ideas-compose .ic-save{margin-left:auto; font-family:var(--sans); font-size:13px; font-weight:650; color:#fff; background:var(--accent); border:0; border-radius:9px; padding:7px 15px; cursor:pointer}
+
+  .ideas-grid{display:flex; flex-wrap:wrap; align-items:flex-start; gap:16px; max-width:1220px; margin:0 auto}
+  .idea{
+    width:236px; border:1px solid var(--tile-edge); border-radius:14px;
+    background:var(--idc,var(--tile)); box-shadow:var(--shadow); padding:14px 14px 10px;
+    position:relative; transition:box-shadow .18s, opacity .15s;
+  }
+  .idea.big{width:488px}
+  .idea.dragging{opacity:.4}
+  .idea:hover{box-shadow:0 4px 12px rgba(20,20,26,.09), 0 14px 34px rgba(20,20,26,.1)}
+  .idea-text{font-size:14px; line-height:1.5; color:var(--ink); white-space:pre-wrap; word-wrap:break-word; outline:none; border-radius:6px; min-height:20px}
+  .idea-text:empty::before{content:"Nota…"; color:var(--ink-faint)}
+  .idea-bar{display:flex; align-items:center; gap:3px; margin-top:10px; opacity:0; transition:opacity .15s}
+  .idea:hover .idea-bar, .idea:focus-within .idea-bar{opacity:1}
+  .idea-bar .ib{background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:14px; padding:3px 5px; border-radius:6px; line-height:1}
+  .idea-bar .ib:hover{color:var(--ink); background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .idea-bar .ib.pinned{color:var(--fav)}
+  .idea-bar .igrip{cursor:grab; margin-right:auto}
+  .idea-bar .igrip:active{cursor:grabbing}
+  .idea-mini-colors{display:flex; gap:5px; margin-left:4px}
+  .idea-mini-colors .ic-dot{width:16px; height:16px}
+  .ideas-empty{text-align:center; color:var(--ink-faint); font-size:14px; padding:50px 20px}
+  .ideas-pin-label{max-width:1200px; margin:0 auto 8px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint)}
+
+  /* ---------- pestaña calendario (mes grande) ---------- */
+  .cal-wrap{flex:1; overflow-y:auto; padding:22px 26px 40px}
+  .cal-top{display:flex; align-items:center; gap:14px; max-width:1100px; margin:0 auto 18px}
+  .cal-top h2{margin:0; font-size:22px; text-transform:capitalize; letter-spacing:-.01em}
+  .cal-top .cal-nav{display:flex; gap:6px; margin-left:auto}
+  .cal-top .cal-nav button{min-width:34px; height:34px; padding:0 11px; border-radius:9px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink); cursor:pointer; font-size:14px}
+  .cal-top .cal-nav button:hover{border-color:var(--accent)}
+  .calgrid{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+  .calgrid .cg-dow{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); text-align:center; padding:2px 0 4px}
+  .cg-cell{min-height:96px; border:1px solid var(--tile-edge); border-radius:11px; background:var(--tile); padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:border-color .12s, background .12s}
+  .cg-cell:hover{border-color:var(--accent)}
+  .cg-cell.pad{visibility:hidden}
+  .cg-cell.today{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+  .cg-num{font-family:var(--mono); font-size:12px; font-weight:700; color:var(--ink-soft); font-variant-numeric:tabular-nums}
+  .cg-cell.today .cg-num{color:var(--accent)}
+  .cg-ev{font-size:10.5px; line-height:1.25; padding:2px 6px; border-radius:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .cg-ev.feriado{background:var(--fav-soft); color:var(--fav)}
+  .cg-ev.comercial{background:var(--accent-soft); color:var(--accent)}
+  .cg-ev.gastro{background:color-mix(in srgb,#2ECC71 18%,transparent); color:#1a9c5b}
+  .cg-ev.mio{background:color-mix(in srgb,#2ECC71 22%,transparent); color:#1a9c5b; font-weight:650}
+  .cg-more{font-size:9.5px; color:var(--ink-faint); font-family:var(--mono)}
+
+  .cal-list-wrap{max-width:1100px; margin:26px auto 0}
+  .cal-list-h{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint); margin-bottom:10px}
+  .cal-list{display:flex; flex-direction:column; gap:2px}
+  .cli{display:flex; align-items:baseline; gap:12px; padding:8px 10px; border-radius:9px; transition:background .12s}
+  .cli:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .cli .cli-d{font-family:var(--mono); font-size:11.5px; font-weight:650; color:var(--ink-soft); min-width:58px; text-transform:capitalize}
+  .cli .cli-n{color:var(--ink); font-size:13.5px; flex:1}
+  .cli .cli-tag{font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:100px}
+  .cli-tag.feriado{background:var(--fav-soft); color:var(--fav)}
+  .cli-tag.comercial{background:var(--accent-soft); color:var(--accent)}
+  .cli-tag.gastro{background:color-mix(in srgb,#2ECC71 18%,transparent); color:#1a9c5b}
+  .cli-tag.mio{background:color-mix(in srgb,#2ECC71 22%,transparent); color:#1a9c5b}
+  .cli .cli-del{background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:12px; opacity:0; transition:opacity .12s}
+  .cli:hover .cli-del{opacity:1}
+  .cli .cli-del:hover{color:var(--fav)}
+  .cal-list-empty{color:var(--ink-faint); font-size:13px; font-style:italic; padding:8px 10px}
+
+  /* ventanita del día en el calendario */
+  #calDayPop{position:fixed; z-index:60; background:var(--tile); border:1px solid var(--tile-edge); border-radius:12px; box-shadow:0 14px 40px rgba(0,0,0,.3); padding:12px; display:none; flex-direction:column; gap:8px; width:250px}
+  #calDayPop.show{display:flex}
+  .cdp-date{font-size:13px; font-weight:700; text-transform:capitalize; color:var(--ink)}
+  .cdp-built{display:flex; flex-wrap:wrap; gap:5px}
+  .cdp-built .cli-tag{font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:100px}
+  .cdp-mine{display:flex; flex-direction:column; gap:5px}
+  .cdp-mine .m{display:flex; align-items:flex-start; gap:8px; font-size:13px; background:color-mix(in srgb,var(--ink) 4%,transparent); border-radius:8px; padding:7px 9px}
+  .cdp-mine .m span{flex:1; line-height:1.35}
+  .cdp-mine .m button{background:none; border:0; color:var(--ink-faint); cursor:pointer; font-size:12px; margin-top:1px}
+  .cdp-mine .m button:hover{color:var(--fav)}
+  .cdp-add{font-family:var(--sans); font-size:13px; color:var(--ink); background:color-mix(in srgb,var(--ink) 5%,transparent); border:1px solid var(--tile-edge); border-radius:9px; padding:9px 11px}
+  .cdp-add:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .cdp-add::placeholder{color:var(--ink-faint)}
 
   .notes{flex:1; overflow-y:auto; padding:6px 10px 4px; display:flex; flex-direction:column; gap:5px}
   .notes::-webkit-scrollbar{width:8px}
@@ -358,18 +509,75 @@
     <span class="lbl"><b id="efemMonth">—</b><small id="efemCount"></small></span>
   </button>
   <div class="spacer"></div>
-  <input class="search" id="search" placeholder="Buscar…" />
-  <div class="filters" id="filters">
-    <button data-f="all" class="on">Todos</button>
-    <button data-f="today">Hoy</button>
-    <button data-f="fav">Favoritos</button>
-  </div>
-  <button class="add-client" id="addClient">＋ Cliente</button>
+  <span id="dashTools" style="display:contents">
+    <input class="search" id="search" placeholder="Buscar…" />
+    <div class="filters" id="filters">
+      <button data-f="all" class="on">Todos</button>
+      <button data-f="today">Hoy</button>
+      <button data-f="fav">Favoritos</button>
+    </div>
+    <button class="add-client" id="addClient">＋ Cliente</button>
+    <div class="zoom" id="zoom" title="Zoom del tablero (achicá para ver todos)">
+      <button id="zoomOut" title="Achicar cuadrados">－</button>
+      <span class="zlbl" id="zoomLbl">100%</span>
+      <button id="zoomIn" title="Agrandar cuadrados">＋</button>
+    </div>
+  </span>
   <button class="iconbtn" id="theme" title="Cambiar tema">◐</button>
   <div class="sync-dot local" id="sync" title="Guardado local (esta compu)"><i></i><span>local</span></div>
 </header>
 
-<main id="board"></main>
+<nav class="tabs" id="tabs">
+  <button data-tab="dashboard" class="on"><span class="tico">🧱</span> Dashboard</button>
+  <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
+  <button data-tab="cal"><span class="tico">🗓️</span> Calendario</button>
+  <button data-tab="ciclo"><span class="tico">🔁</span> Ciclo de trabajo</button>
+</nav>
+
+<div id="view-dashboard" class="view active">
+  <main id="board"></main>
+</div>
+
+<div id="view-ideas" class="view">
+  <div class="ideas-wrap">
+    <div class="ideas-compose" id="ideaCompose">
+      <textarea id="ideaInput" rows="1" placeholder="Escribí una idea suelta…"></textarea>
+      <div class="ic-bottom">
+        <div class="ic-colors" id="ideaColors"></div>
+        <button class="ic-save" id="ideaSave">Guardar</button>
+      </div>
+    </div>
+    <div id="ideasBody"></div>
+  </div>
+</div>
+
+<div id="view-cal" class="view">
+  <div class="cal-wrap">
+    <div class="cal-top">
+      <h2 id="calTitle">—</h2>
+      <div class="cal-nav">
+        <button id="calPrev" title="Mes anterior">‹</button>
+        <button id="calToday">hoy</button>
+        <button id="calNext" title="Mes siguiente">›</button>
+      </div>
+    </div>
+    <div class="calgrid" id="calGrid"></div>
+    <div class="cal-list-wrap">
+      <div class="cal-list-h">Lo que pasa este mes</div>
+      <div class="cal-list" id="calList"></div>
+    </div>
+  </div>
+  <div id="calDayPop">
+    <div class="cdp-date" id="cdpDate"></div>
+    <div class="cdp-built" id="cdpBuilt"></div>
+    <div class="cdp-mine" id="cdpMine"></div>
+    <input class="cdp-add" id="cdpAdd" placeholder="＋ agregar algo a este día…  (Enter)" autocomplete="off" />
+  </div>
+</div>
+
+<div id="view-ciclo" class="view">
+  <iframe id="cicloFrame" title="Ciclo de trabajo"></iframe>
+</div>
 
 <dialog id="clientDlg">
   <div class="dlg-in">
@@ -460,19 +668,21 @@ function LocalStore(){
   const KEY="panaDashboard.v2";
   let data = JSON.parse(localStorage.getItem(KEY) || "null");
   if(!data){
-    data = {clients:{}, notes:{}, events:{}};
+    data = {clients:{}, notes:{}, events:{}, ideas:{}};
     SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
     localStorage.setItem(KEY, JSON.stringify(data));
   }
   if(!data.events) data.events={};
+  if(!data.ideas) data.ideas={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
-  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); };
+  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); };
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
     onNotes:cb=>{cbN=cb; cb({...data.notes});},
     onEvents:cb=>{cbE=cb; cb({...data.events});},
+    onIdeas:cb=>{cbI=cb; cb({...data.ideas});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
     removeClient:id=>{ delete data.clients[id];
@@ -484,6 +694,9 @@ function LocalStore(){
     removeNote:id=>{delete data.notes[id]; save(); emit();},
     addEvent:ev=>{data.events[makeId()]=ev; save(); emit();},
     removeEvent:id=>{delete data.events[id]; save(); emit();},
+    addIdea:it=>{data.ideas[makeId()]=it; save(); emit();},
+    updateIdea:(id,patch)=>{Object.assign(data.ideas[id],patch); save(); emit();},
+    removeIdea:id=>{delete data.ideas[id]; save(); emit();},
   };
 }
 
@@ -510,6 +723,7 @@ function FirebaseStore(){
     onClients:cb=>root.child("clients").on("value",s=>cb(s.val()||{})),
     onNotes:cb=>root.child("notes").on("value",s=>cb(s.val()||{})),
     onEvents:cb=>root.child("events").on("value",s=>cb(s.val()||{})),
+    onIdeas:cb=>root.child("ideas").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
     removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); },
@@ -518,11 +732,14 @@ function FirebaseStore(){
     removeNote:id=>root.child("notes/"+id).remove(),
     addEvent:ev=>root.child("events").push(ev),
     removeEvent:id=>root.child("events/"+id).remove(),
+    addIdea:it=>root.child("ideas").push(it),
+    updateIdea:(id,patch)=>root.child("ideas/"+id).update(patch),
+    removeIdea:id=>root.child("ideas/"+id).remove(),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={}, EVENTS={};
+let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={};
 let filter="all", query="";
 const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
 let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
@@ -636,6 +853,7 @@ function render(){
 
     card.innerHTML=`
       <div class="card-head">
+        <button class="grip" data-grip title="Arrastrá para reordenar" draggable="true">⠿</button>
         <span class="avatar">${c.emoji||"◍"}</span>
         <div class="card-name" contenteditable="true" spellcheck="false" data-rename="${c.id}">${escapeHtml(c.name)}</div>
         <span class="count">${total}</span>
@@ -751,8 +969,92 @@ themeBtn.onclick=()=>{
   const next = cur==="dark" ? "light" : cur==="light" ? "dark" : (matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark");
   document.documentElement.setAttribute("data-theme",next);
   localStorage.setItem("panaTheme",next);
+  syncCicloTheme();
 };
 const savedTheme=localStorage.getItem("panaTheme"); if(savedTheme) document.documentElement.setAttribute("data-theme",savedTheme);
+
+/* ---------------- zoom del tablero ---------------- */
+/* niveles: de grande a chiquito. tile-min = ancho mínimo de columna */
+const ZOOM_LEVELS=[
+  {label:"140%", min:"440px", cardMax:"78vh", cardMin:"210px", gap:"22px"},
+  {label:"120%", min:"370px", cardMax:"70vh", cardMin:"200px", gap:"20px"},
+  {label:"100%", min:"310px", cardMax:"64vh", cardMin:"190px", gap:"18px"},
+  {label:"75%",  min:"236px", cardMax:"46vh", cardMin:"120px", gap:"13px"},
+  {label:"55%",  min:"176px", cardMax:"32vh", cardMin:"84px",  gap:"10px"},
+];
+let zoomIdx=Math.min(ZOOM_LEVELS.length-1, Math.max(0, parseInt(localStorage.getItem("panaZoom")??"2",10)||0));
+function applyZoom(){
+  const z=ZOOM_LEVELS[zoomIdx];
+  board.style.setProperty("--tile-min", z.min);
+  board.style.setProperty("--card-max", z.cardMax);
+  board.style.setProperty("--card-min", z.cardMin);
+  board.style.setProperty("--board-gap", z.gap);
+  document.body.dataset.zoom=String(zoomIdx);
+  document.getElementById("zoomLbl").innerText=z.label;
+  document.getElementById("zoomIn").disabled = zoomIdx===0;
+  document.getElementById("zoomOut").disabled = zoomIdx===ZOOM_LEVELS.length-1;
+  localStorage.setItem("panaZoom", String(zoomIdx));
+}
+document.getElementById("zoomIn").onclick=()=>{ if(zoomIdx>0){ zoomIdx--; applyZoom(); } };
+document.getElementById("zoomOut").onclick=()=>{ if(zoomIdx<ZOOM_LEVELS.length-1){ zoomIdx++; applyZoom(); } };
+applyZoom();
+
+/* ---------------- arrastrar para reordenar los cuadrados ---------------- */
+let dragCard=null, dragPending=false;
+/* devuelve el nodo ANTES del cual habría que insertar (o el ghost = al final) */
+function dropRefFor(x,y){
+  const cards=[...board.querySelectorAll(".card:not(.dragging)")];
+  const ghost=board.querySelector(".ghost");
+  let nearest=null, nd=Infinity, before=true;
+  for(const c of cards){
+    const r=c.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const d=(x-cx)*(x-cx)+(y-cy)*(y-cy);
+    if(d<nd){ nd=d; nearest=c; before=(x<cx); }
+  }
+  if(!nearest) return ghost;
+  return before ? nearest : (nearest.nextElementSibling || ghost);
+}
+board.addEventListener("dragstart",e=>{
+  const grip=e.target.closest("[data-grip]");
+  if(!grip){ e.preventDefault(); return; }
+  dragCard=grip.closest(".card");
+  if(!dragCard){ e.preventDefault(); return; }
+  e.dataTransfer.effectAllowed="move";
+  e.dataTransfer.setData("text/plain",dragCard.dataset.client);
+  try{ e.dataTransfer.setDragImage(dragCard, 24, 24); }catch(_){}
+  board.classList.add("dragging-active");
+  requestAnimationFrame(()=>dragCard&&dragCard.classList.add("dragging"));
+});
+board.addEventListener("dragover",e=>{
+  if(!dragCard) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect="move";
+  if(dragPending) return;              // 1 reordenamiento por frame, no por pixel
+  dragPending=true;
+  const x=e.clientX, y=e.clientY;
+  requestAnimationFrame(()=>{
+    dragPending=false;
+    if(!dragCard) return;
+    const ref=dropRefFor(x,y);
+    // no tocar el DOM si ya está en ese lugar (esto era lo que hacía saltar todo)
+    if(ref===dragCard || ref===dragCard.nextElementSibling) return;
+    board.insertBefore(dragCard, ref);
+  });
+});
+function endDrag(){
+  board.classList.remove("dragging-active");
+  if(dragCard) dragCard.classList.remove("dragging");
+  dragCard=null; dragPending=false;
+}
+board.addEventListener("drop",e=>{
+  if(!dragCard){ return; }
+  e.preventDefault();
+  const order=[...board.querySelectorAll(".card")].map(c=>c.dataset.client);
+  endDrag();
+  order.forEach((id,i)=>{ if(CLIENTS[id] && CLIENTS[id].order!==i) store.updateClient(id,{order:i}); });
+});
+board.addEventListener("dragend",endDrag);
 
 /* ---------------- dialog cliente ---------------- */
 const dlg=document.getElementById("clientDlg");
@@ -926,6 +1228,266 @@ efemDlgEl.addEventListener("keydown",e=>{
   updateEfemPill();
 })();
 
+/* ============================================================
+   PESTAÑAS
+   ============================================================ */
+let activeTab = localStorage.getItem("panaTab") || "dashboard";
+const dashTools = document.getElementById("dashTools");
+let cicloLoaded=false;
+
+function currentEffectiveTheme(){
+  return document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+}
+function syncCicloTheme(){
+  const f=document.getElementById("cicloFrame");
+  if(f && f.contentWindow) f.contentWindow.postMessage({__panaTheme:currentEffectiveTheme()}, "*");
+}
+function setTab(name){
+  activeTab=name; localStorage.setItem("panaTab",name);
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===name));
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+name));
+  dashTools.style.display = name==="dashboard" ? "contents" : "none";
+  if(name==="ideas") renderIdeas();
+  if(name==="cal") renderCalTab();
+  if(name==="ciclo"){
+    const f=document.getElementById("cicloFrame");
+    if(!cicloLoaded){ f.src="ciclo.html"; cicloLoaded=true; f.addEventListener("load",syncCicloTheme,{once:true}); }
+    else syncCicloTheme();
+  }
+}
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-tab]"); if(b) setTab(b.dataset.tab);
+});
+/* pegar la barra de pestañas justo debajo del header (sin huecos) */
+function positionTabs(){
+  const h=document.querySelector("header");
+  if(h) document.getElementById("tabs").style.top=h.offsetHeight+"px";
+}
+positionTabs(); addEventListener("resize",positionTabs);
+
+/* ============================================================
+   IDEAS SUELTAS  (tipo Google Keep)
+   ============================================================ */
+const IDEA_HUES=[["Sin color","none"],["Amarillo","#F5C518"],["Coral","#FF5A36"],["Verde","#2ECC71"],["Azul","#0FB5C9"],["Violeta","#6B4EFF"]];
+function ideaBg(hue){ return (!hue||hue==="none") ? "var(--tile)" : "color-mix(in srgb, "+hue+" 22%, var(--tile))"; }
+let composeColor="none";
+
+/* paleta del compositor */
+(function(){
+  const wrap=document.getElementById("ideaColors");
+  IDEA_HUES.forEach(([name,hue])=>{
+    const d=document.createElement("div"); d.className="ic-dot"+(hue==="none"?" sel":""); d.title=name;
+    d.style.background = hue==="none" ? "var(--tile)" : hue;
+    if(hue==="none") d.style.border="2px solid var(--tile-edge)";
+    d.dataset.hue=hue;
+    d.onclick=()=>{ composeColor=hue; [...wrap.children].forEach(x=>x.classList.toggle("sel",x===d)); };
+    wrap.appendChild(d);
+  });
+})();
+const ideaInput=document.getElementById("ideaInput");
+const ideaCompose=document.getElementById("ideaCompose");
+function autoGrow(t){ t.style.height="auto"; t.style.height=Math.min(t.scrollHeight,260)+"px"; }
+ideaInput.addEventListener("focus",()=>ideaCompose.classList.add("expanded"));
+ideaInput.addEventListener("input",()=>autoGrow(ideaInput));
+function saveCompose(){
+  const t=ideaInput.value.trim();
+  if(t){ store.addIdea({text:t, color:composeColor, pinned:false, createdAt:Date.now()}); }
+  ideaInput.value=""; autoGrow(ideaInput); ideaCompose.classList.remove("expanded");
+}
+document.getElementById("ideaSave").onclick=saveCompose;
+ideaInput.addEventListener("keydown",e=>{ if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ saveCompose(); e.preventDefault(); } });
+/* clic afuera del compositor → lo cierra (guardando si hay texto) */
+document.addEventListener("click",e=>{
+  if(activeTab==="ideas" && ideaCompose.classList.contains("expanded") && !ideaCompose.contains(e.target)) saveCompose();
+});
+
+function ideaHTML(it){
+  const dots=IDEA_HUES.map(([n,h])=>`<div class="ic-dot" title="${n}" data-setcolor="${h}" style="background:${h==="none"?"var(--tile)":h};${h==="none"?"border:2px solid var(--tile-edge)":""}"></div>`).join("");
+  return `<div class="idea ${it.big?'big':''}" data-idea="${it.id}" style="--idc:${ideaBg(it.color)}">
+    <div class="idea-text" contenteditable="true" spellcheck="false" data-editidea>${escapeHtml(it.text)}</div>
+    <div class="idea-bar">
+      <button class="ib igrip" data-igrip draggable="true" title="Arrastrá para reordenar">⠿</button>
+      <button class="ib ${it.pinned?'pinned':''}" data-pinidea title="Fijar arriba">${it.pinned?'📌':'📍'}</button>
+      <button class="ib" data-bigidea title="Agrandar / achicar">${it.big?'🡸🡺':'⤢'}</button>
+      <span class="idea-mini-colors">${dots}</span>
+      <button class="ib" data-delidea title="Borrar">🗑</button>
+    </div>
+  </div>`;
+}
+function ideaOrder(x){ return (x.order!=null) ? x.order : -(x.createdAt||0); }
+function renderIdeas(){
+  const body=document.getElementById("ideasBody");
+  const all=Object.entries(IDEAS).map(([id,x])=>({id,...x}));
+  if(!all.length){ body.innerHTML='<div class="ideas-empty">Todavía no hay ideas sueltas.<br>Escribí una arriba y guardala. 💡</div>'; return; }
+  const pin=all.filter(x=>x.pinned).sort((a,b)=>ideaOrder(a)-ideaOrder(b));
+  const rest=all.filter(x=>!x.pinned).sort((a,b)=>ideaOrder(a)-ideaOrder(b));
+  let html="";
+  if(pin.length) html+=`<div class="ideas-pin-label">📌 Fijadas</div><div class="ideas-grid" data-igroup="pin">${pin.map(ideaHTML).join("")}</div>`;
+  if(rest.length) html+=(pin.length?`<div class="ideas-pin-label" style="margin-top:18px">Otras</div>`:"")+`<div class="ideas-grid" data-igroup="rest">${rest.map(ideaHTML).join("")}</div>`;
+  body.innerHTML=html;
+}
+const ideasBody=document.getElementById("ideasBody");
+ideasBody.addEventListener("click",e=>{
+  const card=e.target.closest("[data-idea]"); if(!card) return;
+  const id=card.dataset.idea; if(!IDEAS[id]) return;
+  if(e.target.closest("[data-pinidea]")){ store.updateIdea(id,{pinned:!IDEAS[id].pinned}); return; }
+  if(e.target.closest("[data-bigidea]")){ store.updateIdea(id,{big:!IDEAS[id].big}); return; }
+  if(e.target.closest("[data-delidea]")){ if(confirm("¿Borrar esta idea?")) store.removeIdea(id); return; }
+  const col=e.target.closest("[data-setcolor]"); if(col){ store.updateIdea(id,{color:col.dataset.setcolor}); return; }
+});
+ideasBody.addEventListener("blur",e=>{
+  if(e.target.hasAttribute&&e.target.hasAttribute("data-editidea")){
+    const id=e.target.closest("[data-idea]").dataset.idea;
+    const t=e.target.innerText.trim();
+    if(!IDEAS[id]) return;
+    if(!t) store.removeIdea(id);
+    else if(t!==IDEAS[id].text) store.updateIdea(id,{text:t});
+  }
+},true);
+
+/* arrastrar para reordenar las notas (dentro de su grupo: fijadas / otras) */
+let dragIdea=null, dragIdeaGroup=null, dragIdeaPending=false;
+function ideaDropRef(container,x,y){
+  const notes=[...container.querySelectorAll(".idea:not(.dragging)")];
+  let nearest=null, nd=Infinity, before=true;
+  for(const c of notes){
+    const r=c.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const d=(x-cx)*(x-cx)+(y-cy)*(y-cy);
+    if(d<nd){ nd=d; nearest=c; before=(x<cx); }
+  }
+  if(!nearest) return null;
+  return before ? nearest : nearest.nextElementSibling;
+}
+ideasBody.addEventListener("dragstart",e=>{
+  const grip=e.target.closest("[data-igrip]");
+  if(!grip){ if(e.target.closest(".idea")) e.preventDefault(); return; }
+  dragIdea=grip.closest(".idea");
+  dragIdeaGroup=dragIdea.closest("[data-igroup]");
+  e.dataTransfer.effectAllowed="move";
+  e.dataTransfer.setData("text/plain",dragIdea.dataset.idea);
+  try{ e.dataTransfer.setDragImage(dragIdea, 24, 24); }catch(_){}
+  requestAnimationFrame(()=>dragIdea&&dragIdea.classList.add("dragging"));
+});
+ideasBody.addEventListener("dragover",e=>{
+  if(!dragIdea) return;
+  e.preventDefault(); e.dataTransfer.dropEffect="move";
+  if(dragIdeaPending) return;
+  dragIdeaPending=true;
+  const x=e.clientX, y=e.clientY;
+  requestAnimationFrame(()=>{
+    dragIdeaPending=false;
+    if(!dragIdea||!dragIdeaGroup) return;
+    const ref=ideaDropRef(dragIdeaGroup,x,y);
+    if(ref===dragIdea || ref===dragIdea.nextElementSibling) return;
+    if(ref) dragIdeaGroup.insertBefore(dragIdea, ref);
+    else dragIdeaGroup.appendChild(dragIdea);
+  });
+});
+function endDragIdea(){
+  if(dragIdea) dragIdea.classList.remove("dragging");
+  dragIdea=null; dragIdeaGroup=null; dragIdeaPending=false;
+}
+ideasBody.addEventListener("drop",e=>{
+  if(!dragIdea||!dragIdeaGroup){ return; }
+  e.preventDefault();
+  const ids=[...dragIdeaGroup.querySelectorAll(".idea")].map(c=>c.dataset.idea);
+  endDragIdea();
+  ids.forEach((id,i)=>{ if(IDEAS[id] && IDEAS[id].order!==i) store.updateIdea(id,{order:i}); });
+});
+ideasBody.addEventListener("dragend",endDragIdea);
+
+/* ============================================================
+   CALENDARIO (mes grande, con efemérides + lo tuyo)
+   ============================================================ */
+let calTabView=null;
+function renderCalTab(){
+  const now=new Date();
+  calTabView=calTabView||{y:now.getFullYear(), m:now.getMonth()};
+  const {y,m}=calTabView;
+  document.getElementById("calTitle").innerText=MONTHS[m]+" "+y;
+  const first=new Date(y,m,1), nd=new Date(y,m+1,0).getDate(), startDow=(first.getDay()+6)%7;
+  const isCur=(y===now.getFullYear()&&m===now.getMonth()), todayD=now.getDate();
+  let g=["lun","mar","mié","jue","vie","sáb","dom"].map(d=>`<div class="cg-dow">${d}</div>`).join("");
+  for(let i=0;i<startDow;i++) g+=`<div class="cg-cell pad"></div>`;
+  const listItems=[];
+  for(let d=1; d<=nd; d++){
+    const ds=ymd(new Date(y,m,d));
+    const built=efemFor(y,m,d).map(e=>({name:e[0],type:e[1]}));
+    const mine=efemNotesFor(ds).map(e=>({name:e.text,type:"mio",id:e.id}));
+    const evs=[...built,...mine];
+    evs.forEach(e=>listItems.push({d,ds,...e}));
+    const shown=evs.slice(0,3).map(e=>`<div class="cg-ev ${e.type}" title="${escapeHtml(e.name)}">${escapeHtml(e.name)}</div>`).join("");
+    const more=evs.length>3?`<div class="cg-more">+${evs.length-3} más</div>`:"";
+    g+=`<div class="cg-cell ${isCur&&d===todayD?'today':''}" data-calday="${ds}"><span class="cg-num">${d}</span>${shown}${more}</div>`;
+  }
+  document.getElementById("calGrid").innerHTML=g;
+  // lista de abajo
+  const list=document.getElementById("calList");
+  if(!listItems.length){ list.innerHTML='<div class="cal-list-empty">Sin nada este mes. Tocá un día para agregar algo.</div>'; }
+  else{
+    list.innerHTML=listItems.map(e=>{
+      const tag=e.type==="mio"?"mío":e.type;
+      const del=e.id?`<button class="cli-del" data-delcli="${e.id}" title="Borrar">✕</button>`:'<span style="width:14px"></span>';
+      return `<div class="cli"><span class="cli-d">${e.d} ${MONTHS[m].slice(0,3)}</span><span class="cli-n">${escapeHtml(e.name)}</span><span class="cli-tag ${e.type}">${tag}</span>${del}</div>`;
+    }).join("");
+  }
+  if(calDaySel && calDayPop.classList.contains("show")) renderCalDayPop();
+}
+document.getElementById("calPrev").onclick=()=>{ let {y,m}=calTabView; m--; if(m<0){m=11;y--;} calTabView={y,m}; closeCalDay(); renderCalTab(); };
+document.getElementById("calNext").onclick=()=>{ let {y,m}=calTabView; m++; if(m>11){m=0;y++;} calTabView={y,m}; closeCalDay(); renderCalTab(); };
+document.getElementById("calToday").onclick=()=>{ const n=new Date(); calTabView={y:n.getFullYear(),m:n.getMonth()}; closeCalDay(); renderCalTab(); };
+
+/* ventanita del día */
+const calDayPop=document.getElementById("calDayPop");
+let calDaySel=null;
+function renderCalDayPop(){
+  if(!calDaySel) return;
+  const dt=parseYmd(calDaySel);
+  document.getElementById("cdpDate").innerText=dt.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+  const built=efemFor(dt.getFullYear(),dt.getMonth(),dt.getDate());
+  document.getElementById("cdpBuilt").innerHTML=built.map(e=>`<span class="cli-tag ${e[1]}">${escapeHtml(e[0])}</span>`).join("");
+  const mine=efemNotesFor(calDaySel);
+  document.getElementById("cdpMine").innerHTML=mine.map(e=>`<div class="m"><span>${escapeHtml(e.text)}</span><button data-delc="${e.id}" title="Borrar">✕</button></div>`).join("");
+}
+function openCalDay(cell, ds){
+  calDaySel=ds; renderCalDayPop();
+  const r=cell.getBoundingClientRect();
+  calDayPop.style.left=Math.min(r.left, window.innerWidth-262)+"px";
+  calDayPop.style.top=Math.min(r.bottom+6, window.innerHeight-230)+"px";
+  calDayPop.classList.add("show");
+  const a=document.getElementById("cdpAdd"); a.value=""; setTimeout(()=>a.focus(),30);
+}
+function closeCalDay(){ calDayPop.classList.remove("show"); calDaySel=null; }
+document.getElementById("calGrid").addEventListener("click",e=>{
+  const cell=e.target.closest("[data-calday]"); if(!cell) return;
+  openCalDay(cell, cell.dataset.calday);
+});
+document.getElementById("calList").addEventListener("click",e=>{
+  const del=e.target.closest("[data-delcli]"); if(del) store.removeEvent(del.dataset.delcli);
+});
+calDayPop.addEventListener("click",e=>{
+  const del=e.target.closest("[data-delc]"); if(del) store.removeEvent(del.dataset.delc);
+});
+document.getElementById("cdpAdd").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const t=e.target.value.trim();
+    if(t && calDaySel){ store.addEvent({date:calDaySel, text:t, createdAt:Date.now()}); e.target.value=""; }
+    e.preventDefault();
+  }
+});
+document.addEventListener("click",e=>{
+  if(calDayPop.classList.contains("show") && !calDayPop.contains(e.target) && !e.target.closest("[data-calday]")) closeCalDay();
+});
+
+/* ============================================================
+   cerrar diálogos al hacer clic afuera (en el fondo)
+   ============================================================ */
+["clientDlg","efemDlg"].forEach(idd=>{
+  const d=document.getElementById(idd);
+  d.addEventListener("click",e=>{ if(e.target===d){ if(idd==="efemDlg") efemSelDay=null; d.close(); } });
+});
+
 /* ---------------- boot ---------------- */
 function boot(){
   store = hasFirebase ? FirebaseStore() : LocalStore();
@@ -933,7 +1495,9 @@ function boot(){
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
   store.onClients(c=>{ CLIENTS=c||{}; render(); });
   store.onNotes(n=>{ NOTES=n||{}; render(); });
-  store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); });
+  store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); });
+  store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
+  setTab(activeTab);
 }
 
 function startApp(){
