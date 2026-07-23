@@ -121,7 +121,7 @@
   main{
     flex:1; padding:22px;
     display:grid; gap:var(--board-gap,18px); align-content:start;
-    grid-template-columns:repeat(auto-fill, minmax(var(--tile-min,310px), 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(min(var(--tile-min,310px), 100%), 1fr));
   }
 
   .card{
@@ -250,7 +250,7 @@
   .cal-top .cal-nav button:hover{border-color:var(--accent)}
   .calgrid{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
   .calgrid .cg-dow{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); text-align:center; padding:2px 0 4px}
-  .cg-cell{min-height:96px; border:1px solid var(--tile-edge); border-radius:11px; background:var(--tile); padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:border-color .12s, background .12s}
+  .cg-cell{min-height:96px; min-width:0; border:1px solid var(--tile-edge); border-radius:11px; background:var(--tile); padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:border-color .12s, background .12s}
   .cg-cell:hover{border-color:var(--accent)}
   .cg-cell.pad{visibility:hidden}
   .cg-cell.today{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
@@ -486,6 +486,118 @@
   #dayMenu>button{font-family:var(--sans); font-size:12px; text-align:left; background:none; border:0; color:var(--ink); padding:7px 8px; border-radius:7px; cursor:pointer}
   #dayMenu>button:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
   #dayMenu>button.clear{color:var(--ink-faint); font-size:11px}
+
+  /* ==================================================================
+     CELULAR — todo lo de arriba sigue igual en compu.
+     Esto solo se enciende en pantallas angostas (≤760px).
+     ================================================================== */
+  @media (max-width:760px){
+
+    /* --- barra de arriba: deja de ser una fila larga, se acomoda en 3 renglones --- */
+    header{
+      position:static;                 /* se va con el scroll, gana pantalla */
+      flex-wrap:wrap; gap:8px; padding:10px 12px;
+    }
+    /* renglón 1: Pana + fecha ...... efemérides, tema, puntito de sincro */
+    .brand{order:1; flex:0 0 auto; gap:7px}
+    .brand b{font-size:18px}
+    .brand .today{font-size:8.5px; letter-spacing:.06em; padding:2px 6px; white-space:nowrap}
+    .spacer{order:2; flex:1 1 0; min-width:0}
+    .efem-pill{order:3; flex:0 0 auto; padding:4px 10px 4px 5px}
+    .efem-pill .ic{width:24px; height:24px; font-size:12px}
+    header .iconbtn#theme{order:4; width:34px; height:34px}
+    .sync-dot{order:5}
+    .sync-dot span{display:none}       /* solo queda el puntito de color */
+    /* renglón 2: el buscador a lo ancho */
+    .search{order:6; flex:1 1 100%; width:auto; min-width:0; font-size:16px; padding:9px 12px}
+    .search:focus{width:auto}          /* que no se agrande y desborde */
+    /* renglón 3: filtros + agregar + zoom */
+    .filters{order:7; flex:1 1 140px; min-width:0}
+    .filters button{flex:1; padding:7px 8px; font-size:12px; white-space:nowrap}
+    .add-client{order:8; flex:0 0 auto; padding:9px 13px; font-size:15px}
+    .ac-lbl{display:none}              /* queda solo el ＋ */
+    .zoom{order:9; flex:0 0 auto}
+    .zoom button{width:30px; height:30px}
+
+    /* --- pestañas: quedan pegadas arriba y se deslizan al costado si no entran --- */
+    nav.tabs{
+      top:0; padding:4px 10px 0; gap:0;
+      overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    }
+    nav.tabs::-webkit-scrollbar{display:none}
+    nav.tabs button{flex:0 0 auto; white-space:nowrap; padding:10px 12px; font-size:13px}
+
+    /* --- tablero: una columna, cuadrados enteros (sin scroll adentro del cuadrado) --- */
+    main{padding:12px 12px 40px; gap:12px}
+    .card{max-height:none; min-height:0}
+    .notes{overflow:visible; padding:6px 8px 6px}
+    .card-head{padding:13px 13px 11px}
+    .ghost{min-height:110px}
+    .minical{padding:10px 12px 12px}
+    .mc-day{height:24px; font-size:11px}   /* días más grandes para el dedo */
+    .mc-dow{font-size:9px}
+
+    /* --- ideas sueltas: papelitos a lo ancho --- */
+    .ideas-wrap{padding:16px 12px 40px}
+    .ideas-compose{margin-bottom:18px; padding:12px}
+    .ideas-compose textarea{font-size:16px}
+    .ideas-grid{gap:12px}
+    .idea, .idea.big{width:100%}
+
+    /* --- calendario grande --- */
+    .cal-wrap{padding:16px 12px 40px}
+    .cal-top{gap:10px; margin-bottom:14px}
+    .cal-top h2{font-size:19px}
+    .calgrid{gap:4px}
+    .cg-cell{min-height:58px; padding:5px 5px; border-radius:9px; gap:2px}
+    .cg-num{font-size:11px}
+    .cg-ev{font-size:8px; padding:1px 4px; border-radius:5px; line-height:1.2}
+    .cg-more{font-size:8px}
+    .cal-list-wrap{margin-top:20px}
+    .cli{gap:8px; padding:8px 6px}
+    .cli .cli-d{min-width:50px; font-size:11px}
+    .cli .cli-n{font-size:13px}
+
+    /* --- ventanitas del día: se apoyan abajo, a lo ancho (tipo cajón) --- */
+    #dayMenu, #calDayPop{
+      left:12px !important; right:12px; width:auto !important;
+      top:auto !important; bottom:calc(14px + env(safe-area-inset-bottom,0px)) !important;
+      max-height:66vh; overflow-y:auto; padding:12px;
+    }
+    .dm-add, .cdp-add{font-size:16px}
+
+    /* --- efemérides --- */
+    .efem-wrap{padding:16px 14px 18px}
+    .efem-top h3{font-size:16px}
+    .efem-cell{height:42px; font-size:12px}
+    .efem-grid{gap:3px}
+    .efem-list{max-height:200px}
+    .efem-addin{font-size:16px}
+
+    /* --- que iOS no haga zoom solo al tocar un campo (todo ≥16px) --- */
+    .card-add input, .gate-box input, .dlg-in input[type=text]{font-size:16px}
+    .card-add{padding:9px 10px 12px}
+  }
+
+  /* --- pantalla muy chica (iPhone mini / SE) --- */
+  @media (max-width:380px){
+    .brand .today{display:none}        /* la fecha larga ya no entra */
+    .filters button{padding:7px 6px; font-size:11.5px}
+    .cg-cell{min-height:50px; padding:4px}
+  }
+
+  /* ==================================================================
+     DEDO en vez de mouse: lo que aparecía "al pasar el mouse"
+     no existe en el celular, así que lo dejamos siempre visible.
+     ================================================================== */
+  @media (hover:none){
+    .grip, .card-menu{opacity:.55}
+    .note-del, .cli .cli-del{opacity:.5}
+    .idea-bar{opacity:1}
+    .star, .chk{font-size:17px; padding:2px}
+    .note-del, .card-menu{padding:4px 6px}
+    .mc-day:hover{transform:none}
+  }
 </style>
 </head>
 <body>
@@ -516,7 +628,7 @@
       <button data-f="today">Hoy</button>
       <button data-f="fav">Favoritos</button>
     </div>
-    <button class="add-client" id="addClient">＋ Cliente</button>
+    <button class="add-client" id="addClient">＋<span class="ac-lbl"> Cliente</span></button>
     <div class="zoom" id="zoom" title="Zoom del tablero (achicá para ver todos)">
       <button id="zoomOut" title="Achicar cuadrados">－</button>
       <span class="zlbl" id="zoomLbl">100%</span>
@@ -1254,6 +1366,7 @@ function setTab(name){
     if(!cicloLoaded){ f.src="ciclo.html"; cicloLoaded=true; f.addEventListener("load",syncCicloTheme,{once:true}); }
     else syncCicloTheme();
   }
+  positionTabs();  /* el header cambia de alto al esconder/mostrar las herramientas */
 }
 document.getElementById("tabs").addEventListener("click",e=>{
   const b=e.target.closest("button[data-tab]"); if(b) setTab(b.dataset.tab);
@@ -1261,7 +1374,10 @@ document.getElementById("tabs").addEventListener("click",e=>{
 /* pegar la barra de pestañas justo debajo del header (sin huecos) */
 function positionTabs(){
   const h=document.querySelector("header");
-  if(h) document.getElementById("tabs").style.top=h.offsetHeight+"px";
+  const tabs=document.getElementById("tabs");
+  /* en celular el header no queda pegado arriba: las pestañas van al tope */
+  if(window.matchMedia("(max-width:760px)").matches){ tabs.style.top="0px"; return; }
+  if(h) tabs.style.top=h.offsetHeight+"px";
 }
 positionTabs(); addEventListener("resize",positionTabs);
 
