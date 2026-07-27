@@ -511,7 +511,9 @@
   .pc-emoji{width:32px; height:32px; flex:none; display:grid; place-items:center; font-size:17px; border-radius:9px; background:color-mix(in srgb,var(--c,var(--accent)) 16%, var(--tile))}
   .pc-body{flex:1; min-width:0}
   .pc-title{font-weight:700; font-size:14px; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .pc-meta{font-family:var(--mono); font-size:10px; color:var(--ink-faint); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pc-meta{display:flex; gap:5px; font-family:var(--mono); font-size:10px; color:var(--ink-faint); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; overflow:hidden}
+  .pc-who{flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis}
+  .pc-when{flex:none}
   .pc-clip{flex:none; font-family:var(--mono); font-size:10px; color:var(--ink-faint)}
   .pc-badge{flex:none; font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.05em; padding:3px 8px; border-radius:100px; font-weight:700; white-space:nowrap}
   .prod-empty{color:var(--ink-faint); font-size:13px; font-style:italic; padding:8px 2px}
@@ -1786,13 +1788,15 @@ function prodCardHTML(p){
   const sm=statusMeta(p.status);
   const nrefs=asArr(p.refs).length;
   const dstr=p.date?parseYmd(p.date).toLocaleDateString("es-AR",{day:"numeric",month:"short"}):"sin fecha";
-  // fecha + hora juntas; el tipo se ve al entrar a la ficha
-  const meta=[prodClientName(p), dstr+(p.time?" · "+p.time:"")].filter(Boolean).join(" · ");
+  // fecha + hora nunca se cortan; si algo se corta es el nombre del cliente.
+  // Las espontáneas no dicen nada: el título ya lo explica.
+  const who=prodClient(p) ? escapeHtml(prodClientName(p))+" ·" : "";
+  const when=escapeHtml(dstr+(p.time?" · "+p.time:""));
   return `<div class="prod-card" data-openprod="${p.id}" style="--c:${prodColor(p)}">
     <span class="pc-emoji">${prodEmoji(p)}</span>
     <div class="pc-body">
       <div class="pc-title">${escapeHtml(p.title||"Sin título")}</div>
-      <div class="pc-meta">${escapeHtml(meta)}</div>
+      <div class="pc-meta"><span class="pc-who">${who}</span><span class="pc-when">${when}</span></div>
     </div>
     ${nrefs?`<span class="pc-clip">📎${nrefs}</span>`:''}
     <span class="pc-badge" style="background:color-mix(in srgb,${sm[3]} 18%,transparent);color:${sm[3]}">${sm[1]} ${sm[2]}</span>
@@ -1815,7 +1819,8 @@ function renderProdTab(){
   for(let i=0;i<startDow;i++) g+=`<div class="cg-cell pad"></div>`;
   for(let d=1; d<=nd; d++){
     const list=(byDay[d]||[]).sort(byTime);
-    const shown=list.slice(0,3).map(p=>`<div class="cg-prod" style="--c:${prodColor(p)}" data-openprod="${p.id}" title="${escapeHtml((p.time?p.time+" · ":"")+(p.title||"Sin título"))}"><span class="st">${statusMeta(p.status)[1]}</span>${p.time?` <span class="hr">${escapeHtml(p.time)}</span>`:""} ${escapeHtml(p.title||"Sin título")}</div>`).join("");
+    // en el calendario manda el cliente (su emoji); el estado se lee abajo, en las cards
+    const shown=list.slice(0,3).map(p=>`<div class="cg-prod" style="--c:${prodColor(p)}" data-openprod="${p.id}" title="${escapeHtml((p.time?p.time+" · ":"")+(p.title||"Sin título"))}"><span class="st">${prodEmoji(p)}</span>${p.time?` <span class="hr">${escapeHtml(p.time)}</span>`:""} ${escapeHtml(p.title||"Sin título")}</div>`).join("");
     const more=list.length>3?`<div class="cg-more">+${list.length-3} más</div>`:"";
     g+=`<div class="cg-cell ${isCur&&d===todayD?'today':''}" data-prodday="${ymd(new Date(y,m,d))}"><span class="cg-num">${d}</span>${shown}${more}</div>`;
   }
