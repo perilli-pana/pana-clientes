@@ -487,6 +487,81 @@
   #dayMenu>button:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
   #dayMenu>button.clear{color:var(--ink-faint); font-size:11px}
 
+  /* ---------- pestaña producciones (audiovisual) ---------- */
+  .prod-wrap{flex:1; overflow-y:auto; padding:22px 26px 40px}
+  .prod-bar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; max-width:1100px; margin:0 auto 16px}
+  .prod-bar h2{margin:0; font-size:22px; text-transform:capitalize; letter-spacing:-.01em}
+  .prod-bar .pb-nav{display:flex; gap:6px}
+  .prod-bar .pb-nav button{min-width:34px; height:34px; padding:0 11px; border-radius:9px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink); cursor:pointer; font-size:14px}
+  .prod-bar .pb-nav button:hover{border-color:var(--accent)}
+  .prod-bar .pb-see{font-family:var(--sans); font-size:13px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:9px; padding:8px 11px; max-width:190px}
+  .prod-bar .pb-see:focus{outline:none; border-color:var(--accent)}
+  .prod-bar .pb-new{margin-left:auto; display:flex; align-items:center; gap:7px; font-family:var(--sans); font-size:13px; font-weight:650; cursor:pointer; background:var(--ink); color:var(--paper); border:0; padding:9px 15px; border-radius:10px; transition:transform .12s}
+  .prod-bar .pb-new:hover{transform:translateY(-1px)}
+
+  .cg-prod{font-size:10.5px; line-height:1.25; padding:2px 6px; border-radius:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; background:color-mix(in srgb,var(--c) 22%, var(--tile)); color:color-mix(in srgb,var(--c) 68%, var(--ink)); font-weight:650; border:1px solid color-mix(in srgb,var(--c) 32%, transparent)}
+  .cg-prod:hover{background:color-mix(in srgb,var(--c) 36%, var(--tile))}
+  .cg-prod .st{opacity:.9}
+
+  .prod-sect{max-width:1100px; margin:26px auto 0}
+  .prod-sh{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint); margin-bottom:10px; display:flex; align-items:center; gap:8px}
+  .prod-cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr)); gap:10px}
+  .prod-card{display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid var(--tile-edge); border-left:3px solid var(--c,var(--accent)); border-radius:12px; background:var(--tile); box-shadow:var(--shadow); cursor:pointer; transition:box-shadow .15s, transform .1s}
+  .prod-card:hover{box-shadow:0 4px 12px rgba(20,20,26,.09),0 12px 30px rgba(20,20,26,.09); transform:translateY(-1px)}
+  .pc-emoji{width:32px; height:32px; flex:none; display:grid; place-items:center; font-size:17px; border-radius:9px; background:color-mix(in srgb,var(--c,var(--accent)) 16%, var(--tile))}
+  .pc-body{flex:1; min-width:0}
+  .pc-title{font-weight:700; font-size:14px; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pc-meta{font-family:var(--mono); font-size:10px; color:var(--ink-faint); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pc-clip{flex:none; font-family:var(--mono); font-size:10px; color:var(--ink-faint)}
+  .pc-badge{flex:none; font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.05em; padding:3px 8px; border-radius:100px; font-weight:700; white-space:nowrap}
+  .prod-empty{color:var(--ink-faint); font-size:13px; font-style:italic; padding:8px 2px}
+
+  /* editor de producción (ficha grande) */
+  .prod-modal{max-width:760px; width:96vw; max-height:92vh}
+  .prod-editor{display:flex; flex-direction:column; max-height:92vh}
+  .pe-top{display:flex; align-items:center; gap:10px; padding:16px 20px 12px; border-bottom:1px solid var(--tile-edge)}
+  .pe-title{flex:1; font-family:var(--sans); font-size:18px; font-weight:750; letter-spacing:-.01em; color:var(--ink); background:none; border:0; padding:4px 2px}
+  .pe-title:focus{outline:none}
+  .pe-title::placeholder{color:var(--ink-faint)}
+  .pe-x{background:none; border:0; color:var(--ink-faint); font-size:18px; cursor:pointer; padding:4px 7px; border-radius:8px}
+  .pe-x:hover{color:var(--ink); background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .pe-scroll{overflow-y:auto; padding:16px 20px 8px; display:flex; flex-direction:column; gap:16px}
+  .pe-meta{display:flex; flex-wrap:wrap; gap:12px}
+  .pe-meta label{display:flex; flex-direction:column; gap:4px; font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); flex:1 1 150px}
+  .pe-meta label.pe-time{flex:0 1 120px}
+  .cg-prod .hr{font-family:var(--mono); font-size:9.5px; opacity:.85; margin-right:2px}
+  .pe-meta select, .pe-meta input{font-family:var(--sans); font-size:13.5px; color:var(--ink); background:color-mix(in srgb,var(--ink) 4%,transparent); border:1px solid var(--tile-edge); border-radius:9px; padding:9px 11px}
+  .pe-meta select:focus, .pe-meta input:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .pe-status{display:flex; flex-wrap:wrap; gap:6px}
+  .pe-status button{font-family:var(--sans); font-size:12px; font-weight:600; color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 4%,transparent); border:1px solid transparent; border-radius:100px; padding:6px 12px; cursor:pointer; transition:all .12s; display:flex; align-items:center; gap:5px}
+  .pe-status button.on{background:var(--tile); border-color:var(--accent); color:var(--accent)}
+  .pe-sec{display:flex; flex-direction:column; gap:7px}
+  .pe-sh{display:flex; align-items:baseline; gap:8px; font-size:13px; font-weight:700; color:var(--ink)}
+  .pe-sh small{font-family:var(--mono); font-size:9.5px; font-weight:400; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint)}
+  .pe-sec textarea{width:100%; resize:vertical; min-height:64px; font-family:var(--sans); font-size:13.5px; line-height:1.5; color:var(--ink); background:color-mix(in srgb,var(--ink) 4%,transparent); border:1px solid var(--tile-edge); border-radius:11px; padding:11px 13px}
+  .pe-sec textarea:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .pe-refin{width:100%; font-family:var(--sans); font-size:13px; color:var(--ink); background:color-mix(in srgb,var(--ink) 4%,transparent); border:1px solid var(--tile-edge); border-radius:10px; padding:10px 12px}
+  .pe-refin:focus{outline:none; border-color:var(--accent); background:var(--tile)}
+  .pe-refin::placeholder{color:var(--ink-faint)}
+  .pe-refs{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; margin-top:2px}
+  .pe-refs:empty{display:none}
+  .ref{position:relative; border-radius:12px}
+  .ref-x{position:absolute; top:5px; right:5px; z-index:3; width:22px; height:22px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(10,10,14,.62); color:#fff; font-size:12px; cursor:pointer; opacity:0; transition:opacity .12s}
+  .ref:hover .ref-x{opacity:1}
+  .ref-img img{max-width:190px; max-height:230px; border-radius:12px; display:block; border:1px solid var(--tile-edge)}
+  .ref-ig{width:328px; max-width:100%}
+  .ref-ig .instagram-media{margin:0 !important; min-width:auto !important; width:100% !important}
+  .ig-fallback{display:block; padding:16px; border:1px solid var(--tile-edge); border-radius:12px; font-size:12px; color:var(--ink-soft); text-decoration:none; background:var(--tile)}
+  .ref-link{display:flex; align-items:center; gap:8px; max-width:230px; padding:11px 13px; border:1px solid var(--tile-edge); border-radius:12px; background:var(--tile); color:var(--ink); text-decoration:none; font-size:12.5px}
+  .ref-link .rl-ico{font-size:15px}
+  .ref-link .rl-host{font-family:var(--mono); font-size:10px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .ref-note{max-width:240px; padding:12px 14px; border:1px solid var(--tile-edge); border-radius:12px; background:color-mix(in srgb,var(--accent) 8%,var(--tile)); color:var(--ink); font-size:13px; line-height:1.45; white-space:pre-wrap; word-break:break-word}
+  .pe-actions{display:flex; align-items:center; gap:8px; padding:12px 20px; border-top:1px solid var(--tile-edge)}
+  .pe-actions button{font-family:var(--sans); font-size:13px; font-weight:650; padding:9px 16px; border-radius:10px; cursor:pointer; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink)}
+  .pe-actions .primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .pe-actions .danger{color:var(--fav); border:0; background:none}
+  .pe-actions .danger:hover{background:var(--fav-soft)}
+
   /* ==================================================================
      CELULAR — todo lo de arriba sigue igual en compu.
      Esto solo se enciende en pantallas angostas (≤760px).
@@ -557,6 +632,18 @@
     .cli{gap:8px; padding:8px 6px}
     .cli .cli-d{min-width:50px; font-size:11px}
     .cli .cli-n{font-size:13px}
+
+    /* --- producciones --- */
+    .prod-wrap{padding:16px 12px 40px}
+    .prod-bar{gap:9px; margin-bottom:14px}
+    .prod-bar h2{font-size:19px}
+    .prod-bar .pb-new{padding:9px 12px; font-size:12.5px}
+    .prod-cards{grid-template-columns:1fr}
+    .prod-modal{width:100vw; max-width:100vw; max-height:100vh; height:100dvh; border-radius:0}
+    .prod-editor{max-height:100dvh}
+    .ref-ig{width:100%}
+    .pe-title{font-size:17px}
+    .pe-meta select, .pe-meta input, .pe-sec textarea, .pe-refin{font-size:16px}
 
     /* --- ventanitas del día: se apoyan abajo, a lo ancho (tipo cajón) --- */
     #dayMenu, #calDayPop{
@@ -643,6 +730,7 @@
   <button data-tab="dashboard" class="on"><span class="tico">🧱</span> Dashboard</button>
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
   <button data-tab="cal"><span class="tico">🗓️</span> Calendario</button>
+  <button data-tab="prod"><span class="tico">🎬</span> Producciones</button>
   <button data-tab="ciclo"><span class="tico">🔁</span> Ciclo de trabajo</button>
 </nav>
 
@@ -687,6 +775,24 @@
   </div>
 </div>
 
+<div id="view-prod" class="view">
+  <div class="prod-wrap">
+    <div class="prod-bar">
+      <h2 id="prodTitle">—</h2>
+      <div class="pb-nav">
+        <button id="prodPrev" title="Mes anterior">‹</button>
+        <button id="prodToday">hoy</button>
+        <button id="prodNext" title="Mes siguiente">›</button>
+      </div>
+      <select class="pb-see" id="prodFilter" title="Filtrar por cliente"></select>
+      <button class="pb-new" id="prodNew">🎬 Nueva producción</button>
+    </div>
+    <div class="calgrid prod-cal" id="prodGrid"></div>
+    <div class="prod-sect" id="prodSinFecha"></div>
+    <div class="prod-sect" id="prodMes"></div>
+  </div>
+</div>
+
 <div id="view-ciclo" class="view">
   <iframe id="cicloFrame" title="Ciclo de trabajo"></iframe>
 </div>
@@ -721,6 +827,38 @@
     </div>
     <div class="efem-grid" id="efemGrid"></div>
     <div class="efem-list" id="efemList"></div>
+  </div>
+</dialog>
+
+<dialog id="prodDlg" class="prod-modal">
+  <div class="prod-editor">
+    <div class="pe-top">
+      <input class="pe-title" id="peTitle" placeholder="Título de la producción…" autocomplete="off" />
+      <button class="pe-x" id="peClose" title="Guardar y cerrar">✕</button>
+    </div>
+    <div class="pe-scroll">
+      <div class="pe-meta">
+        <label>Cliente<select id="peClient"></select></label>
+        <label>Fecha<input type="date" id="peDate" /></label>
+        <label class="pe-time">Hora<input type="time" id="peTime" /></label>
+        <label>Tipo<input id="peKind" placeholder="reel · foto · campaña…" autocomplete="off" /></label>
+      </div>
+      <div class="pe-status" id="peStatus"></div>
+      <div class="pe-sec"><div class="pe-sh">📝 Desglose <small>guion · shot-list · plan de tomas</small></div><textarea id="peDesglose" placeholder="Qué se filma, plano por plano…"></textarea></div>
+      <div class="pe-sec"><div class="pe-sh">🎬 Producción <small>locación · día · hora · logística</small></div><textarea id="peProduccion" placeholder="Dónde, cuándo, permisos, catering, quién coordina…"></textarea></div>
+      <div class="pe-sec"><div class="pe-sh">🎒 Recursos <small>equipo · gente · cámaras</small></div><textarea id="peRecursos" placeholder="Cámara, luces, roles, talentos, presupuesto…"></textarea></div>
+      <div class="pe-sec">
+        <div class="pe-sh">🎨 Moodboard / Inspo <small>reels y fotos de Instagram, imágenes o links</small></div>
+        <input class="pe-refin" id="peRefInput" placeholder="Pegá un link de Instagram, una foto o una referencia + Enter…" autocomplete="off" />
+        <div class="pe-refs" id="peRefs"></div>
+      </div>
+    </div>
+    <div class="pe-actions">
+      <button class="danger" id="peDelete">Borrar</button>
+      <button id="peDup">Duplicar</button>
+      <span style="flex:1"></span>
+      <button class="primary" id="peSave">Guardar</button>
+    </div>
   </div>
 </dialog>
 
@@ -780,26 +918,29 @@ function LocalStore(){
   const KEY="panaDashboard.v2";
   let data = JSON.parse(localStorage.getItem(KEY) || "null");
   if(!data){
-    data = {clients:{}, notes:{}, events:{}, ideas:{}};
+    data = {clients:{}, notes:{}, events:{}, ideas:{}, prods:{}};
     SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
     localStorage.setItem(KEY, JSON.stringify(data));
   }
   if(!data.events) data.events={};
   if(!data.ideas) data.ideas={};
+  if(!data.prods) data.prods={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
-  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); };
+  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); };
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
     onNotes:cb=>{cbN=cb; cb({...data.notes});},
     onEvents:cb=>{cbE=cb; cb({...data.events});},
     onIdeas:cb=>{cbI=cb; cb({...data.ideas});},
+    onProds:cb=>{cbP=cb; cb({...data.prods});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
     removeClient:id=>{ delete data.clients[id];
       Object.keys(data.notes).forEach(n=>{if(data.notes[n].clientId===id) delete data.notes[n];});
       Object.keys(data.events).forEach(n=>{if(data.events[n].clientId===id) delete data.events[n];});
+      Object.keys(data.prods).forEach(n=>{if(data.prods[n].clientId===id) data.prods[n].clientId=null;});
       save(); emit();},
     addNote:n=>{data.notes[makeId()]=n; save(); emit();},
     updateNote:(id,patch)=>{Object.assign(data.notes[id],patch); save(); emit();},
@@ -809,6 +950,9 @@ function LocalStore(){
     addIdea:it=>{data.ideas[makeId()]=it; save(); emit();},
     updateIdea:(id,patch)=>{Object.assign(data.ideas[id],patch); save(); emit();},
     removeIdea:id=>{delete data.ideas[id]; save(); emit();},
+    addProd:p=>{data.prods[makeId()]=p; save(); emit();},
+    updateProd:(id,obj)=>{data.prods[id]=obj; save(); emit();},
+    removeProd:id=>{delete data.prods[id]; save(); emit();},
   };
 }
 
@@ -836,9 +980,10 @@ function FirebaseStore(){
     onNotes:cb=>root.child("notes").on("value",s=>cb(s.val()||{})),
     onEvents:cb=>root.child("events").on("value",s=>cb(s.val()||{})),
     onIdeas:cb=>root.child("ideas").on("value",s=>cb(s.val()||{})),
+    onProds:cb=>root.child("prods").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
-    removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); },
+    removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); root.child("prods").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("prods/"+k+"/clientId").set(null);});}); },
     addNote:n=>root.child("notes").push(n),
     updateNote:(id,patch)=>root.child("notes/"+id).update(patch),
     removeNote:id=>root.child("notes/"+id).remove(),
@@ -847,11 +992,14 @@ function FirebaseStore(){
     addIdea:it=>root.child("ideas").push(it),
     updateIdea:(id,patch)=>root.child("ideas/"+id).update(patch),
     removeIdea:id=>root.child("ideas/"+id).remove(),
+    addProd:p=>root.child("prods").push(p),
+    updateProd:(id,obj)=>root.child("prods/"+id).set(obj),
+    removeProd:id=>root.child("prods/"+id).remove(),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={};
+let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={};
 let filter="all", query="";
 const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
 let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
@@ -1361,6 +1509,7 @@ function setTab(name){
   dashTools.style.display = name==="dashboard" ? "contents" : "none";
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
+  if(name==="prod") renderProdTab();
   if(name==="ciclo"){
     const f=document.getElementById("cicloFrame");
     if(!cicloLoaded){ f.src="ciclo.html"; cicloLoaded=true; f.addEventListener("load",syncCicloTheme,{once:true}); }
@@ -1597,6 +1746,226 @@ document.addEventListener("click",e=>{
 });
 
 /* ============================================================
+   PRODUCCIONES  (planificación audiovisual)
+   ============================================================ */
+const PROD_STATUS=[
+  ["idea","💡","Idea","#9A9AA1"],
+  ["pre","🎬","Pre","#0FB5C9"],
+  ["rodaje","🔴","Rodaje","#FF5A36"],
+  ["edicion","✂️","Edición","#F5A623"],
+  ["listo","✅","Listo","#2ECC71"],
+];
+function statusMeta(s){ return PROD_STATUS.find(x=>x[0]===s) || PROD_STATUS[0]; }
+function asArr(x){ return Array.isArray(x)?x:(x?Object.values(x):[]); }
+function prodClient(p){ return (p.clientId && CLIENTS[p.clientId]) ? CLIENTS[p.clientId] : null; }
+function prodColor(p){ const c=prodClient(p); return c?c.color:"#8E7CFF"; }
+function prodEmoji(p){ const c=prodClient(p); return c?(c.emoji||"🎬"):"🎬"; }
+function prodClientName(p){ const c=prodClient(p); return c?c.name:"Espontánea"; }
+
+let prodTabView=null, prodFilter="all";
+
+function prodsList(){
+  return Object.entries(PRODS).map(([id,p])=>({id,...p})).filter(p=>{
+    if(prodFilter==="all") return true;
+    if(prodFilter==="suelta") return !p.clientId;
+    return p.clientId===prodFilter;
+  });
+}
+function renderProdFilter(){
+  const sel=document.getElementById("prodFilter");
+  const clients=Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>(a.order??0)-(b.order??0));
+  const cur=prodFilter;
+  sel.innerHTML=`<option value="all">Todos los clientes</option><option value="suelta">🎬 Espontáneas</option>`
+    + clients.map(c=>`<option value="${c.id}">${escapeHtml(c.emoji||"")} ${escapeHtml(c.name)}</option>`).join("");
+  if([...sel.options].some(o=>o.value===cur)) sel.value=cur; else { prodFilter="all"; sel.value="all"; }
+}
+/* las sin hora van al final del día */
+function timeKey(p){ return p.time||"99:99"; }
+function byTime(a,b){ return timeKey(a).localeCompare(timeKey(b)) || (a.createdAt||0)-(b.createdAt||0); }
+function prodCardHTML(p){
+  const sm=statusMeta(p.status);
+  const nrefs=asArr(p.refs).length;
+  const dstr=p.date?parseYmd(p.date).toLocaleDateString("es-AR",{day:"numeric",month:"short"}):"sin fecha";
+  const meta=[prodClientName(p), dstr, p.time||"", p.kind].filter(Boolean).join(" · ");
+  return `<div class="prod-card" data-openprod="${p.id}" style="--c:${prodColor(p)}">
+    <span class="pc-emoji">${prodEmoji(p)}</span>
+    <div class="pc-body">
+      <div class="pc-title">${escapeHtml(p.title||"Sin título")}</div>
+      <div class="pc-meta">${escapeHtml(meta)}</div>
+    </div>
+    ${nrefs?`<span class="pc-clip">📎${nrefs}</span>`:''}
+    <span class="pc-badge" style="background:color-mix(in srgb,${sm[3]} 18%,transparent);color:${sm[3]}">${sm[1]} ${sm[2]}</span>
+  </div>`;
+}
+function renderProdTab(){
+  const now=new Date();
+  prodTabView=prodTabView||{y:now.getFullYear(),m:now.getMonth()};
+  const {y,m}=prodTabView;
+  document.getElementById("prodTitle").innerText=MONTHS[m]+" "+y;
+  renderProdFilter();
+  const all=prodsList();
+
+  // calendario del mes
+  const first=new Date(y,m,1), nd=new Date(y,m+1,0).getDate(), startDow=(first.getDay()+6)%7;
+  const isCur=(y===now.getFullYear()&&m===now.getMonth()), todayD=now.getDate();
+  const byDay={};
+  all.forEach(p=>{ if(p.date){ const dt=parseYmd(p.date); if(dt&&dt.getFullYear()===y&&dt.getMonth()===m){ (byDay[dt.getDate()]=byDay[dt.getDate()]||[]).push(p); } } });
+  let g=["lun","mar","mié","jue","vie","sáb","dom"].map(d=>`<div class="cg-dow">${d}</div>`).join("");
+  for(let i=0;i<startDow;i++) g+=`<div class="cg-cell pad"></div>`;
+  for(let d=1; d<=nd; d++){
+    const list=(byDay[d]||[]).sort(byTime);
+    const shown=list.slice(0,3).map(p=>`<div class="cg-prod" style="--c:${prodColor(p)}" data-openprod="${p.id}" title="${escapeHtml((p.time?p.time+" · ":"")+(p.title||"Sin título"))}"><span class="st">${statusMeta(p.status)[1]}</span>${p.time?` <span class="hr">${escapeHtml(p.time)}</span>`:""} ${escapeHtml(p.title||"Sin título")}</div>`).join("");
+    const more=list.length>3?`<div class="cg-more">+${list.length-3} más</div>`:"";
+    g+=`<div class="cg-cell ${isCur&&d===todayD?'today':''}" data-prodday="${ymd(new Date(y,m,d))}"><span class="cg-num">${d}</span>${shown}${more}</div>`;
+  }
+  document.getElementById("prodGrid").innerHTML=g;
+
+  // sin fecha / espontáneas
+  const sinF=all.filter(p=>!p.date).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  document.getElementById("prodSinFecha").innerHTML = sinF.length
+    ? `<div class="prod-sh">🗂️ Sin fecha · espontáneas <span style="opacity:.6">${sinF.length}</span></div><div class="prod-cards">${sinF.map(prodCardHTML).join("")}</div>`
+    : "";
+  // del mes
+  const mes=all.filter(p=>{ if(!p.date) return false; const dt=parseYmd(p.date); return dt&&dt.getFullYear()===y&&dt.getMonth()===m; }).sort((a,b)=>String(a.date).localeCompare(String(b.date))||byTime(a,b));
+  document.getElementById("prodMes").innerHTML = `<div class="prod-sh">🎬 Producciones de ${MONTHS[m]} <span style="opacity:.6">${mes.length||''}</span></div>`
+    + (mes.length ? `<div class="prod-cards">${mes.map(prodCardHTML).join("")}</div>` : `<div class="prod-empty">Nada agendado este mes. Tocá un día del calendario o “Nueva producción”.</div>`);
+}
+document.getElementById("prodPrev").onclick=()=>{ let {y,m}=prodTabView; m--; if(m<0){m=11;y--;} prodTabView={y,m}; renderProdTab(); };
+document.getElementById("prodNext").onclick=()=>{ let {y,m}=prodTabView; m++; if(m>11){m=0;y++;} prodTabView={y,m}; renderProdTab(); };
+document.getElementById("prodToday").onclick=()=>{ const n=new Date(); prodTabView={y:n.getFullYear(),m:n.getMonth()}; renderProdTab(); };
+document.getElementById("prodFilter").addEventListener("change",e=>{ prodFilter=e.target.value; renderProdTab(); });
+document.getElementById("prodNew").onclick=()=>openProd(null,{});
+document.getElementById("prodGrid").addEventListener("click",e=>{
+  const pill=e.target.closest("[data-openprod]"); if(pill){ openProd(pill.dataset.openprod); return; }
+  const cell=e.target.closest("[data-prodday]"); if(cell){ openProd(null,{date:cell.dataset.prodday}); }
+});
+document.getElementById("prodSinFecha").addEventListener("click",e=>{ const c=e.target.closest("[data-openprod]"); if(c) openProd(c.dataset.openprod); });
+document.getElementById("prodMes").addEventListener("click",e=>{ const c=e.target.closest("[data-openprod]"); if(c) openProd(c.dataset.openprod); });
+
+/* ---- ficha / editor de una producción ---- */
+const prodDlg=document.getElementById("prodDlg");
+let editing=null, editingId=null;
+
+function fillClientSelect(sel, val){
+  const clients=Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>(a.order??0)-(b.order??0));
+  sel.innerHTML=`<option value="">🎬 Espontánea (sin cliente)</option>`
+    + clients.map(c=>`<option value="${c.id}">${escapeHtml(c.emoji||"")} ${escapeHtml(c.name)}</option>`).join("");
+  sel.value=val||"";
+}
+function renderStatusChips(){
+  document.getElementById("peStatus").innerHTML=PROD_STATUS.map(s=>
+    `<button data-status="${s[0]}" class="${editing.status===s[0]?'on':''}">${s[1]} ${s[2]}</button>`).join("");
+}
+let igLoaded=false;
+function loadIG(){
+  if(igLoaded){ if(window.instgrm) window.instgrm.Embeds.process(); return; }
+  igLoaded=true;
+  const s=document.createElement("script"); s.async=true; s.src="https://www.instagram.com/embed.js";
+  s.onload=()=>{ if(window.instgrm) window.instgrm.Embeds.process(); };
+  document.body.appendChild(s);
+}
+function classifyRef(raw){
+  const url=(raw||"").trim(); if(!url) return null;
+  if(/instagram\.com\/(p|reel|reels|tv)\//i.test(url)) return {t:"ig", url:url.split("?")[0]};
+  if(/^data:image\//i.test(url) || /\.(jpe?g|png|gif|webp|avif|bmp|svg)(\?|$)/i.test(url)) return {t:"img", url};
+  if(/^https?:\/\//i.test(url)) return {t:"link", url};
+  return {t:"note", url};
+}
+function refTileHTML(r,i){
+  const x=`<button class="ref-x" data-refx="${i}" title="Quitar">✕</button>`;
+  if(r.t==="ig") return `<div class="ref ref-ig">${x}<blockquote class="instagram-media" data-instgrm-permalink="${escapeHtml(r.url)}" data-instgrm-version="14"><a class="ig-fallback" href="${escapeHtml(r.url)}" target="_blank" rel="noopener">Ver reel/foto en Instagram ↗</a></blockquote></div>`;
+  if(r.t==="img") return `<div class="ref ref-img">${x}<img src="${escapeHtml(r.url)}" loading="lazy" alt="referencia" /></div>`;
+  if(r.t==="link"){ let host=""; try{ host=new URL(r.url).hostname.replace(/^www\./,""); }catch(_){ host=r.url; }
+    return `<div class="ref"><a class="ref-link" href="${escapeHtml(r.url)}" target="_blank" rel="noopener"><span class="rl-ico">🔗</span><span class="rl-host">${escapeHtml(host)}</span></a>${x}</div>`; }
+  return `<div class="ref"><div class="ref-note">${escapeHtml(r.url)}</div>${x}</div>`;
+}
+function renderRefs(){
+  const wrap=document.getElementById("peRefs");
+  const refs=asArr(editing.refs);
+  wrap.innerHTML=refs.map((r,i)=>refTileHTML(r,i)).join("");
+  if(refs.some(r=>r.t==="ig")) loadIG();
+}
+function openProd(id, preset){
+  if(id && PRODS[id]){
+    editingId=id;
+    editing=JSON.parse(JSON.stringify(PRODS[id]));
+    editing.refs=asArr(editing.refs);
+  }else{
+    editingId=null;
+    editing={clientId:(prodFilter!=="all"&&prodFilter!=="suelta")?prodFilter:"", title:"", date:null, time:null, status:"idea", kind:"", desglose:"", produccion:"", recursos:"", refs:[]};
+    if(preset) Object.assign(editing, preset);
+  }
+  document.getElementById("peTitle").value=editing.title||"";
+  fillClientSelect(document.getElementById("peClient"), editing.clientId||"");
+  document.getElementById("peDate").value=editing.date||"";
+  document.getElementById("peTime").value=editing.time||"";
+  document.getElementById("peKind").value=editing.kind||"";
+  document.getElementById("peDesglose").value=editing.desglose||"";
+  document.getElementById("peProduccion").value=editing.produccion||"";
+  document.getElementById("peRecursos").value=editing.recursos||"";
+  document.getElementById("peDelete").style.display = editingId ? "" : "none";
+  document.getElementById("peDup").style.display = editingId ? "" : "none";
+  renderStatusChips();
+  renderRefs();
+  prodDlg.showModal();
+  setTimeout(()=>{ if(!editing.title) document.getElementById("peTitle").focus(); },50);
+}
+function collectEditor(){
+  editing.title=document.getElementById("peTitle").value.trim();
+  editing.clientId=document.getElementById("peClient").value||null;
+  editing.date=document.getElementById("peDate").value||null;
+  editing.time=document.getElementById("peTime").value||null;
+  editing.kind=document.getElementById("peKind").value.trim();
+  editing.desglose=document.getElementById("peDesglose").value.trim();
+  editing.produccion=document.getElementById("peProduccion").value.trim();
+  editing.recursos=document.getElementById("peRecursos").value.trim();
+  editing.refs=asArr(editing.refs);
+}
+function saveEditor(){
+  if(!editing) return;
+  collectEditor();
+  const empty = !editing.title && !editing.desglose && !editing.produccion && !editing.recursos && editing.refs.length===0;
+  if(!editingId && empty){ editing=null; return; }
+  if(!editing.title) editing.title="Sin título";
+  if(editingId){ editing.updatedAt=Date.now(); store.updateProd(editingId, editing); }
+  else { editing.createdAt=Date.now(); editing.updatedAt=Date.now(); store.addProd(editing); }
+  editing=null; editingId=null;
+}
+function closeProd(save){ if(save) saveEditor(); else { editing=null; editingId=null; } if(prodDlg.open) prodDlg.close(); }
+document.getElementById("peSave").onclick=()=>closeProd(true);
+document.getElementById("peClose").onclick=()=>closeProd(true);
+document.getElementById("peDup").onclick=()=>{
+  if(!editing) return;
+  collectEditor();
+  const copy=JSON.parse(JSON.stringify(editing));
+  copy.title=(copy.title||"Sin título")+" (copia)";
+  copy.createdAt=Date.now(); copy.updatedAt=Date.now(); delete copy.id;
+  store.addProd(copy);
+  editing=null; editingId=null; prodDlg.close();
+};
+document.getElementById("peDelete").onclick=()=>{
+  if(editingId && confirm("¿Borrar esta producción?")){ store.removeProd(editingId); editing=null; editingId=null; prodDlg.close(); }
+};
+document.getElementById("peStatus").addEventListener("click",e=>{
+  const b=e.target.closest("[data-status]"); if(!b||!editing) return;
+  editing.status=b.dataset.status; renderStatusChips();
+});
+document.getElementById("peRefs").addEventListener("click",e=>{
+  const x=e.target.closest("[data-refx]"); if(!x||!editing) return;
+  editing.refs=asArr(editing.refs); editing.refs.splice(parseInt(x.dataset.refx,10),1); renderRefs();
+});
+function addRefFromInput(){
+  const inp=document.getElementById("peRefInput");
+  const r=classifyRef(inp.value);
+  if(r && editing){ editing.refs=asArr(editing.refs); editing.refs.push(r); inp.value=""; renderRefs(); }
+}
+document.getElementById("peRefInput").addEventListener("keydown",e=>{ if(e.key==="Enter"){ addRefFromInput(); e.preventDefault(); } });
+document.getElementById("peRefInput").addEventListener("paste",()=>{
+  setTimeout(()=>{ const v=document.getElementById("peRefInput").value.trim(); if(/^https?:\/\//i.test(v)||/instagram\.com/i.test(v)) addRefFromInput(); },0);
+});
+prodDlg.addEventListener("click",e=>{ if(e.target===prodDlg) closeProd(true); });
+
+/* ============================================================
    cerrar diálogos al hacer clic afuera (en el fondo)
    ============================================================ */
 ["clientDlg","efemDlg"].forEach(idd=>{
@@ -1609,10 +1978,11 @@ function boot(){
   store = hasFirebase ? FirebaseStore() : LocalStore();
   const sync=document.getElementById("sync");
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
-  store.onClients(c=>{ CLIENTS=c||{}; render(); });
+  store.onClients(c=>{ CLIENTS=c||{}; render(); if(activeTab==="prod") renderProdTab(); });
   store.onNotes(n=>{ NOTES=n||{}; render(); });
   store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); });
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
+  store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); });
   setTab(activeTab);
 }
 
