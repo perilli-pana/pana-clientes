@@ -1786,7 +1786,8 @@ function prodCardHTML(p){
   const sm=statusMeta(p.status);
   const nrefs=asArr(p.refs).length;
   const dstr=p.date?parseYmd(p.date).toLocaleDateString("es-AR",{day:"numeric",month:"short"}):"sin fecha";
-  const meta=[prodClientName(p), dstr, p.time||"", p.kind].filter(Boolean).join(" · ");
+  // fecha + hora juntas; el tipo se ve al entrar a la ficha
+  const meta=[prodClientName(p), dstr+(p.time?" · "+p.time:"")].filter(Boolean).join(" · ");
   return `<div class="prod-card" data-openprod="${p.id}" style="--c:${prodColor(p)}">
     <span class="pc-emoji">${prodEmoji(p)}</span>
     <div class="pc-body">
