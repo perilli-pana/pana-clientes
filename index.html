@@ -1820,9 +1820,9 @@ function renderProdTab(){
   for(let d=1; d<=nd; d++){
     const list=(byDay[d]||[]).sort(byTime);
     // en el calendario manda el cliente (su emoji); el estado se lee abajo, en las cards
-    const shown=list.slice(0,3).map(p=>`<div class="cg-prod" style="--c:${prodColor(p)}" data-openprod="${p.id}" title="${escapeHtml((p.time?p.time+" · ":"")+(p.title||"Sin título"))}"><span class="st">${prodEmoji(p)}</span>${p.time?` <span class="hr">${escapeHtml(p.time)}</span>`:""} ${escapeHtml(p.title||"Sin título")}</div>`).join("");
-    const more=list.length>3?`<div class="cg-more">+${list.length-3} más</div>`:"";
-    g+=`<div class="cg-cell ${isCur&&d===todayD?'today':''}" data-prodday="${ymd(new Date(y,m,d))}"><span class="cg-num">${d}</span>${shown}${more}</div>`;
+    const shown=list.map(p=>`<div class="cg-prod" style="--c:${prodColor(p)}" data-openprod="${p.id}" title="${escapeHtml((p.time?p.time+" · ":"")+(p.title||"Sin título"))}"><span class="st">${prodEmoji(p)}</span>${p.time?` <span class="hr">${escapeHtml(p.time)}</span>`:""} ${escapeHtml(p.title||"Sin título")}</div>`).join("");
+    // sin tope: el día muestra TODO lo que hay que hacer, la celda se estira
+    g+=`<div class="cg-cell ${isCur&&d===todayD?'today':''}" data-prodday="${ymd(new Date(y,m,d))}"><span class="cg-num">${d}</span>${shown}</div>`;
   }
   document.getElementById("prodGrid").innerHTML=g;
 
