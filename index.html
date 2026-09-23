@@ -568,6 +568,94 @@
      CELULAR — todo lo de arriba sigue igual en compu.
      Esto solo se enciende en pantallas angostas (≤760px).
      ================================================================== */
+
+  /* ============================================================
+     EL MES — la portada: una fila por cliente, seis casilleros
+     ============================================================ */
+  #view-mes{overflow:auto}
+  .mes-wrap{--ok:#2ECC71; width:100%; max-width:1180px; margin:0 auto; padding:18px 20px 90px}
+
+  /* --- la bandeja: una sola puerta para anotar --- */
+  .cap{background:var(--tile); border:1px solid var(--tile-edge); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 14px; margin-bottom:26px}
+  .cap textarea{width:100%; border:0; background:transparent; resize:none; outline:none; font-family:var(--sans); font-size:15.5px; line-height:1.45; color:var(--ink); min-height:24px; max-height:160px}
+  .cap textarea::placeholder{color:var(--ink-faint)}
+  .cap-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:9px}
+  .cap-kinds{display:flex; gap:3px; background:color-mix(in srgb,var(--ink) 5%,transparent); padding:3px; border-radius:10px}
+  .cap-kinds button{border:0; background:transparent; font-family:var(--sans); font-size:12.5px; color:var(--ink-soft); padding:5px 11px; border-radius:7px; cursor:pointer}
+  .cap-kinds button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
+  .cap select{font-family:var(--sans); font-size:12.5px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:9px; padding:6px 9px; max-width:220px}
+  .cap-save{margin-left:auto; border:0; background:var(--accent); color:#fff; font-family:var(--sans); font-size:13px; font-weight:650; padding:7px 17px; border-radius:9px; cursor:pointer}
+  .cap-echo{font-size:12px; color:var(--ok); min-height:15px; margin-top:6px; opacity:0; transition:opacity .2s}
+  .cap-echo.show{opacity:1}
+
+  /* --- encabezado del mes --- */
+  .mes-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 3px 6px}
+  .mes-top h2{margin:0; font-size:23px; letter-spacing:-.02em; text-transform:capitalize; white-space:nowrap}
+  .mes-nav{display:flex; gap:3px}
+  .mes-nav button{width:27px; height:27px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); border-radius:8px; cursor:pointer; font-size:14px; line-height:1}
+  .mes-nav button:hover{color:var(--ink); border-color:var(--ink-faint)}
+  .mes-sum{font-size:12.5px; color:var(--ink-soft)}
+  .mes-sum b{color:var(--ink); font-weight:650}
+  .mes-sum .gap{color:var(--fav); font-weight:650}
+  .mes-only{margin-left:auto; display:flex; gap:3px; background:color-mix(in srgb,var(--ink) 5%,transparent); padding:3px; border-radius:10px}
+  .mes-only button{border:0; background:transparent; font-family:var(--sans); font-size:12px; color:var(--ink-soft); padding:5px 11px; border-radius:7px; cursor:pointer}
+  .mes-only button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
+
+  .mes-legend{display:grid; grid-template-columns:1fr auto auto; gap:14px; align-items:end; padding:14px 15px 7px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
+  .mes-legend .lg-steps{font-size:9.5px; letter-spacing:.07em; white-space:nowrap}
+
+  /* --- una fila por cliente --- */
+  .mes-grid{display:flex; flex-direction:column; gap:6px}
+  .mes-row{background:var(--tile); border:1px solid var(--tile-edge); border-radius:14px; padding:10px 15px; display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:14px; row-gap:0}
+  .mes-row.full{background:transparent; border-color:transparent; opacity:.42}
+  .mes-row.full:hover{opacity:.8}
+  .mes-row.casa{border-color:color-mix(in srgb,var(--accent) 38%,transparent); background:color-mix(in srgb,var(--accent) 5%,var(--tile))}
+  .mr-head{min-width:0}
+  .mr-title{display:flex; align-items:center; gap:7px; min-width:0}
+  .mr-bar{width:3px; height:15px; border-radius:2px; flex:none}
+  .mr-emoji{font-size:14px; flex:none}
+  .mr-name{font-size:14.5px; font-weight:650; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
+  .mr-msg{display:block; width:100%; margin-top:2px; border:0; background:transparent; outline:none; padding:1px 0; font-family:var(--sans); font-size:12.5px; color:var(--ink-soft)}
+  .mr-msg::placeholder{color:var(--ink-faint); font-style:italic}
+  .mr-msg:focus{color:var(--ink)}
+  .mr-steps{display:flex; gap:5px; flex:none}
+  .st{position:relative; width:34px; height:34px; border-radius:10px; border:1px solid var(--tile-edge); background:transparent; font-size:14px; line-height:1; cursor:pointer; display:grid; place-items:center; filter:grayscale(1); opacity:.38; transition:opacity .12s, transform .12s, background .12s}
+  .st:hover{opacity:.85; transform:translateY(-1px)}
+  .st.on{filter:none; opacity:1; background:color-mix(in srgb,var(--ok) 15%,transparent); border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+  .st.next{border-style:dashed; border-color:var(--accent); opacity:.7}
+  .st i{position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--accent)}
+  .mr-tail{display:flex; align-items:center; justify-content:flex-end; gap:9px; flex:none; min-width:168px}
+  .mr-turno{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); white-space:nowrap}
+  .mr-turno i{width:7px; height:7px; border-radius:50%; flex:none}
+  .mr-turno.ok{color:var(--ok)}
+  .mr-chip{font-size:11.5px; color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 6%,transparent); padding:3px 8px; border-radius:7px; cursor:pointer; white-space:nowrap}
+  .mr-chip.hot{color:var(--fav); background:var(--fav-soft)}
+  .mr-more{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; padding:4px 2px}
+
+  /* --- lo que se abre abajo de la fila --- */
+  .mr-det{grid-column:1/-1; margin-top:12px; padding-top:13px; border-top:1px solid var(--tile-edge); display:grid; grid-template-columns:1.25fr 1fr auto; gap:22px}
+  .mr-det h4{margin:0 0 7px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:650}
+  .mr-list{display:flex; flex-direction:column; gap:3px}
+  .mr-it{display:flex; align-items:flex-start; gap:7px; font-size:13px; color:var(--ink); line-height:1.4}
+  .mr-it button{border:0; background:transparent; cursor:pointer; padding:0; font-size:12px; color:var(--ink-faint); flex:none; margin-top:1px}
+  .mr-it .tk{width:14px; height:14px; border:1.5px solid var(--ink-faint); border-radius:50%; margin-top:2px}
+  .mr-it.done{color:var(--ink-faint); text-decoration:line-through}
+  .mr-it.done .tk{background:var(--ok); border-color:var(--ok)}
+  .mr-it .x{margin-left:auto; opacity:0}
+  .mr-it:hover .x{opacity:1}
+  .mr-prod{display:flex; align-items:center; gap:7px; font-size:13px; cursor:pointer; padding:2px 0}
+  .mr-prod .d{font-family:var(--mono); font-size:11px; color:var(--ink-faint); flex:none}
+  .mr-empty{font-size:12.5px; color:var(--ink-faint); font-style:italic}
+  .mr-add{width:100%; margin-top:6px; border:1px dashed var(--tile-edge); background:transparent; border-radius:9px; padding:6px 9px; font-family:var(--sans); font-size:12.5px; color:var(--ink); outline:none}
+  .mr-add:focus{border-style:solid; border-color:var(--accent)}
+  .mr-add::placeholder{color:var(--ink-faint)}
+  .mr-roles{display:flex; flex-direction:column; gap:6px; min-width:132px}
+  .mr-roles label{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11.5px; color:var(--ink-soft)}
+  .mr-roles select{font-family:var(--sans); font-size:11.5px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:7px; padding:3px 5px}
+  .mes-foot{margin-top:18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--ink-faint)}
+  .mes-foot button{border:1px dashed var(--tile-edge); background:transparent; color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:7px 13px; border-radius:9px; cursor:pointer}
+  .mes-foot button:hover{border-style:solid; color:var(--ink)}
+
   @media (max-width:760px){
 
     /* --- barra de arriba: deja de ser una fila larga, se acomoda en 3 renglones --- */
@@ -687,6 +775,24 @@
     .note-del, .card-menu{padding:4px 6px}
     .mc-day:hover{transform:none}
   }
+
+  /* --- EL MES en el celular --- */
+  @media (max-width:760px){
+    .mes-wrap{padding:14px 13px 90px}
+    .mes-top h2{font-size:20px}
+    .mes-only{margin-left:0; width:100%}
+    .mes-only button{flex:1}
+    .mes-legend{display:none}
+    .mes-row{grid-template-columns:1fr; gap:9px; padding:12px 13px}
+    .mr-steps{justify-content:space-between}
+    .st{width:14.2vw; max-width:44px; height:38px; font-size:15px}
+    .mr-tail{justify-content:flex-start; min-width:0; flex-wrap:wrap}
+    .mr-det{grid-template-columns:1fr; gap:16px}
+    .cap select{max-width:100%; flex:1}
+    .cap-save{width:100%; margin-left:0; padding:10px}
+    .cap textarea{font-size:16px}
+    .mr-add{font-size:16px}
+  }
 </style>
 </head>
 <body>
@@ -729,14 +835,34 @@
 </header>
 
 <nav class="tabs" id="tabs">
-  <button data-tab="dashboard" class="on"><span class="tico">🧱</span> Dashboard</button>
+  <button data-tab="mes" class="on"><span class="tico">🎛️</span> El mes</button>
+  <button data-tab="dashboard"><span class="tico">🧱</span> Dashboard</button>
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
   <button data-tab="cal"><span class="tico">🗓️</span> Calendario</button>
   <button data-tab="prod"><span class="tico">🎬</span> Producciones</button>
   <button data-tab="ciclo"><span class="tico">🔁</span> Ciclo de trabajo</button>
 </nav>
 
-<div id="view-dashboard" class="view active">
+<div id="view-mes" class="view active">
+  <div class="mes-wrap">
+    <div class="cap">
+      <textarea id="capText" rows="1" placeholder="Anotá cualquier cosa acá y después decís dónde va…"></textarea>
+      <div class="cap-row">
+        <select id="capClient"></select>
+        <div class="cap-kinds" id="capKinds">
+          <button data-kind="pend" class="on">📌 Pendiente</button>
+          <button data-kind="idea">💡 Idea</button>
+          <button data-kind="prod">🎬 Producción</button>
+        </div>
+        <button class="cap-save" id="capSave">Guardar</button>
+      </div>
+      <div class="cap-echo" id="capEcho"></div>
+    </div>
+    <div id="mesBody"></div>
+  </div>
+</div>
+
+<div id="view-dashboard" class="view">
   <main id="board"></main>
 </div>
 
@@ -920,16 +1046,17 @@ function LocalStore(){
   const KEY="panaDashboard.v2";
   let data = JSON.parse(localStorage.getItem(KEY) || "null");
   if(!data){
-    data = {clients:{}, notes:{}, events:{}, ideas:{}, prods:{}};
+    data = {clients:{}, notes:{}, events:{}, ideas:{}, prods:{}, mes:{}};
     SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
     localStorage.setItem(KEY, JSON.stringify(data));
   }
   if(!data.events) data.events={};
   if(!data.ideas) data.ideas={};
   if(!data.prods) data.prods={};
+  if(!data.mes) data.mes={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
-  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); };
+  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{}, cbM=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); cbM({...data.mes}); };
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
@@ -937,6 +1064,7 @@ function LocalStore(){
     onEvents:cb=>{cbE=cb; cb({...data.events});},
     onIdeas:cb=>{cbI=cb; cb({...data.ideas});},
     onProds:cb=>{cbP=cb; cb({...data.prods});},
+    onMes:cb=>{cbM=cb; cb({...data.mes});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
     removeClient:id=>{ delete data.clients[id];
@@ -955,6 +1083,7 @@ function LocalStore(){
     addProd:p=>{data.prods[makeId()]=p; save(); emit();},
     updateProd:(id,obj)=>{data.prods[id]=obj; save(); emit();},
     removeProd:id=>{delete data.prods[id]; save(); emit();},
+    updateMes:(id,patch)=>{data.mes[id]=Object.assign({},data.mes[id],patch); save(); emit();},
   };
 }
 
@@ -983,6 +1112,7 @@ function FirebaseStore(){
     onEvents:cb=>root.child("events").on("value",s=>cb(s.val()||{})),
     onIdeas:cb=>root.child("ideas").on("value",s=>cb(s.val()||{})),
     onProds:cb=>root.child("prods").on("value",s=>cb(s.val()||{})),
+    onMes:cb=>root.child("mes").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
     removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); root.child("prods").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("prods/"+k+"/clientId").set(null);});}); },
@@ -997,11 +1127,12 @@ function FirebaseStore(){
     addProd:p=>root.child("prods").push(p),
     updateProd:(id,obj)=>root.child("prods/"+id).set(obj),
     removeProd:id=>root.child("prods/"+id).remove(),
+    updateMes:(id,patch)=>root.child("mes/"+id).update(patch),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={};
+let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={}, MES={};
 let filter="all", query="";
 const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
 let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
@@ -1493,7 +1624,8 @@ efemDlgEl.addEventListener("keydown",e=>{
 /* ============================================================
    PESTAÑAS
    ============================================================ */
-let activeTab = localStorage.getItem("panaTab") || "dashboard";
+if(!localStorage.getItem("panaMesSeen")){ localStorage.setItem("panaMesSeen","1"); localStorage.setItem("panaTab","mes"); }
+let activeTab = localStorage.getItem("panaTab") || "mes";
 const dashTools = document.getElementById("dashTools");
 let cicloLoaded=false;
 
@@ -1509,6 +1641,7 @@ function setTab(name){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===name));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+name));
   dashTools.style.display = name==="dashboard" ? "contents" : "none";
+  if(name==="mes") renderMes();
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
   if(name==="prod") renderProdTab();
@@ -1979,16 +2112,246 @@ prodDlg.addEventListener("click",e=>{ if(e.target===prodDlg) closeProd(true); })
   d.addEventListener("click",e=>{ if(e.target===d){ if(idd==="efemDlg") efemSelDay=null; d.close(); } });
 });
 
+
+/* ============================================================
+   EL MES — la portada: una fila por cliente, seis casilleros
+   ============================================================ */
+const PASOS=[
+  {k:"estrategia",ic:"🧭",lbl:"Estrategia",hint:"Qué quiere comunicar el cliente este mes",who:"plani"},
+  {k:"planteo",   ic:"🗂️",lbl:"Planteo",   hint:"La grilla del mes armada y cruzada con las fechas",who:"plani"},
+  {k:"foto",      ic:"📸",lbl:"Foto",      hint:"Foto fresca de este mes",who:"prod"},
+  {k:"video",     ic:"🎥",lbl:"Video",     hint:"Video fresco de este mes",who:"prod"},
+  {k:"diseno",    ic:"🎨",lbl:"Diseñado",  hint:"Las placas hechas",who:"dis"},
+  {k:"subido",    ic:"📤",lbl:"Subido",    hint:"Programado en Meta",who:"prog"},
+];
+const EQUIPO={marcos:["Marcos","#6B4EFF"],cami:["Cami","#E84393"],zurdo:["Zurdo","#0FB5C9"]};
+/* quién planifica y quién diseña (se cambia en la fila, esto es sólo el arranque) */
+const ROLES_SEED={
+  "ap":["cami","marcos"],"aurelia":["cami","marcos"],"clínica de fracturas":["cami","marcos"],
+  "cantina bernardo":["cami","marcos"],"vialmaq":["cami","marcos"],
+  "solgast":["cami","zurdo"],"canntek":["cami","zurdo"],"de gennaro giaccone":["cami","zurdo"],"cpm":["cami","zurdo"],
+  "bodegón co":["marcos","zurdo"],"bodegón co palan´t":["marcos","zurdo"],"chinita":["marcos","zurdo"],
+  "pasta co":["marcos","zurdo"],"pasta mar & vino":["marcos","zurdo"],"parrilla co":["marcos","zurdo"],
+  "thunder":["marcos","zurdo"],"pana":["marcos","zurdo"],
+};
+function rolesOf(c){
+  const seed=ROLES_SEED[(c.name||"").trim().toLowerCase()]||["cami","marcos"];
+  return {plani:c.plani||seed[0], dis:c.dis||seed[1], prod:"marcos", prog:"marcos"};
+}
+function isCasa(c){ return (c.name||"").trim().toLowerCase()==="pana"; }
+
+let mesView=(()=>{const n=new Date();return {y:n.getFullYear(),m:n.getMonth()};})();
+let mesOnly=localStorage.getItem("panaMesOnly")||"falta";
+let mesOpen=new Set(JSON.parse(localStorage.getItem("panaMesOpen")||"[]"));
+let mesPending=false;
+function saveMesOpen(){ localStorage.setItem("panaMesOpen",JSON.stringify([...mesOpen])); }
+function ymKey(){ return mesView.y+"-"+String(mesView.m+1).padStart(2,"0"); }
+function mesKey(cid){ return cid+"__"+ymKey(); }
+function mesRow(cid){ return MES[mesKey(cid)]||{}; }
+function stepsOf(cid){ return mesRow(cid).s||{}; }
+function patchMes(cid,patch){
+  const key=mesKey(cid), full=Object.assign({clientId:cid, ym:ymKey(), updatedAt:Date.now()}, patch);
+  MES[key]=Object.assign({}, MES[key], full);   /* lo anoto acá primero: si tocás rápido, no se pierde ningún clic esperando a la nube */
+  store.updateMes(key, full);
+}
+function toggleStep(cid,k){ const s=Object.assign({},stepsOf(cid)); s[k]=!s[k]; patchMes(cid,{s}); renderMes(); }
+
+function clientsSorted(){
+  return Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>{
+    const pa=isCasa(a)?0:1, pb=isCasa(b)?0:1;
+    if(pa!==pb) return pa-pb;
+    return (a.order??999)-(b.order??999) || (a.name||"").localeCompare(b.name||"");
+  });
+}
+function pendOf(cid){ return Object.entries(NOTES).filter(([id,n])=>n.clientId===cid&&n.cat==="pend").map(([id,n])=>({id,...n})); }
+function prodsOfMonth(cid){
+  const ym=ymKey();
+  return Object.entries(PRODS).map(([id,p])=>({id,...p}))
+    .filter(p=>p.clientId===cid && String(p.date||"").slice(0,7)===ym)
+    .sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
+}
+function turnoOf(c){
+  const r=rolesOf(c), s=stepsOf(c.id);
+  for(const p of PASOS){ if(!s[p.k]) return {paso:p, quien:r[p.who]}; }
+  return null;
+}
+
+function detHTML(c){
+  const pends=pendOf(c.id).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.createdAt||0)-(a.createdAt||0)).slice(0,14);
+  const prods=prodsOfMonth(c.id), r=rolesOf(c);
+  const sel=(field,val)=>`<select data-role="${field}" data-c="${c.id}">`+
+    Object.entries(EQUIPO).map(([k,v])=>`<option value="${k}"${k===val?" selected":""}>${v[0]}</option>`).join("")+`</select>`;
+  return `<div class="mr-det">
+    <div>
+      <h4>Pendientes</h4>
+      <div class="mr-list">${pends.length
+        ? pends.map(n=>`<div class="mr-it ${n.done?'done':''}"><button class="tk" data-tick="${n.id}" title="Listo"></button><span>${escapeHtml(n.text)}</span><button class="x" data-delnote="${n.id}" title="Borrar">✕</button></div>`).join("")
+        : '<div class="mr-empty">Nada pendiente.</div>'}</div>
+      <input class="mr-add" data-addpend="${c.id}" placeholder="＋ pendiente…" />
+    </div>
+    <div>
+      <h4>Producciones de ${MONTHS[mesView.m]}</h4>
+      <div class="mr-list">${prods.length
+        ? prods.map(p=>{const st=statusMeta(p.status); return `<div class="mr-prod" data-openprod="${p.id}"><span class="d">${p.date?p.date.slice(8)+"/"+p.date.slice(5,7):"—"}</span><span>${st[1]}</span><span>${escapeHtml(p.title||"Sin título")}</span></div>`;}).join("")
+        : '<div class="mr-empty">Sin rodaje agendado este mes.</div>'}</div>
+      <button class="mr-add" data-newprod="${c.id}" style="text-align:left;cursor:pointer">＋ agendar una producción</button>
+    </div>
+    <div class="mr-roles">
+      <h4>Quién</h4>
+      <label>Planifica ${sel("plani",r.plani)}</label>
+      <label>Diseña ${sel("dis",r.dis)}</label>
+      <label style="opacity:.7">Foto, video y subir <b>Marcos</b></label>
+    </div>
+  </div>`;
+}
+
+function rowHTML(c){
+  const row=mesRow(c.id), s=row.s||{}, msg=row.msg||"";
+  const done=PASOS.filter(p=>s[p.k]).length, full=done===PASOS.length;
+  const t=turnoOf(c), open=mesOpen.has(c.id);
+  const nProds=prodsOfMonth(c.id).length, nPend=pendOf(c.id).filter(n=>!n.done).length;
+  const steps=PASOS.map(p=>{
+    const on=!!s[p.k], next=!on && t && t.paso.k===p.k;
+    const dot=(p.k==="foto"||p.k==="video") && nProds>0 && !on ? "<i></i>" : "";
+    return `<button class="st ${on?'on':''} ${next?'next':''}" data-step="${p.k}" data-c="${c.id}" title="${p.lbl} — ${p.hint}">${p.ic}${dot}</button>`;
+  }).join("");
+  const turno = t
+    ? `<span class="mr-turno"><i style="background:${EQUIPO[t.quien][1]}"></i>${EQUIPO[t.quien][0]} · ${t.paso.lbl.toLowerCase()}</span>`
+    : `<span class="mr-turno ok">✓ cerrado</span>`;
+  return `<div class="mes-row ${full&&mesOnly==='falta'?'full':''} ${isCasa(c)?'casa':''}" data-row="${c.id}">
+    <div class="mr-head">
+      <div class="mr-title"><span class="mr-bar" style="background:${c.color||'#9A9AA1'}"></span><span class="mr-emoji">${c.emoji||"•"}</span><span class="mr-name" data-toggle="${c.id}">${escapeHtml(c.name)}</span></div>
+      <input class="mr-msg" data-msg="${c.id}" value="${escapeHtml(msg)}" placeholder="qué quiere comunicar este mes…" />
+    </div>
+    <div class="mr-steps">${steps}</div>
+    <div class="mr-tail">
+      ${turno}
+      ${nPend?`<span class="mr-chip ${nPend>2?'hot':''}" data-toggle="${c.id}" title="Pendientes abiertos">📌 ${nPend}</span>`:""}
+      ${nProds?`<span class="mr-chip" data-toggle="${c.id}" title="Producciones este mes">🎬 ${nProds}</span>`:""}
+      <button class="mr-more" data-toggle="${c.id}">${open?"▴":"▾"}</button>
+    </div>
+    ${open?detHTML(c):""}
+  </div>`;
+}
+
+function renderMes(){
+  const host=document.getElementById("mesBody"); if(!host) return;
+  const ae=document.activeElement;
+  if(ae && host.contains(ae) && /INPUT|SELECT/.test(ae.tagName)){ mesPending=true; return; }  /* no le pises lo que está escribiendo */
+  const cls=clientsSorted();
+  let prendidos=0, sinFoto=0, sinVideo=0, cerrados=0;
+  cls.forEach(c=>{ const s=stepsOf(c.id), d=PASOS.filter(p=>s[p.k]).length;
+    prendidos+=d; if(d===PASOS.length) cerrados++; if(!s.foto) sinFoto++; if(!s.video) sinVideo++; });
+  const total=cls.length*PASOS.length;
+  const hoy=new Date(), esteMes=(mesView.y===hoy.getFullYear()&&mesView.m===hoy.getMonth());
+  const hayPana=cls.some(isCasa);
+  host.innerHTML=`
+    <div class="mes-top">
+      <h2>${MONTHS[mesView.m]} ${mesView.y}</h2>
+      <div class="mes-nav"><button data-mesnav="prev" title="Mes anterior">‹</button><button data-mesnav="next" title="Mes siguiente">›</button>${esteMes?"":'<button data-mesnav="hoy" title="Volver a este mes" style="width:auto;padding:0 9px;font-size:11.5px">hoy</button>'}</div>
+      <div class="mes-sum"><b>${prendidos}</b> de ${total} casilleros · ${sinFoto?`<span class="gap">${sinFoto} sin foto</span> · `:""}${sinVideo?`<span class="gap">${sinVideo} sin video</span> · `:""}${cerrados} cerrado${cerrados===1?"":"s"}</div>
+      <div class="mes-only">
+        <button data-only="falta" class="${mesOnly==='falta'?'on':''}">Lo que falta</button>
+        <button data-only="todo" class="${mesOnly==='todo'?'on':''}">Ver todo</button>
+      </div>
+    </div>
+    <div class="mes-legend"><span>Cliente · qué quiere comunicar este mes</span><span class="lg-steps">${PASOS.map(p=>p.ic+" "+p.lbl.toLowerCase()).join(" · ")}</span><span>De quién es la pelota</span></div>
+    <div class="mes-grid">${cls.map(rowHTML).join("")}</div>
+    <div class="mes-foot">${hayPana?"":'<button id="mesAddPana">＋ sumar la fila de Pana (la casa)</button>'}<span>Tocá un casillero para prenderlo. El punteado es el que sigue.</span></div>`;
+}
+
+/* ---- la bandeja: una sola puerta para anotar ---- */
+let capKind="pend";
+function capEcho(txt){
+  const e=document.getElementById("capEcho"); if(!e) return;
+  e.textContent=txt; e.classList.add("show");
+  clearTimeout(capEcho._t); capEcho._t=setTimeout(()=>e.classList.remove("show"),2600);
+}
+function fillCapClients(){
+  const sel=document.getElementById("capClient"); if(!sel) return;
+  const keep=sel.value;
+  sel.innerHTML='<option value="">— sin cliente (idea suelta)</option>'+
+    clientsSorted().map(c=>`<option value="${c.id}">${c.emoji||""} ${escapeHtml(c.name)}</option>`).join("");
+  if(keep) sel.value=keep;
+}
+function capGuardar(){
+  const ta=document.getElementById("capText"), t=(ta.value||"").trim(); if(!t) return;
+  const cid=document.getElementById("capClient").value;
+  const nom=cid&&CLIENTS[cid]?CLIENTS[cid].name:"";
+  if(capKind==="prod"){ openProd(null,{clientId:cid||"", title:t}); ta.value=""; ta.style.height="auto"; return; }
+  if(cid){
+    store.addNote({clientId:cid, text:t, cat:(capKind==="idea"?"idea":"pend"), fav:false, done:false, createdAt:Date.now()});
+    capEcho((capKind==="idea"?"💡 idea":"📌 pendiente")+" guardado en "+nom);
+  }else{
+    store.addIdea({text:t, color:"none", pinned:false, createdAt:Date.now()});
+    capEcho("💡 guardado en Ideas sueltas");
+  }
+  ta.value=""; ta.style.height="auto";
+}
+
+(function wireMes(){
+  const view=document.getElementById("view-mes"); if(!view) return;
+  const ta=document.getElementById("capText");
+  ta.addEventListener("input",()=>autoGrow(ta));
+  ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ capGuardar(); e.preventDefault(); } });
+  document.getElementById("capSave").onclick=capGuardar;
+  document.getElementById("capKinds").addEventListener("click",e=>{
+    const b=e.target.closest("button[data-kind]"); if(!b) return;
+    capKind=b.dataset.kind;
+    [...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));
+  });
+
+  view.addEventListener("click",e=>{
+    const st=e.target.closest(".st");                 if(st){ toggleStep(st.dataset.c, st.dataset.step); return; }
+    const nav=e.target.closest("[data-mesnav]");
+    if(nav){
+      const n=new Date();
+      if(nav.dataset.mesnav==="hoy"){ mesView={y:n.getFullYear(),m:n.getMonth()}; }
+      else{ const d=new Date(mesView.y, mesView.m+(nav.dataset.mesnav==="next"?1:-1), 1); mesView={y:d.getFullYear(),m:d.getMonth()}; }
+      renderMes(); return;
+    }
+    const only=e.target.closest("[data-only]");       if(only){ mesOnly=only.dataset.only; localStorage.setItem("panaMesOnly",mesOnly); renderMes(); return; }
+    const tick=e.target.closest("[data-tick]");       if(tick){ const id=tick.dataset.tick; store.updateNote(id,{done:!(NOTES[id]||{}).done}); return; }
+    const del=e.target.closest("[data-delnote]");     if(del){ store.removeNote(del.dataset.delnote); return; }
+    const op=e.target.closest("[data-openprod]");     if(op){ openProd(op.dataset.openprod); return; }
+    const np=e.target.closest("[data-newprod]");      if(np){ openProd(null,{clientId:np.dataset.newprod}); return; }
+    const pana=e.target.closest("#mesAddPana");
+    if(pana){ store.addClient({emoji:"✦",name:"Pana",color:"#6B4EFF",order:-1,createdAt:Date.now()}); return; }
+    const tg=e.target.closest("[data-toggle]");
+    if(tg){ const id=tg.dataset.toggle; mesOpen.has(id)?mesOpen.delete(id):mesOpen.add(id); saveMesOpen(); renderMes(); return; }
+  });
+
+  view.addEventListener("change",e=>{
+    const msg=e.target.closest("[data-msg]");
+    if(msg){ patchMes(msg.dataset.msg,{msg:msg.value.trim()}); return; }
+    const rol=e.target.closest("[data-role]");
+    if(rol){ store.updateClient(rol.dataset.c, {[rol.dataset.role]: rol.value}); return; }
+  });
+
+  view.addEventListener("keydown",e=>{
+    if(e.target.matches("[data-addpend]") && e.key==="Enter"){
+      const t=e.target.value.trim();
+      if(t){ store.addNote({clientId:e.target.dataset.addpend, text:t, cat:"pend", fav:false, done:false, createdAt:Date.now()}); e.target.value=""; }
+      e.preventDefault();
+    }
+    if(e.target.matches(".mr-msg") && e.key==="Enter"){ e.target.blur(); e.preventDefault(); }
+  });
+
+  /* si alguien cambió algo mientras escribías, se redibuja recién cuando soltás */
+  view.addEventListener("focusout",()=>{ if(mesPending){ mesPending=false; setTimeout(renderMes,60); } });
+})();
+
 /* ---------------- boot ---------------- */
 function boot(){
   store = hasFirebase ? FirebaseStore() : LocalStore();
   const sync=document.getElementById("sync");
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
-  store.onClients(c=>{ CLIENTS=c||{}; render(); if(activeTab==="prod") renderProdTab(); });
-  store.onNotes(n=>{ NOTES=n||{}; render(); });
+  store.onClients(c=>{ CLIENTS=c||{}; render(); fillCapClients(); if(activeTab==="mes") renderMes(); if(activeTab==="prod") renderProdTab(); });
+  store.onNotes(n=>{ NOTES=n||{}; render(); if(activeTab==="mes") renderMes(); });
   store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); });
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
-  store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); });
+  store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="mes") renderMes(); });
+  store.onMes(m=>{ MES=m||{}; if(activeTab==="mes") renderMes(); });
   setTab(activeTab);
 }
 
