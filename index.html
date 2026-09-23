@@ -569,14 +569,108 @@
      Esto solo se enciende en pantallas angostas (≤760px).
      ================================================================== */
 
+
   /* ============================================================
-     EL MES — la portada: una fila por cliente, seis casilleros
+     LA CABINA — todo lo del estudio en una sola pantalla
      ============================================================ */
-  #view-mes{overflow:auto}
-  .mes-wrap{--ok:#2ECC71; width:100%; max-width:1180px; margin:0 auto; padding:18px 20px 90px}
+  #view-cabina{overflow:auto}
+  .cab{--ok:#2ECC71; --warn:#F5A623; width:100%; max-width:1320px; margin:0 auto; padding:16px 20px 80px; display:flex; flex-direction:column; gap:13px}
+  .cab-fila{display:grid; grid-template-columns:minmax(290px,1fr) 2.1fr; gap:13px; align-items:stretch}
+  .panel{background:var(--tile); border:1px solid var(--tile-edge); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px}
+  .panel h3{margin:0 0 11px; font-size:9.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-faint); font-weight:700; display:flex; align-items:center; gap:8px}
+  .panel h3 .ed{margin-left:auto; border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; padding:0 2px}
+  .panel h3 .ed:hover{color:var(--ink)}
+  .panel h3 .cuenta{margin-left:auto; color:var(--ink-faint); letter-spacing:0; font-size:10.5px; text-transform:none}
+
+  /* --- hoy --- */
+  .hoy-f{font-size:17px; font-weight:650; letter-spacing:-.02em; margin:-2px 0 12px}
+  .hoy-f::first-letter{text-transform:uppercase}
+  .hoy-b{margin-bottom:10px}
+  .hoy-t{font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); font-weight:700}
+  .hoy-l{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px}
+  .hoy-c{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; background:color-mix(in srgb,var(--ink) 5%,transparent); padding:4px 10px; border-radius:8px; cursor:pointer; border:0; font-family:var(--sans); color:var(--ink)}
+  .hoy-c:hover{background:var(--accent-soft)}
+  .hoy-c i{width:6px; height:6px; border-radius:50%; flex:none}
+  .hoy-c .q{color:var(--ink-faint); font-size:11px}
+  .hoy-nada{font-size:12.5px; color:var(--ink-faint); font-style:italic; margin-top:4px}
+
+  /* --- la franja de días --- */
+  .fran{display:grid; grid-template-columns:repeat(14,1fr); gap:4px; margin-bottom:13px}
+  .fran-d{border:1px solid var(--tile-edge); border-radius:9px; padding:6px 1px 5px; text-align:center; cursor:pointer; min-height:58px; background:transparent}
+  .fran-d:hover{border-color:var(--ink-faint)}
+  .fran-d.hoy{border-color:var(--accent); background:var(--accent-soft)}
+  .fran-d.finde{opacity:.45}
+  .fran-d.mes1{border-left:2px solid var(--accent)}
+  .fran-dow{font-size:8.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint)}
+  .fran-n{font-size:15px; font-weight:650; line-height:1.2}
+  .fran-p{display:flex; justify-content:center; gap:2px; margin-top:3px; flex-wrap:wrap; min-height:5px}
+  .fran-p i{width:5px; height:5px; border-radius:50%}
+  .vie-l{display:flex; flex-direction:column}
+  .vie{display:flex; align-items:baseline; gap:10px; font-size:12.5px; padding:5px 0; border-top:1px solid color-mix(in srgb,var(--tile-edge) 70%,transparent)}
+  .vie:first-child{border-top:0}
+  .vie .d{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); min-width:56px; flex:none}
+  .vie .n{flex:1; min-width:0}
+  .vie .t{font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); flex:none}
+  .vie.hoy .d{color:var(--accent)}
+
+  /* --- el semáforo de clientes --- */
+  .sem{display:grid; grid-template-columns:repeat(auto-fill,minmax(138px,1fr)); gap:8px}
+  .sem-c{display:flex; align-items:center; gap:8px; border:1px solid var(--tile-edge); border-radius:11px; padding:8px 10px; cursor:pointer; background:transparent; font-family:var(--sans); text-align:left}
+  .sem-c:hover{border-color:var(--ink-faint)}
+  .sem-c .bar{width:3px; height:16px; border-radius:2px; flex:none}
+  .sem-c .e{font-size:14px; flex:none}
+  .sem-c .n{font-size:12.5px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0}
+  .sem-c .p{width:9px; height:9px; border-radius:50%; flex:none}
+  .sem-ley{display:flex; gap:13px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; color:var(--ink-faint)}
+  .sem-ley span{display:inline-flex; align-items:center; gap:5px}
+  .sem-ley i{width:7px; height:7px; border-radius:50%}
+
+  /* --- lo que está frenando --- */
+  .fre{display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:6px}
+  .fre-i{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; line-height:1.4; padding:7px 9px; border-radius:9px; background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .fre-i .tk{width:14px; height:14px; border:1.5px solid var(--ink-faint); border-radius:50%; background:transparent; cursor:pointer; flex:none; margin-top:2px; padding:0}
+  .fre-i .tk:hover{border-color:var(--ok); background:color-mix(in srgb,var(--ok) 25%,transparent)}
+  .fre-i .who{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; color:var(--ink-faint); flex:none}
+  .fre-i .who i{width:6px; height:6px; border-radius:50%}
+  .fre-i.esp{background:color-mix(in srgb,var(--warn) 13%,transparent)}
+  .vacio{font-size:12.5px; color:var(--ink-faint); font-style:italic}
+
+  /* --- lo que se sube --- */
+  .sube-l{display:flex; align-items:center; gap:22px; flex-wrap:wrap}
+  .sube-n{display:flex; align-items:baseline; gap:7px; font-size:12.5px; color:var(--ink-soft)}
+  .sube-n b{font-size:21px; font-weight:650; color:var(--ink); letter-spacing:-.02em}
+  .sube-n.mal b{color:var(--fav)}
+  .sube-n.ojo b{color:#F5A623}
+  .sube-b{margin-left:auto; border:1px solid var(--tile-edge); background:transparent; color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:7px 14px; border-radius:9px; cursor:pointer}
+  .sube-b:hover{border-color:var(--accent); color:var(--accent)}
+
+  /* --- la ficha de un cliente --- */
+  #cabDlg{border:0; padding:0; background:transparent; max-width:min(560px,94vw); width:100%}
+  #cabDlg::backdrop{background:rgba(10,10,14,.5); backdrop-filter:blur(2px)}
+  .cd-box{background:var(--tile); border:1px solid var(--tile-edge); border-radius:18px; box-shadow:var(--shadow); padding:20px 22px; display:flex; flex-direction:column; gap:14px; max-height:86vh; overflow:auto}
+  .cd-top{display:flex; align-items:center; gap:9px}
+  .cd-top .bar{width:4px; height:22px; border-radius:2px}
+  .cd-top b{font-size:17px; letter-spacing:-.01em}
+  .cd-top .x{margin-left:auto; border:0; background:transparent; color:var(--ink-faint); font-size:16px; cursor:pointer}
+  .cd-msg{width:100%; border:1px solid var(--tile-edge); border-radius:10px; padding:9px 11px; font-family:var(--sans); font-size:13px; color:var(--ink); background:transparent; outline:none}
+  .cd-msg:focus{border-color:var(--accent)}
+  .cd-sec h4{margin:0 0 7px; font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); font-weight:700}
+  .cd-quien{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--ink-soft)}
+  .cd-quien select{font-family:var(--sans); font-size:12px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:7px; padding:3px 6px; margin-left:5px}
+  .cd-acc{display:flex; gap:7px; flex-wrap:wrap}
+  .cd-acc button{border:1px solid var(--tile-edge); background:transparent; color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:7px 13px; border-radius:9px; cursor:pointer}
+  .cd-acc button:hover{border-color:var(--accent); color:var(--accent)}
+
+  /* --- editor del ciclo --- */
+  #cicloDlg{border:0; padding:0; background:transparent; max-width:min(500px,94vw); width:100%}
+  #cicloDlg::backdrop{background:rgba(10,10,14,.5)}
+  .ci-fila{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+  .ci-fila label{font-size:11.5px; color:var(--ink-faint); width:34px; text-transform:uppercase; letter-spacing:.08em; font-weight:650}
+  .ci-fila input{flex:1; border:1px solid var(--tile-edge); border-radius:9px; padding:7px 10px; font-family:var(--sans); font-size:12.5px; color:var(--ink); background:transparent; outline:none}
+  .ci-fila input:focus{border-color:var(--accent)}
 
   /* --- la bandeja: una sola puerta para anotar --- */
-  .cap{background:var(--tile); border:1px solid var(--tile-edge); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 14px; margin-bottom:26px}
+  .cap{background:var(--tile); border:1px solid var(--tile-edge); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 14px}
   .cap textarea{width:100%; border:0; background:transparent; resize:none; outline:none; font-family:var(--sans); font-size:15.5px; line-height:1.45; color:var(--ink); min-height:24px; max-height:160px}
   .cap textarea::placeholder{color:var(--ink-faint)}
   .cap-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:9px}
@@ -585,78 +679,27 @@
   .cap-kinds button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
   .cap select{font-family:var(--sans); font-size:12.5px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:9px; padding:6px 9px; max-width:220px}
   .cap-save{margin-left:auto; border:0; background:var(--accent); color:#fff; font-family:var(--sans); font-size:13px; font-weight:650; padding:7px 17px; border-radius:9px; cursor:pointer}
-  .cap-echo{font-size:12px; color:var(--ok); min-height:15px; margin-top:6px; opacity:0; transition:opacity .2s}
+  .cap-echo{font-size:12px; color:#2ECC71; min-height:15px; margin-top:6px; opacity:0; transition:opacity .2s}
   .cap-echo.show{opacity:1}
 
-  /* --- encabezado del mes --- */
-  .mes-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 3px 6px}
-  .mes-top h2{margin:0; font-size:23px; letter-spacing:-.02em; text-transform:capitalize; white-space:nowrap}
+  /* --- piezas compartidas (las usa también el espejo) --- */
   .mes-nav{display:flex; gap:3px}
   .mes-nav button{width:27px; height:27px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); border-radius:8px; cursor:pointer; font-size:14px; line-height:1}
   .mes-nav button:hover{color:var(--ink); border-color:var(--ink-faint)}
-  .mes-sum{font-size:12.5px; color:var(--ink-soft)}
-  .mes-sum b{color:var(--ink); font-weight:650}
-  .mes-sum .gap{color:var(--fav); font-weight:650}
-  .mes-only{margin-left:auto; display:flex; gap:3px; background:color-mix(in srgb,var(--ink) 5%,transparent); padding:3px; border-radius:10px}
-  .mes-only button{border:0; background:transparent; font-family:var(--sans); font-size:12px; color:var(--ink-soft); padding:5px 11px; border-radius:7px; cursor:pointer}
-  .mes-only button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
-
-  .mes-legend{display:grid; grid-template-columns:1fr auto auto; gap:14px; align-items:end; padding:14px 15px 7px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint)}
-  .mes-legend .lg-steps{font-size:9.5px; letter-spacing:.07em; white-space:nowrap}
-
-  /* --- una fila por cliente --- */
-  .mes-grid{display:flex; flex-direction:column; gap:6px}
-  .mes-row{background:var(--tile); border:1px solid var(--tile-edge); border-radius:14px; padding:10px 15px; display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:14px; row-gap:0}
-  .mes-row.full{background:transparent; border-color:transparent; opacity:.42}
-  .mes-row.full:hover{opacity:.8}
-  .mes-row.casa{border-color:color-mix(in srgb,var(--accent) 38%,transparent); background:color-mix(in srgb,var(--accent) 5%,var(--tile))}
-  .mr-head{min-width:0}
-  .mr-title{display:flex; align-items:center; gap:7px; min-width:0}
-  .mr-bar{width:3px; height:15px; border-radius:2px; flex:none}
-  .mr-emoji{font-size:14px; flex:none}
-  .mr-name{font-size:14.5px; font-weight:650; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
-  .mr-msg{display:block; width:100%; margin-top:2px; border:0; background:transparent; outline:none; padding:1px 0; font-family:var(--sans); font-size:12.5px; color:var(--ink-soft)}
-  .mr-msg::placeholder{color:var(--ink-faint); font-style:italic}
-  .mr-msg:focus{color:var(--ink)}
-  .mr-steps{display:flex; gap:5px; flex:none}
-  .st{position:relative; width:34px; height:34px; border-radius:10px; border:1px solid var(--tile-edge); background:transparent; font-size:14px; line-height:1; cursor:pointer; display:grid; place-items:center; filter:grayscale(1); opacity:.38; transition:opacity .12s, transform .12s, background .12s}
-  .st:hover{opacity:.85; transform:translateY(-1px)}
-  .st.on{filter:none; opacity:1; background:color-mix(in srgb,var(--ok) 15%,transparent); border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
-  .st.next{border-style:dashed; border-color:var(--accent); opacity:.7}
-  .st i{position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--accent)}
-  .mr-tail{display:flex; align-items:center; justify-content:flex-end; gap:9px; flex:none; min-width:168px}
-  .mr-turno{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); white-space:nowrap}
-  .mr-turno i{width:7px; height:7px; border-radius:50%; flex:none}
-  .mr-turno.ok{color:var(--ok)}
-  .mr-chip{font-size:11.5px; color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 6%,transparent); padding:3px 8px; border-radius:7px; cursor:pointer; white-space:nowrap}
-  .mr-chip.hot{color:var(--fav); background:var(--fav-soft)}
-  .mr-more{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; padding:4px 2px}
-
-  /* --- lo que se abre abajo de la fila --- */
-  .mr-det{grid-column:1/-1; margin-top:12px; padding-top:13px; border-top:1px solid var(--tile-edge); display:grid; grid-template-columns:1.25fr 1fr auto; gap:22px}
-  .mr-det h4{margin:0 0 7px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:650}
+  .mes-nav button[disabled]{opacity:.35; cursor:default}
+  .mes-foot{margin-top:18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--ink-faint)}
   .mr-list{display:flex; flex-direction:column; gap:3px}
   .mr-it{display:flex; align-items:flex-start; gap:7px; font-size:13px; color:var(--ink); line-height:1.4}
   .mr-it button{border:0; background:transparent; cursor:pointer; padding:0; font-size:12px; color:var(--ink-faint); flex:none; margin-top:1px}
   .mr-it .tk{width:14px; height:14px; border:1.5px solid var(--ink-faint); border-radius:50%; margin-top:2px}
-  .mr-it.done{color:var(--ink-faint); text-decoration:line-through}
-  .mr-it.done .tk{background:var(--ok); border-color:var(--ok)}
+  .mr-it .tk:hover{border-color:#2ECC71; background:color-mix(in srgb,#2ECC71 25%,transparent)}
   .mr-it .x{margin-left:auto; opacity:0}
   .mr-it:hover .x{opacity:1}
   .mr-prod{display:flex; align-items:center; gap:7px; font-size:13px; cursor:pointer; padding:2px 0}
   .mr-prod .d{font-family:var(--mono); font-size:11px; color:var(--ink-faint); flex:none}
-  .mr-empty{font-size:12.5px; color:var(--ink-faint); font-style:italic}
   .mr-add{width:100%; margin-top:6px; border:1px dashed var(--tile-edge); background:transparent; border-radius:9px; padding:6px 9px; font-family:var(--sans); font-size:12.5px; color:var(--ink); outline:none}
   .mr-add:focus{border-style:solid; border-color:var(--accent)}
   .mr-add::placeholder{color:var(--ink-faint)}
-  .mr-roles{display:flex; flex-direction:column; gap:6px; min-width:132px}
-  .mr-roles label{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11.5px; color:var(--ink-soft)}
-  .mr-roles select{font-family:var(--sans); font-size:11.5px; color:var(--ink); background:var(--tile); border:1px solid var(--tile-edge); border-radius:7px; padding:3px 5px}
-  .mes-foot{margin-top:18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--ink-faint)}
-  .mes-foot button{border:1px dashed var(--tile-edge); background:transparent; color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:7px 13px; border-radius:9px; cursor:pointer}
-  .mes-foot button:hover{border-style:solid; color:var(--ink)}
-
-
   /* ============================================================
      EL ESPEJO — el mes como va a salir, antes de subirlo
      ============================================================ */
@@ -829,18 +872,20 @@
     .mc-day:hover{transform:none}
   }
 
-  /* --- EL MES en el celular --- */
+  /* --- LA CABINA en el celular --- */
   @media (max-width:760px){
-    .mes-wrap{padding:14px 13px 90px}
-    .mes-top h2{font-size:20px}
-    .mes-only{margin-left:0; width:100%}
-    .mes-only button{flex:1}
-    .mes-legend{display:none}
-    .mes-row{grid-template-columns:1fr; gap:9px; padding:12px 13px}
-    .mr-steps{justify-content:space-between}
-    .st{width:14.2vw; max-width:44px; height:38px; font-size:15px}
-    .mr-tail{justify-content:flex-start; min-width:0; flex-wrap:wrap}
-    .mr-det{grid-template-columns:1fr; gap:16px}
+    .cab{padding:13px 13px 80px; gap:11px}
+    .cab-fila{grid-template-columns:1fr}
+    .fran{grid-template-columns:repeat(7,1fr); gap:3px}
+    .fran-d{min-height:52px}
+    .fran-n{font-size:14px}
+    .sem{grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:6px}
+    .fre{grid-template-columns:1fr}
+    .cd-box{border-radius:14px; padding:16px}
+    .cd-msg{font-size:16px}
+  }
+
+  @media (max-width:760px){
     .cap select{max-width:100%; flex:1}
     .cap-save{width:100%; margin-left:0; padding:10px}
     .cap textarea{font-size:16px}
@@ -901,7 +946,7 @@
 </header>
 
 <nav class="tabs" id="tabs">
-  <button data-tab="mes" class="on"><span class="tico">🎛️</span> El mes</button>
+  <button data-tab="cabina" class="on"><span class="tico">🎛️</span> Cabina</button>
   <button data-tab="espejo"><span class="tico">🪞</span> El espejo</button>
   <button data-tab="dashboard"><span class="tico">🧱</span> Dashboard</button>
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
@@ -910,8 +955,8 @@
   <button data-tab="ciclo"><span class="tico">🔁</span> Ciclo de trabajo</button>
 </nav>
 
-<div id="view-mes" class="view active">
-  <div class="mes-wrap">
+<div id="view-cabina" class="view active">
+  <div class="cab">
     <div class="cap">
       <textarea id="capText" rows="1" placeholder="Anotá cualquier cosa acá y después decís dónde va…"></textarea>
       <div class="cap-row">
@@ -925,9 +970,16 @@
       </div>
       <div class="cap-echo" id="capEcho"></div>
     </div>
-    <div id="mesBody"></div>
+    <div id="cabBody"></div>
   </div>
 </div>
+
+<dialog id="cabDlg"><div class="cd-box" id="cabDlgBody"></div></dialog>
+<dialog id="cicloDlg"><div class="cd-box">
+  <div class="cd-top"><b>El ciclo de la semana</b></div>
+  <div id="cicloBody"></div>
+  <div class="cd-acc"><button id="cicloGuardar">Guardar</button></div>
+</div></dialog>
 
 <div id="view-espejo" class="view">
   <div class="ep-wrap"><div id="espBody"></div></div>
@@ -1129,7 +1181,7 @@ function LocalStore(){
   if(!data.mes) data.mes={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
   let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{}, cbM=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); cbM({...data.mes}); };
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); cbM({...data.mes}); };  /* data.mes guarda la config local */
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
@@ -1137,7 +1189,7 @@ function LocalStore(){
     onEvents:cb=>{cbE=cb; cb({...data.events});},
     onIdeas:cb=>{cbI=cb; cb({...data.ideas});},
     onProds:cb=>{cbP=cb; cb({...data.prods});},
-    onMes:cb=>{cbM=cb; cb({...data.mes});},
+    onConfig:cb=>{cbM=cb; cb({...data.mes});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
     removeClient:id=>{ delete data.clients[id];
@@ -1156,7 +1208,7 @@ function LocalStore(){
     addProd:p=>{data.prods[makeId()]=p; save(); emit();},
     updateProd:(id,obj)=>{data.prods[id]=obj; save(); emit();},
     removeProd:id=>{delete data.prods[id]; save(); emit();},
-    updateMes:(id,patch)=>{data.mes[id]=Object.assign({},data.mes[id],patch); save(); emit();},
+    updateConfig:patch=>{data.mes=Object.assign({},data.mes,patch); save(); emit();},
   };
 }
 
@@ -1185,7 +1237,7 @@ function FirebaseStore(){
     onEvents:cb=>root.child("events").on("value",s=>cb(s.val()||{})),
     onIdeas:cb=>root.child("ideas").on("value",s=>cb(s.val()||{})),
     onProds:cb=>root.child("prods").on("value",s=>cb(s.val()||{})),
-    onMes:cb=>root.child("mes").on("value",s=>cb(s.val()||{})),
+    onConfig:cb=>root.child("config").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
     removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); root.child("prods").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("prods/"+k+"/clientId").set(null);});}); },
@@ -1200,12 +1252,12 @@ function FirebaseStore(){
     addProd:p=>root.child("prods").push(p),
     updateProd:(id,obj)=>root.child("prods/"+id).set(obj),
     removeProd:id=>root.child("prods/"+id).remove(),
-    updateMes:(id,patch)=>root.child("mes/"+id).update(patch),
+    updateConfig:patch=>root.child("config").update(patch),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={}, MES={};
+let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={}, CONFIG={};
 let filter="all", query="";
 const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
 let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
@@ -1697,8 +1749,9 @@ efemDlgEl.addEventListener("keydown",e=>{
 /* ============================================================
    PESTAÑAS
    ============================================================ */
-if(!localStorage.getItem("panaMesSeen")){ localStorage.setItem("panaMesSeen","1"); localStorage.setItem("panaTab","mes"); }
-let activeTab = localStorage.getItem("panaTab") || "mes";
+if(!localStorage.getItem("panaMesSeen")){ localStorage.setItem("panaMesSeen","1"); localStorage.setItem("panaTab","cabina"); }
+let activeTab = localStorage.getItem("panaTab") || "cabina";
+if(activeTab==="mes") activeTab="cabina";   /* la portada vieja se jubiló */
 const dashTools = document.getElementById("dashTools");
 let cicloLoaded=false;
 
@@ -1714,7 +1767,7 @@ function setTab(name){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===name));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+name));
   dashTools.style.display = name==="dashboard" ? "contents" : "none";
-  if(name==="mes") renderMes();
+  if(name==="cabina") renderCabina();
   if(name==="espejo"){ if(ESP) renderEspejo(); else espCargar(); }
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
@@ -2188,154 +2241,244 @@ prodDlg.addEventListener("click",e=>{ if(e.target===prodDlg) closeProd(true); })
 
 
 /* ============================================================
-   EL MES — la portada: una fila por cliente, seis casilleros
+   LA CABINA — todo lo del estudio en una sola pantalla
+   Cuatro instrumentos: hoy · lo que se viene · el semáforo de
+   clientes · lo que está frenando. Y la bandeja para anotar.
    ============================================================ */
-const PASOS=[
-  {k:"estrategia",ic:"🧭",lbl:"Estrategia",hint:"Qué quiere comunicar el cliente este mes",who:"plani"},
-  {k:"planteo",   ic:"🗂️",lbl:"Planteo",   hint:"La grilla del mes armada y cruzada con las fechas",who:"plani"},
-  {k:"foto",      ic:"📸",lbl:"Foto",      hint:"Foto fresca de este mes",who:"prod"},
-  {k:"video",     ic:"🎥",lbl:"Video",     hint:"Video fresco de este mes",who:"prod"},
-  {k:"diseno",    ic:"🎨",lbl:"Diseñado",  hint:"Las placas hechas",who:"dis"},
-  {k:"subido",    ic:"📤",lbl:"Subido",    hint:"Programado en Meta",who:"prog"},
-];
 const EQUIPO={marcos:["Marcos","#6B4EFF"],cami:["Cami","#E84393"],zurdo:["Zurdo","#0FB5C9"]};
-/* quién planifica y quién diseña (se cambia en la fila, esto es sólo el arranque) */
+
+/* quién planifica y quién diseña cada cliente (se cambia en su ficha) */
 const ROLES_SEED={
-  "ap":["cami","marcos"],"aurelia":["cami","marcos"],"clínica de fracturas":["cami","marcos"],
+  "ap":["cami","marcos"],"aurelia":["cami","marcos"],"clinica de fracturas":["cami","marcos"],
   "cantina bernardo":["cami","marcos"],"vialmaq":["cami","marcos"],
   "solgast":["cami","zurdo"],"canntek":["cami","zurdo"],"de gennaro giaccone":["cami","zurdo"],"cpm":["cami","zurdo"],
-  "bodegón co":["marcos","zurdo"],"bodegón co palan´t":["marcos","zurdo"],"chinita":["marcos","zurdo"],
-  "pasta co":["marcos","zurdo"],"pasta mar & vino":["marcos","zurdo"],"parrilla co":["marcos","zurdo"],
+  "bodegon co":["marcos","zurdo"],"bodegon co palan t":["marcos","zurdo"],"chinita":["marcos","zurdo"],
+  "pasta co":["marcos","zurdo"],"pasta mar vino":["marcos","zurdo"],"parrilla co":["marcos","zurdo"],
   "thunder":["marcos","zurdo"],"pana":["marcos","zurdo"],
 };
 function rolesOf(c){
-  const seed=ROLES_SEED[(c.name||"").trim().toLowerCase()]||["cami","marcos"];
-  return {plani:c.plani||seed[0], dis:c.dis||seed[1], prod:"marcos", prog:"marcos"};
+  const seed=ROLES_SEED[pelarNombre(c.name)]||["cami","marcos"];
+  return {plani:c.plani||seed[0], dis:c.dis||seed[1]};
 }
-function isCasa(c){ return (c.name||"").trim().toLowerCase()==="pana"; }
 
-let mesView=(()=>{const n=new Date();return {y:n.getFullYear(),m:n.getMonth()};})();
-let mesOnly=localStorage.getItem("panaMesOnly")||"falta";
-let mesOpen=new Set(JSON.parse(localStorage.getItem("panaMesOpen")||"[]"));
-let mesPending=false;
-function saveMesOpen(){ localStorage.setItem("panaMesOpen",JSON.stringify([...mesOpen])); }
-function ymKey(){ return mesView.y+"-"+String(mesView.m+1).padStart(2,"0"); }
-function mesKey(cid){ return cid+"__"+ymKey(); }
-function mesRow(cid){ return MES[mesKey(cid)]||{}; }
-function stepsOf(cid){ return mesRow(cid).s||{}; }
-function patchMes(cid,patch){
-  const key=mesKey(cid), full=Object.assign({clientId:cid, ym:ymKey(), updatedAt:Date.now()}, patch);
-  MES[key]=Object.assign({}, MES[key], full);   /* lo anoto acá primero: si tocás rápido, no se pierde ningún clic esperando a la nube */
-  store.updateMes(key, full);
+/* el ciclo de la semana: qué se PLANIFICA cada día.
+   El diseño va siempre un día después, y programar un día después del diseño. */
+const CICLO_DEF={
+  1:"Thunder, Aurelia, Solgast",
+  2:"Bodegón Co, Vialmaq, Cantina Bernardo",
+  3:"Pasta Co, Pasta Mar & Vino, Clínica de Fracturas, AP",
+  4:"Chinita, Canntek",
+  5:"Parrilla Co, De Gennaro Giaccone",
+};
+const DIAS_CORTOS=["dom","lun","mar","mié","jue","vie","sáb"];
+function ciclo(){ return Object.assign({}, CICLO_DEF, (CONFIG.ciclo||{})); }
+function cicloDe(fecha){
+  const d=fecha.getDay();
+  if(d===0||d===6) return [];
+  return String(ciclo()[d]||"").split(",").map(s=>s.trim()).filter(Boolean);
 }
-function toggleStep(cid,k){ const s=Object.assign({},stepsOf(cid)); s[k]=!s[k]; patchMes(cid,{s}); renderMes(); }
+function habilAtras(fecha,n){
+  const d=new Date(fecha);
+  while(n>0){ d.setDate(d.getDate()-1); if(d.getDay()!==0&&d.getDay()!==6) n--; }
+  return d;
+}
 
-function clientsSorted(){
-  return Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>{
-    const pa=isCasa(a)?0:1, pb=isCasa(b)?0:1;
-    if(pa!==pb) return pa-pb;
-    return (a.order??999)-(b.order??999) || (a.name||"").localeCompare(b.name||"");
-  });
+/* ---- estado de un cliente: de qué color está su lucecita ---- */
+function pendAbiertos(cid){
+  return Object.entries(NOTES).filter(([id,n])=>n.clientId===cid&&n.cat==="pend"&&!n.done).map(([id,n])=>({id,...n}));
 }
-function pendOf(cid){ return Object.entries(NOTES).filter(([id,n])=>n.clientId===cid&&n.cat==="pend").map(([id,n])=>({id,...n})); }
-function prodsOfMonth(cid){
-  const ym=ymKey();
+function prodsDelMes(cid,base){
+  const b=base||new Date(), ym=b.getFullYear()+"-"+String(b.getMonth()+1).padStart(2,"0");
   return Object.entries(PRODS).map(([id,p])=>({id,...p}))
     .filter(p=>p.clientId===cid && String(p.date||"").slice(0,7)===ym)
     .sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
 }
-function turnoOf(c){
-  const r=rolesOf(c), s=stepsOf(c.id);
-  for(const p of PASOS){ if(!s[p.k]) return {paso:p, quien:r[p.who]}; }
-  return null;
+function luzDe(c){
+  const pend=pendAbiertos(c.id);
+  const marcadas=pend.filter(n=>n.esp).length;
+  if(marcadas)        return {color:"#FF5A36", txt:marcadas+" por corregir en lo que se sube"};
+  if(pend.length>2)   return {color:"#F5A623", txt:pend.length+" pendientes abiertos"};
+  if(pend.length)     return {color:"#F5A623", txt:pend.length+" pendiente"+(pend.length>1?"s":"")};
+  return {color:"#2ECC71", txt:"sin pendientes"};
 }
 
-function detHTML(c){
-  const pends=pendOf(c.id).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.createdAt||0)-(a.createdAt||0)).slice(0,14);
-  const prods=prodsOfMonth(c.id), r=rolesOf(c);
-  const sel=(field,val)=>`<select data-role="${field}" data-c="${c.id}">`+
-    Object.entries(EQUIPO).map(([k,v])=>`<option value="${k}"${k===val?" selected":""}>${v[0]}</option>`).join("")+`</select>`;
-  return `<div class="mr-det">
-    <div>
-      <h4>Pendientes</h4>
-      <div class="mr-list">${pends.length
-        ? pends.map(n=>`<div class="mr-it ${n.done?'done':''}"><button class="tk" data-tick="${n.id}" title="Listo"></button><span>${escapeHtml(n.text)}</span><button class="x" data-delnote="${n.id}" title="Borrar">✕</button></div>`).join("")
-        : '<div class="mr-empty">Nada pendiente.</div>'}</div>
-      <input class="mr-add" data-addpend="${c.id}" placeholder="＋ pendiente…" />
-    </div>
-    <div>
-      <h4>Producciones de ${MONTHS[mesView.m]}</h4>
-      <div class="mr-list">${prods.length
-        ? prods.map(p=>{const st=statusMeta(p.status); return `<div class="mr-prod" data-openprod="${p.id}"><span class="d">${p.date?p.date.slice(8)+"/"+p.date.slice(5,7):"—"}</span><span>${st[1]}</span><span>${escapeHtml(p.title||"Sin título")}</span></div>`;}).join("")
-        : '<div class="mr-empty">Sin rodaje agendado este mes.</div>'}</div>
-      <button class="mr-add" data-newprod="${c.id}" style="text-align:left;cursor:pointer">＋ agendar una producción</button>
-      <button class="mr-add" data-verespejo="${escapeHtml(c.name)}" style="text-align:left;cursor:pointer;margin-top:4px">🪞 ver qué se sube este mes</button>
-    </div>
-    <div class="mr-roles">
-      <h4>Quién</h4>
-      <label>Planifica ${sel("plani",r.plani)}</label>
-      <label>Diseña ${sel("dis",r.dis)}</label>
-      <label style="opacity:.7">Foto, video y subir <b>Marcos</b></label>
-    </div>
-  </div>`;
+/* ---- lo que se viene: efemérides + producciones, día por día ---- */
+function loQueSeViene(dias){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const salida=[];
+  for(let i=0;i<dias;i++){
+    const d=new Date(hoy); d.setDate(d.getDate()+i);
+    const ds=ymd(d), items=[];
+    efemFor(d.getFullYear(),d.getMonth(),d.getDate()).forEach(e=>items.push({t:e[1],n:e[0],color:"#9A9AA1"}));
+    efemNotesFor(ds).forEach(e=>items.push({t:"mío",n:e.text,color:"#2ECC71"}));
+    Object.entries(PRODS).forEach(([id,p])=>{
+      if(p.date!==ds) return;
+      const c=p.clientId&&CLIENTS[p.clientId];
+      items.push({t:"rodaje",n:(c?c.emoji+" ":"🎬 ")+(p.title||"Sin título"),color:c?c.color:"#6B4EFF",prod:id});
+    });
+    if(d.getDate()===1) items.push({t:"ciclo",n:"arranca "+MONTHS[d.getMonth()],color:"#6B4EFF"});
+    salida.push({fecha:d, ds, items});
+  }
+  return salida;
 }
 
-function rowHTML(c){
-  const row=mesRow(c.id), s=row.s||{}, msg=row.msg||"";
-  const done=PASOS.filter(p=>s[p.k]).length, full=done===PASOS.length;
-  const t=turnoOf(c), open=mesOpen.has(c.id);
-  const nProds=prodsOfMonth(c.id).length, nPend=pendOf(c.id).filter(n=>!n.done).length;
-  const steps=PASOS.map(p=>{
-    const on=!!s[p.k], next=!on && t && t.paso.k===p.k;
-    const dot=(p.k==="foto"||p.k==="video") && nProds>0 && !on ? "<i></i>" : "";
-    return `<button class="st ${on?'on':''} ${next?'next':''}" data-step="${p.k}" data-c="${c.id}" title="${p.lbl} — ${p.hint}">${p.ic}${dot}</button>`;
-  }).join("");
-  const turno = t
-    ? `<span class="mr-turno"><i style="background:${EQUIPO[t.quien][1]}"></i>${EQUIPO[t.quien][0]} · ${t.paso.lbl.toLowerCase()}</span>`
-    : `<span class="mr-turno ok">✓ cerrado</span>`;
-  return `<div class="mes-row ${full&&mesOnly==='falta'?'full':''} ${isCasa(c)?'casa':''}" data-row="${c.id}">
-    <div class="mr-head">
-      <div class="mr-title"><span class="mr-bar" style="background:${c.color||'#9A9AA1'}"></span><span class="mr-emoji">${c.emoji||"•"}</span><span class="mr-name" data-toggle="${c.id}">${escapeHtml(c.name)}</span></div>
-      <input class="mr-msg" data-msg="${c.id}" value="${escapeHtml(msg)}" placeholder="qué quiere comunicar este mes…" />
-    </div>
-    <div class="mr-steps">${steps}</div>
-    <div class="mr-tail">
-      ${turno}
-      ${nPend?`<span class="mr-chip ${nPend>2?'hot':''}" data-toggle="${c.id}" title="Pendientes abiertos">📌 ${nPend}</span>`:""}
-      ${nProds?`<span class="mr-chip" data-toggle="${c.id}" title="Producciones este mes">🎬 ${nProds}</span>`:""}
-      <button class="mr-more" data-toggle="${c.id}">${open?"▴":"▾"}</button>
-    </div>
-    ${open?detHTML(c):""}
-  </div>`;
-}
-
-function renderMes(){
-  const host=document.getElementById("mesBody"); if(!host) return;
+/* ============================ dibujar ============================ */
+function renderCabina(){
+  const host=document.getElementById("cabBody"); if(!host) return;
   const ae=document.activeElement;
-  if(ae && host.contains(ae) && /INPUT|SELECT/.test(ae.tagName)){ mesPending=true; return; }  /* no le pises lo que está escribiendo */
-  const cls=clientsSorted();
-  let prendidos=0, sinFoto=0, sinVideo=0, cerrados=0;
-  cls.forEach(c=>{ const s=stepsOf(c.id), d=PASOS.filter(p=>s[p.k]).length;
-    prendidos+=d; if(d===PASOS.length) cerrados++; if(!s.foto) sinFoto++; if(!s.video) sinVideo++; });
-  const total=cls.length*PASOS.length;
-  const hoy=new Date(), esteMes=(mesView.y===hoy.getFullYear()&&mesView.m===hoy.getMonth());
-  const hayPana=cls.some(isCasa);
+  if(ae && host.contains(ae) && /INPUT|SELECT/.test(ae.tagName)){ cabPendiente=true; return; }
+
+  const hoy=new Date();
+  const plan=cicloDe(hoy), dis=cicloDe(habilAtras(hoy,1)), prog=cicloDe(habilAtras(hoy,2));
+  const chip=(nombre,rol)=>{
+    const c=clienteDe(nombre);
+    const quien=c?EQUIPO[rolesOf(c)[rol]||"marcos"]:null;
+    return `<button class="hoy-c" ${c?`data-cliente="${c.id}"`:""}>
+      <i style="background:${c?c.color:'#9A9AA1'}"></i>${c&&c.emoji?c.emoji+" ":""}${escapeHtml(nombre)}${quien?`<span class="q">${quien[0]}</span>`:""}</button>`;
+  };
+  const bloque=(tag,lista,rol)=>`<div class="hoy-b"><div class="hoy-t">${tag}</div>${
+    lista.length?`<div class="hoy-l">${lista.map(n=>chip(n,rol)).join("")}</div>`:'<div class="hoy-nada">nada</div>'}</div>`;
+
+  const viene=loQueSeViene(14);
+  const franja=viene.map(d=>{
+    const finde=d.fecha.getDay()===0||d.fecha.getDay()===6;
+    const puntos=d.items.slice(0,6).map(i=>`<i style="background:${i.color}"></i>`).join("");
+    return `<button class="fran-d ${d.ds===ymd(hoy)?'hoy':''} ${finde?'finde':''} ${d.fecha.getDate()===1?'mes1':''}" data-dia="${d.ds}" title="${escapeHtml(d.items.map(i=>i.n).join(" · ")||"nada")}">
+      <div class="fran-dow">${DIAS_CORTOS[d.fecha.getDay()]}</div>
+      <div class="fran-n">${d.fecha.getDate()}</div>
+      <div class="fran-p">${puntos}</div>
+    </button>`;
+  }).join("");
+
+  const lista=[];
+  viene.forEach(d=>d.items.forEach(i=>lista.push({d,i})));
+  const listaHTML=lista.length ? lista.slice(0,9).map(({d,i})=>`
+    <div class="vie ${d.ds===ymd(hoy)?'hoy':''}">
+      <span class="d">${d.ds===ymd(hoy)?"hoy":DIAS_CORTOS[d.fecha.getDay()]+" "+d.fecha.getDate()}</span>
+      <span class="n">${escapeHtml(i.n)}</span><span class="t">${i.t}</span>
+    </div>`).join("") : '<div class="vacio">Nada anotado en estos 14 días.</div>';
+
+  const cls=Object.entries(CLIENTS).map(([id,c])=>({id,...c}))
+    .sort((a,b)=>(a.order??999)-(b.order??999)||(a.name||"").localeCompare(b.name||""));
+  const sem=cls.map(c=>{
+    const l=luzDe(c);
+    return `<button class="sem-c" data-cliente="${c.id}" title="${escapeHtml(c.name+" · "+l.txt)}">
+      <span class="bar" style="background:${c.color||'#9A9AA1'}"></span>
+      <span class="e">${c.emoji||"•"}</span><span class="n">${escapeHtml(c.name)}</span>
+      <span class="p" style="background:${l.color}"></span></button>`;
+  }).join("");
+
+  const frenando=Object.entries(NOTES).filter(([id,n])=>n.cat==="pend"&&!n.done)
+    .map(([id,n])=>({id,...n}))
+    .sort((a,b)=>(b.esp?1:0)-(a.esp?1:0)||(a.createdAt||0)-(b.createdAt||0));
+  const freHTML=frenando.length ? frenando.slice(0,8).map(n=>{
+    const c=CLIENTS[n.clientId];
+    return `<div class="fre-i ${n.esp?'esp':''}">
+      <button class="tk" data-tick="${n.id}" title="Listo"></button>
+      <span style="flex:1">${escapeHtml(n.text)}</span>
+      ${c?`<span class="who"><i style="background:${c.color||'#9A9AA1'}"></i>${escapeHtml(c.name)}</span>`:""}
+    </div>`;
+  }).join("") : '<div class="vacio">Nada trabado. Rara vez pasa.</div>';
+
   host.innerHTML=`
-    <div class="mes-top">
-      <h2>${MONTHS[mesView.m]} ${mesView.y}</h2>
-      <div class="mes-nav"><button data-mesnav="prev" title="Mes anterior">‹</button><button data-mesnav="next" title="Mes siguiente">›</button>${esteMes?"":'<button data-mesnav="hoy" title="Volver a este mes" style="width:auto;padding:0 9px;font-size:11.5px">hoy</button>'}</div>
-      <div class="mes-sum"><b>${prendidos}</b> de ${total} casilleros · ${sinFoto?`<span class="gap">${sinFoto} sin foto</span> · `:""}${sinVideo?`<span class="gap">${sinVideo} sin video</span> · `:""}${cerrados} cerrado${cerrados===1?"":"s"}</div>
-      <div class="mes-only">
-        <button data-only="falta" class="${mesOnly==='falta'?'on':''}">Lo que falta</button>
-        <button data-only="todo" class="${mesOnly==='todo'?'on':''}">Ver todo</button>
+    <div class="cab-fila">
+      <div class="panel">
+        <h3>Hoy <button class="ed" data-ciclo title="Cambiar el ciclo de la semana">✎ ciclo</button></h3>
+        <div class="hoy-f">${hoy.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"}).replace(",","")}</div>
+        ${bloque("Planificar",plan,"plani")}
+        ${bloque("Diseñar",dis,"dis")}
+        ${bloque("Programar (vos)",prog,"plani")}
+      </div>
+      <div class="panel">
+        <h3>Lo que se viene <span class="cuenta">${lista.length} cosa${lista.length===1?"":"s"} en 14 días</span></h3>
+        <div class="fran">${franja}</div>
+        <div class="vie-l">${listaHTML}</div>
       </div>
     </div>
-    <div class="mes-legend"><span>Cliente · qué quiere comunicar este mes</span><span class="lg-steps">${PASOS.map(p=>p.ic+" "+p.lbl.toLowerCase()).join(" · ")}</span><span>De quién es la pelota</span></div>
-    <div class="mes-grid">${cls.map(rowHTML).join("")}</div>
-    <div class="mes-foot">${hayPana?"":'<button id="mesAddPana">＋ sumar la fila de Pana (la casa)</button>'}<span>Tocá un casillero para prenderlo. El punteado es el que sigue.</span></div>`;
+    ${espResumenHTML()}
+    <div class="panel">
+      <h3>Los clientes <span class="cuenta">${cls.length}</span></h3>
+      <div class="sem">${sem}</div>
+      <div class="sem-ley">
+        <span><i style="background:#2ECC71"></i>al día</span>
+        <span><i style="background:#F5A623"></i>tiene pendientes</span>
+        <span><i style="background:#FF5A36"></i>hay algo por corregir en lo que se sube</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Lo que está frenando <span class="cuenta">${frenando.length} abierto${frenando.length===1?"":"s"}</span></h3>
+      <div class="fre">${freHTML}</div>
+    </div>`;
 }
 
-/* ---- la bandeja: una sola puerta para anotar ---- */
+/* ---- lo que se sube este mes: sale del espejo, si ya está armado ---- */
+let espIntento=false;
+function espResumenHTML(){
+  if(!ESP){
+    if(!espIntento){ espIntento=true; espCargar().then(()=>{ if(activeTab==="cabina") renderCabina(); }).catch(()=>{}); }
+    return "";
+  }
+  let t=0,l=0,no=0,fix=0;
+  ESP.clientes.forEach(cl=>cl.dias.forEach(d=>d.placas.forEach(p=>{
+    t++; if(p.link)l++; if(p.no)no++;
+    if(fixDe(ESP.mes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) fix++;
+  })));
+  return `<div class="panel">
+    <h3>Lo que se sube <span class="cuenta">${escapeHtml(ESP.titulo)}</span></h3>
+    <div class="sube-l">
+      <span class="sube-n"><b>${t}</b>historias listas</span>
+      <span class="sube-n"><b>${l}</b>con link</span>
+      ${no?`<span class="sube-n mal"><b>${no}</b>no suben</span>`:""}
+      ${fix?`<span class="sube-n ojo"><b>${fix}</b>por corregir</span>`:""}
+      <button class="sube-b" data-irespejo>🪞 Abrir el espejo</button>
+    </div>
+  </div>`;
+}
+
+/* ---- la ficha de un cliente ---- */
+let cabCliente=null, cabPendiente=false;
+function abrirCliente(cid){
+  const c=CLIENTS[cid]; if(!c) return;
+  cabCliente=cid;
+  const ym=(new Date()).getFullYear()+"-"+String((new Date()).getMonth()+1).padStart(2,"0");
+  const guardado=(CONFIG.frases||{})[cid+"__"+ym]||"";
+  const pend=pendAbiertos(cid), prods=prodsDelMes(cid), r=rolesOf({...c,id:cid});
+  const sel=(campo,val)=>`<select data-role="${campo}">`+Object.entries(EQUIPO)
+    .map(([k,v])=>`<option value="${k}"${k===val?" selected":""}>${v[0]}</option>`).join("")+`</select>`;
+  document.getElementById("cabDlgBody").innerHTML=`
+    <div class="cd-top"><span class="bar" style="background:${c.color||'#9A9AA1'}"></span>
+      <b>${c.emoji||""} ${escapeHtml(c.name)}</b><button class="x" data-cerrar>✕</button></div>
+    <input class="cd-msg" id="cdMsg" value="${escapeHtml(guardado)}" placeholder="qué quiere comunicar este mes…" />
+    <div class="cd-sec">
+      <h4>Pendientes</h4>
+      <div class="mr-list">${pend.length
+        ? pend.map(n=>`<div class="mr-it"><button class="tk" data-tick="${n.id}"></button><span>${escapeHtml(n.text)}</span><button class="x" data-delnote="${n.id}">✕</button></div>`).join("")
+        : '<div class="vacio">Nada pendiente.</div>'}</div>
+      <input class="mr-add" data-addpend="${cid}" placeholder="＋ pendiente…" />
+    </div>
+    <div class="cd-sec">
+      <h4>Producciones de este mes</h4>
+      <div class="mr-list">${prods.length
+        ? prods.map(p=>{const st=statusMeta(p.status); return `<div class="mr-prod" data-openprod="${p.id}"><span class="d">${p.date?p.date.slice(8)+"/"+p.date.slice(5,7):"—"}</span><span>${st[1]}</span><span>${escapeHtml(p.title||"Sin título")}</span></div>`;}).join("")
+        : '<div class="vacio">Sin rodaje agendado.</div>'}</div>
+    </div>
+    <div class="cd-quien"><span>Planifica ${sel("plani",r.plani)}</span><span>Diseña ${sel("dis",r.dis)}</span></div>
+    <div class="cd-acc">
+      <button data-newprod="${cid}">🎬 Agendar una producción</button>
+      <button data-verespejo="${escapeHtml(c.name)}">🪞 Ver qué se sube</button>
+    </div>`;
+  document.getElementById("cabDlg").showModal();
+}
+
+function abrirCiclo(){
+  const c=ciclo();
+  document.getElementById("cicloBody").innerHTML=
+    [1,2,3,4,5].map(d=>`<div class="ci-fila"><label>${DIAS_CORTOS[d]}</label><input data-ciclodia="${d}" value="${escapeHtml(c[d]||"")}" /></div>`).join("")+
+    '<div class="vacio" style="margin-top:10px">Se planifica en estos días. El diseño va siempre un día después, y programar un día después del diseño.</div>';
+  document.getElementById("cicloDlg").showModal();
+}
+
+/* ---- la bandeja ---- */
 let capKind="pend";
 function capEcho(txt){
   const e=document.getElementById("capEcho"); if(!e) return;
@@ -2346,7 +2489,8 @@ function fillCapClients(){
   const sel=document.getElementById("capClient"); if(!sel) return;
   const keep=sel.value;
   sel.innerHTML='<option value="">— sin cliente (idea suelta)</option>'+
-    clientsSorted().map(c=>`<option value="${c.id}">${c.emoji||""} ${escapeHtml(c.name)}</option>`).join("");
+    Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>(a.order??999)-(b.order??999))
+      .map(c=>`<option value="${c.id}">${c.emoji||""} ${escapeHtml(c.name)}</option>`).join("");
   if(keep) sel.value=keep;
 }
 function capGuardar(){
@@ -2364,60 +2508,66 @@ function capGuardar(){
   ta.value=""; ta.style.height="auto";
 }
 
-(function wireMes(){
-  const view=document.getElementById("view-mes"); if(!view) return;
+(function wireCabina(){
+  const view=document.getElementById("view-cabina"); if(!view) return;
   const ta=document.getElementById("capText");
   ta.addEventListener("input",()=>autoGrow(ta));
   ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ capGuardar(); e.preventDefault(); } });
   document.getElementById("capSave").onclick=capGuardar;
   document.getElementById("capKinds").addEventListener("click",e=>{
     const b=e.target.closest("button[data-kind]"); if(!b) return;
-    capKind=b.dataset.kind;
-    [...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));
+    capKind=b.dataset.kind; [...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));
   });
 
-  view.addEventListener("click",e=>{
-    const st=e.target.closest(".st");                 if(st){ toggleStep(st.dataset.c, st.dataset.step); return; }
-    const nav=e.target.closest("[data-mesnav]");
-    if(nav){
-      const n=new Date();
-      if(nav.dataset.mesnav==="hoy"){ mesView={y:n.getFullYear(),m:n.getMonth()}; }
-      else{ const d=new Date(mesView.y, mesView.m+(nav.dataset.mesnav==="next"?1:-1), 1); mesView={y:d.getFullYear(),m:d.getMonth()}; }
-      renderMes(); return;
+  const dlg=document.getElementById("cabDlg"), cdlg=document.getElementById("cicloDlg");
+  dlg.addEventListener("click",e=>{ if(e.target===dlg) cerrarFicha(); });
+  cdlg.addEventListener("click",e=>{ if(e.target===cdlg) cdlg.close(); });
+  function cerrarFicha(){
+    const m=document.getElementById("cdMsg");
+    if(m && cabCliente){
+      const ym=(new Date()).getFullYear()+"-"+String((new Date()).getMonth()+1).padStart(2,"0");
+      const frases=Object.assign({}, CONFIG.frases||{}); frases[cabCliente+"__"+ym]=m.value.trim();
+      CONFIG.frases=frases; store.updateConfig({frases});
     }
-    const only=e.target.closest("[data-only]");       if(only){ mesOnly=only.dataset.only; localStorage.setItem("panaMesOnly",mesOnly); renderMes(); return; }
-    const tick=e.target.closest("[data-tick]");       if(tick){ const id=tick.dataset.tick; store.updateNote(id,{done:!(NOTES[id]||{}).done}); return; }
-    const del=e.target.closest("[data-delnote]");     if(del){ store.removeNote(del.dataset.delnote); return; }
-    const op=e.target.closest("[data-openprod]");     if(op){ openProd(op.dataset.openprod); return; }
-    const np=e.target.closest("[data-newprod]");      if(np){ openProd(null,{clientId:np.dataset.newprod}); return; }
-    const pana=e.target.closest("#mesAddPana");
-    if(pana){ store.addClient({emoji:"✦",name:"Pana",color:"#6B4EFF",order:-1,createdAt:Date.now()}); return; }
+    cabCliente=null; if(dlg.open) dlg.close();
+  }
+
+  document.body.addEventListener("click",e=>{
+    const cli=e.target.closest("[data-cliente]");
+    if(cli && (view.contains(cli))){ abrirCliente(cli.dataset.cliente); return; }
+    if(e.target.closest("[data-ciclo]") && view.contains(e.target)){ abrirCiclo(); return; }
+    if(e.target.closest("[data-cerrar]")){ cerrarFicha(); return; }
+    if(e.target.closest("[data-irespejo]")){ setTab("espejo"); return; }
+    const dia=e.target.closest("[data-dia]");
+    if(dia && view.contains(dia)){ calTabView=null; setTab("cal"); return; }
+    /* estos viven adentro del diálogo, que está fuera de la vista */
+    const tick=e.target.closest("[data-tick]");   if(tick && !e.target.closest("#view-espejo")){ store.updateNote(tick.dataset.tick,{done:!(NOTES[tick.dataset.tick]||{}).done}); return; }
+    const del=e.target.closest("[data-delnote]"); if(del){ store.removeNote(del.dataset.delnote); return; }
+    const op=e.target.closest("[data-openprod]"); if(op && !e.target.closest("#view-espejo")){ cerrarFicha(); openProd(op.dataset.openprod); return; }
+    const np=e.target.closest("[data-newprod]");  if(np){ const id=np.dataset.newprod; cerrarFicha(); openProd(null,{clientId:id}); return; }
     const esp=e.target.closest("[data-verespejo]");
-    if(esp){ espPedido=esp.dataset.verespejo; espCli=null; setTab("espejo"); if(ESP) espCargar(espMes); return; }
-    const tg=e.target.closest("[data-toggle]");
-    if(tg){ const id=tg.dataset.toggle; mesOpen.has(id)?mesOpen.delete(id):mesOpen.add(id); saveMesOpen(); renderMes(); return; }
+    if(esp){ espPedido=esp.dataset.verespejo; espCli=null; cerrarFicha(); setTab("espejo"); if(ESP) espCargar(espMes); return; }
+    if(e.target.closest("#cicloGuardar")){
+      const c={};
+      document.querySelectorAll("[data-ciclodia]").forEach(i=>c[i.dataset.ciclodia]=i.value.trim());
+      CONFIG.ciclo=c; store.updateConfig({ciclo:c}); cdlg.close(); renderCabina(); return;
+    }
   });
 
-  view.addEventListener("change",e=>{
-    const msg=e.target.closest("[data-msg]");
-    if(msg){ patchMes(msg.dataset.msg,{msg:msg.value.trim()}); return; }
-    const rol=e.target.closest("[data-role]");
-    if(rol){ store.updateClient(rol.dataset.c, {[rol.dataset.role]: rol.value}); return; }
-  });
-
-  view.addEventListener("keydown",e=>{
+  document.body.addEventListener("keydown",e=>{
     if(e.target.matches("[data-addpend]") && e.key==="Enter"){
       const t=e.target.value.trim();
       if(t){ store.addNote({clientId:e.target.dataset.addpend, text:t, cat:"pend", fav:false, done:false, createdAt:Date.now()}); e.target.value=""; }
       e.preventDefault();
     }
-    if(e.target.matches(".mr-msg") && e.key==="Enter"){ e.target.blur(); e.preventDefault(); }
   });
 
-  /* si alguien cambió algo mientras escribías, se redibuja recién cuando soltás */
-  view.addEventListener("focusout",()=>{ if(mesPending){ mesPending=false; setTimeout(renderMes,60); } });
+  view.addEventListener("change",e=>{ if(cabPendiente){ cabPendiente=false; renderCabina(); } });
+  dlg.addEventListener("change",e=>{
+    const rol=e.target.closest("[data-role]");
+    if(rol && cabCliente){ store.updateClient(cabCliente,{[rol.dataset.role]:rol.value}); }
+  });
 })();
-
 
 /* ============================================================
    EL ESPEJO — el mes de cada cliente como va a salir
@@ -2601,12 +2751,12 @@ function boot(){
   store = hasFirebase ? FirebaseStore() : LocalStore();
   const sync=document.getElementById("sync");
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
-  store.onClients(c=>{ CLIENTS=c||{}; render(); fillCapClients(); if(activeTab==="mes") renderMes(); if(activeTab==="prod") renderProdTab(); });
-  store.onNotes(n=>{ NOTES=n||{}; render(); if(activeTab==="mes") renderMes(); if(activeTab==="espejo") renderEspejo(); });
-  store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); });
+  store.onClients(c=>{ CLIENTS=c||{}; render(); fillCapClients(); if(activeTab==="cabina") renderCabina(); if(activeTab==="prod") renderProdTab(); });
+  store.onNotes(n=>{ NOTES=n||{}; render(); if(activeTab==="cabina") renderCabina(); if(activeTab==="espejo") renderEspejo(); });
+  store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); if(activeTab==="cabina") renderCabina(); });
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
-  store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="mes") renderMes(); });
-  store.onMes(m=>{ MES=m||{}; if(activeTab==="mes") renderMes(); });
+  store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="cabina") renderCabina(); });
+  store.onConfig(m=>{ CONFIG=m||{}; if(activeTab==="cabina") renderCabina(); });
   setTab(activeTab);
 }
 
