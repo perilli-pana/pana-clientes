@@ -592,6 +592,27 @@
   .hoy-c .q{color:var(--ink-faint); font-size:11px}
   .hoy-nada{font-size:12.5px; color:var(--ink-faint); font-style:italic; margin-top:4px}
 
+  /* --- las tareas del día --- */
+  .tk-l{display:flex; flex-direction:column; gap:1px; margin-bottom:10px}
+  .tk-it{display:flex; align-items:center; gap:8px; font-size:13.5px; line-height:1.4; padding:5px 6px; border-radius:8px}
+  .tk-it:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .tk-it .tk{width:15px; height:15px; border:1.5px solid var(--ink-faint); border-radius:50%; background:transparent; cursor:pointer; flex:none; padding:0}
+  .tk-it .tk:hover{border-color:#2ECC71; background:color-mix(in srgb,#2ECC71 25%,transparent)}
+  .tk-it.ok .tk{background:#2ECC71; border-color:#2ECC71}
+  .tk-it.ok .tk-t{color:var(--ink-faint); text-decoration:line-through}
+  .tk-h{font-family:var(--mono); font-size:11px; color:var(--ink-soft); flex:none; min-width:38px}
+  .tk-t{flex:1; min-width:0}
+  .tk-tarde{font-size:10px; color:var(--fav); background:var(--fav-soft); padding:2px 6px; border-radius:6px; flex:none}
+  .tk-c{display:inline-flex; align-items:center; gap:4px; font-size:13px; flex:none; cursor:pointer; padding:0 2px}
+  .tk-c i{width:3px; height:14px; border-radius:2px}
+  .tk-it .x{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; opacity:0; flex:none; padding:0 2px}
+  .tk-it:hover .x{opacity:1}
+  .tk-nueva{display:flex; gap:7px; align-items:center}
+  .tk-nueva input{flex:1; min-width:0; border:1px dashed var(--tile-edge); background:transparent; border-radius:9px; padding:8px 10px; font-family:var(--sans); font-size:13px; color:var(--ink); outline:none}
+  .tk-nueva input:focus{border-style:solid; border-color:var(--accent)}
+  .tk-nueva input::placeholder{color:var(--ink-faint)}
+  .tk-nueva select{flex:none; max-width:128px; font-family:var(--sans); font-size:11.5px; color:var(--ink-soft); background:var(--tile); border:1px solid var(--tile-edge); border-radius:9px; padding:7px 5px}
+
   /* --- la franja de días --- */
   .fran{display:grid; grid-template-columns:repeat(14,1fr); gap:4px; margin-bottom:13px}
   .fran-d{border:1px solid var(--tile-edge); border-radius:9px; padding:6px 1px 5px; text-align:center; cursor:pointer; min-height:58px; background:transparent}
@@ -607,11 +628,14 @@
   .vie{display:flex; align-items:baseline; gap:10px; font-size:12.5px; padding:5px 0; border-top:1px solid color-mix(in srgb,var(--tile-edge) 70%,transparent)}
   .vie:first-child{border-top:0}
   .vie .d{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); min-width:56px; flex:none}
+  .vie .hh{font-family:var(--mono); font-size:10.5px; color:var(--ink-soft); min-width:36px; flex:none}
   .vie .n{flex:1; min-width:0}
   .vie .t{font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); flex:none}
   .vie.hoy .d{color:var(--accent)}
 
   /* --- el semáforo de clientes --- */
+  .sem-tag{font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); font-weight:700; margin:2px 0 7px}
+  .sem-tag+.sem{margin-bottom:12px}
   .sem{display:grid; grid-template-columns:repeat(auto-fill,minmax(138px,1fr)); gap:8px}
   .sem-c{display:flex; align-items:center; gap:8px; border:1px solid var(--tile-edge); border-radius:11px; padding:8px 10px; cursor:pointer; background:transparent; font-family:var(--sans); text-align:left}
   .sem-c:hover{border-color:var(--ink-faint)}
@@ -632,6 +656,7 @@
   .fre-i .who i{width:6px; height:6px; border-radius:50%}
   .fre-i.esp{background:color-mix(in srgb,var(--warn) 13%,transparent)}
   .vacio{font-size:12.5px; color:var(--ink-faint); font-style:italic}
+  .card.resaltada{box-shadow:0 0 0 2px var(--accent), var(--shadow); transition:box-shadow .25s}
 
   .taller .cd-acc button{font-size:13px}
   .taller-nota{margin-top:10px; font-size:11.5px; color:var(--ink-faint); line-height:1.5}
@@ -899,6 +924,8 @@
     .fran-n{font-size:14px}
     .sem{grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:6px}
     .fre{grid-template-columns:1fr}
+    .tk-nueva{flex-wrap:wrap}
+    .tk-nueva input, .tk-nueva select{font-size:16px; max-width:none; width:100%}
     .cd-box{border-radius:14px; padding:16px}
     .cd-msg{font-size:16px}
   }
@@ -1030,12 +1057,6 @@
   </div>
 </div>
 
-<dialog id="cabDlg"><div class="cd-box" id="cabDlgBody"></div></dialog>
-<dialog id="cicloDlg"><div class="cd-box">
-  <div class="cd-top"><b>El ciclo de la semana</b></div>
-  <div id="cicloBody"></div>
-  <div class="cd-acc"><button id="cicloGuardar">Guardar</button></div>
-</div></dialog>
 
 <div id="view-espejo" class="view">
   <div class="ep-wrap"><div id="espBody"></div></div>
@@ -1223,7 +1244,7 @@ function LocalStore(){
   const KEY="panaDashboard.v2";
   let data = JSON.parse(localStorage.getItem(KEY) || "null");
   if(!data){
-    data = {clients:{}, notes:{}, events:{}, ideas:{}, prods:{}, mes:{}};
+    data = {clients:{}, notes:{}, events:{}, ideas:{}, prods:{}, mes:{}, tareas:{}};
     SEED_CLIENTS.forEach((c,i)=>{ const id=makeId(); data.clients[id]={emoji:c[0],name:c[1],color:c[2],order:i,createdAt:Date.now()}; });
     localStorage.setItem(KEY, JSON.stringify(data));
   }
@@ -1231,9 +1252,10 @@ function LocalStore(){
   if(!data.ideas) data.ideas={};
   if(!data.prods) data.prods={};
   if(!data.mes) data.mes={};
+  if(!data.tareas) data.tareas={};
   const save=()=>localStorage.setItem(KEY, JSON.stringify(data));
-  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{}, cbM=()=>{};
-  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); cbM({...data.mes}); };  /* data.mes guarda la config local */
+  let cbC=()=>{}, cbN=()=>{}, cbE=()=>{}, cbI=()=>{}, cbP=()=>{}, cbM=()=>{}, cbT=()=>{};
+  const emit=()=>{ cbC({...data.clients}); cbN({...data.notes}); cbE({...data.events}); cbI({...data.ideas}); cbP({...data.prods}); cbM({...data.mes}); cbT({...data.tareas}); };  /* data.mes guarda la config local */
   return {
     live:false,
     onClients:cb=>{cbC=cb; cb({...data.clients});},
@@ -1242,6 +1264,7 @@ function LocalStore(){
     onIdeas:cb=>{cbI=cb; cb({...data.ideas});},
     onProds:cb=>{cbP=cb; cb({...data.prods});},
     onConfig:cb=>{cbM=cb; cb({...data.mes});},
+    onTareas:cb=>{cbT=cb; cb({...data.tareas});},
     addClient:c=>{data.clients[makeId()]=c; save(); emit();},
     updateClient:(id,patch)=>{Object.assign(data.clients[id],patch); save(); emit();},
     removeClient:id=>{ delete data.clients[id];
@@ -1261,6 +1284,9 @@ function LocalStore(){
     updateProd:(id,obj)=>{data.prods[id]=obj; save(); emit();},
     removeProd:id=>{delete data.prods[id]; save(); emit();},
     updateConfig:patch=>{data.mes=Object.assign({},data.mes,patch); save(); emit();},
+    addTarea:t=>{data.tareas[makeId()]=t; save(); emit();},
+    updateTarea:(id,patch)=>{Object.assign(data.tareas[id],patch); save(); emit();},
+    removeTarea:id=>{delete data.tareas[id]; save(); emit();},
   };
 }
 
@@ -1290,6 +1316,7 @@ function FirebaseStore(){
     onIdeas:cb=>root.child("ideas").on("value",s=>cb(s.val()||{})),
     onProds:cb=>root.child("prods").on("value",s=>cb(s.val()||{})),
     onConfig:cb=>root.child("config").on("value",s=>cb(s.val()||{})),
+    onTareas:cb=>root.child("tareas").on("value",s=>cb(s.val()||{})),
     addClient:c=>root.child("clients").push(c),
     updateClient:(id,patch)=>root.child("clients/"+id).update(patch),
     removeClient:id=>{ root.child("clients/"+id).remove(); cleanupChild("notes",id); cleanupChild("events",id); root.child("prods").once("value").then(s=>{const n=s.val()||{}; Object.keys(n).forEach(k=>{if(n[k].clientId===id) root.child("prods/"+k+"/clientId").set(null);});}); },
@@ -1305,11 +1332,14 @@ function FirebaseStore(){
     updateProd:(id,obj)=>root.child("prods/"+id).set(obj),
     removeProd:id=>root.child("prods/"+id).remove(),
     updateConfig:patch=>root.child("config").update(patch),
+    addTarea:t=>root.child("tareas").push(t),
+    updateTarea:(id,patch)=>root.child("tareas/"+id).update(patch),
+    removeTarea:id=>root.child("tareas/"+id).remove(),
   };
 }
 
 /* ---------------- estado en memoria ---------------- */
-let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={}, CONFIG={};
+let CLIENTS={}, NOTES={}, EVENTS={}, IDEAS={}, PRODS={}, CONFIG={}, TAREAS={};
 let filter="all", query="";
 const calView={};   // mes que está mirando cada cliente {clientId:{y,m}}
 let calOpen=new Set(JSON.parse(localStorage.getItem("panaCalOpen")||"[]"));
@@ -2286,42 +2316,44 @@ prodDlg.addEventListener("click",e=>{ if(e.target===prodDlg) closeProd(true); })
    Cuatro instrumentos: hoy · lo que se viene · el semáforo de
    clientes · lo que está frenando. Y la bandeja para anotar.
    ============================================================ */
-const EQUIPO={marcos:["Marcos","#6B4EFF"],cami:["Cami","#E84393"],zurdo:["Zurdo","#0FB5C9"]};
-
-/* quién planifica y quién diseña cada cliente (se cambia en su ficha) */
-const ROLES_SEED={
-  "ap":["cami","marcos"],"aurelia":["cami","marcos"],"clinica de fracturas":["cami","marcos"],
-  "cantina bernardo":["cami","marcos"],"vialmaq":["cami","marcos"],
-  "solgast":["cami","zurdo"],"canntek":["cami","zurdo"],"de gennaro giaccone":["cami","zurdo"],"cpm":["cami","zurdo"],
-  "bodegon co":["marcos","zurdo"],"bodegon co palan t":["marcos","zurdo"],"chinita":["marcos","zurdo"],
-  "pasta co":["marcos","zurdo"],"pasta mar vino":["marcos","zurdo"],"parrilla co":["marcos","zurdo"],
-  "thunder":["marcos","zurdo"],"pana":["marcos","zurdo"],
-};
-function rolesOf(c){
-  const seed=ROLES_SEED[pelarNombre(c.name)]||["cami","marcos"];
-  return {plani:c.plani||seed[0], dis:c.dis||seed[1]};
-}
-
-/* el ciclo de la semana: qué se PLANIFICA cada día.
-   El diseño va siempre un día después, y programar un día después del diseño. */
-const CICLO_DEF={
-  1:"Thunder, Aurelia, Solgast",
-  2:"Bodegón Co, Vialmaq, Cantina Bernardo",
-  3:"Pasta Co, Pasta Mar & Vino, Clínica de Fracturas, AP",
-  4:"Chinita, Canntek",
-  5:"Parrilla Co, De Gennaro Giaccone",
-};
+/* Las tareas del día se escriben a mano: las planificaciones son mensuales y lo
+   de cada día son cosas puntuales, así que no hay ciclo fijo que valga. */
 const DIAS_CORTOS=["dom","lun","mar","mié","jue","vie","sáb"];
-function ciclo(){ return Object.assign({}, CICLO_DEF, (CONFIG.ciclo||{})); }
-function cicloDe(fecha){
-  const d=fecha.getDay();
-  if(d===0||d===6) return [];
-  return String(ciclo()[d]||"").split(",").map(s=>s.trim()).filter(Boolean);
+/* Las seis marcas de Grupo Co van juntas: son un cliente solo repartido en seis */
+const GRUPO_CO=["thunder","bodegon co","bodegon co palan t","chinita","pasta co","pasta mar vino","parrilla co"];
+function esGrupoCo(c){ return GRUPO_CO.includes(pelarNombre(c.name)); }
+
+/* ---- las tareas del día ----
+   Se escribe "13hs reunión" y la hora se separa sola para poder ordenar.
+   Hace falta el "hs" o los dos puntos: así "2x1 en tragos" no se confunde con las 2. */
+function partirHora(txt){
+  const s=String(txt||"").trim();
+  const dosDig=n=>String(n).padStart(2,"0");
+  let m=s.match(/^(\d{1,2})[:.](\d{2})\s*(?:hs?\b|horas?\b)?\s*[-–—]?\s*(.*)$/i);
+  if(m && +m[1]<24 && +m[2]<60 && m[3].trim()) return {hora:dosDig(m[1])+":"+m[2], txt:m[3].trim()};
+  m=s.match(/^(\d{1,2})\s*(?:hs\b|h\b|horas\b)\.?\s*[-–—]?\s*(.*)$/i);
+  if(m && +m[1]<24 && m[2].trim()) return {hora:dosDig(m[1])+":00", txt:m[2].trim()};
+  return {hora:null, txt:s};
 }
-function habilAtras(fecha,n){
-  const d=new Date(fecha);
-  while(n>0){ d.setDate(d.getDate()-1); if(d.getDay()!==0&&d.getDay()!==6) n--; }
-  return d;
+function porHora(a,b){ return (a.hora||"99:99").localeCompare(b.hora||"99:99"); }
+function tareasDe(fechaStr){
+  return Object.entries(TAREAS).filter(([id,t])=>t.fecha===fechaStr).map(([id,t])=>({id,...t}))
+    .sort((a,b)=>(a.hecha?1:0)-(b.hecha?1:0) || porHora(a,b) || (a.createdAt||0)-(b.createdAt||0));
+}
+function tareasAtrasadas(hoyStr){
+  return Object.entries(TAREAS).filter(([id,t])=>!t.hecha && t.fecha < hoyStr).map(([id,t])=>({id,...t}))
+    .sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)) || porHora(a,b));
+}
+function tareaHTML(t,atrasada){
+  const c=t.clientId&&CLIENTS[t.clientId];
+  return `<div class="tk-it ${t.hecha?'ok':''} ${atrasada?'tarde':''}">
+    <button class="tk" data-tarea="${t.id}" title="${t.hecha?'Destildar':'Listo'}"></button>
+    ${t.hora?`<span class="tk-h">${t.hora}</span>`:""}
+    <span class="tk-t">${escapeHtml(t.txt)}</span>
+    ${atrasada?`<span class="tk-tarde">${DIAS_CORTOS[parseYmd(t.fecha).getDay()]} ${parseYmd(t.fecha).getDate()}</span>`:""}
+    ${c?`<span class="tk-c" title="${escapeHtml(c.name)}" data-cliente="${t.clientId}"><i style="background:${c.color||'#9A9AA1'}"></i>${c.emoji||"◍"}</span>`:""}
+    <button class="x" data-deltarea="${t.id}" title="Borrar">✕</button>
+  </div>`;
 }
 
 /* ---- estado de un cliente: de qué color está su lucecita ---- */
@@ -2351,13 +2383,14 @@ function loQueSeViene(dias){
     const d=new Date(hoy); d.setDate(d.getDate()+i);
     const ds=ymd(d), items=[];
     efemFor(d.getFullYear(),d.getMonth(),d.getDate()).forEach(e=>items.push({t:e[1],n:e[0],color:"#9A9AA1"}));
-    efemNotesFor(ds).forEach(e=>items.push({t:"mío",n:e.text,color:"#2ECC71"}));
+    efemNotesFor(ds).forEach(e=>{ const p=partirHora(e.text); items.push({t:"mío",n:p.txt,hora:p.hora,color:"#2ECC71"}); });
     Object.entries(PRODS).forEach(([id,p])=>{
       if(p.date!==ds) return;
       const c=p.clientId&&CLIENTS[p.clientId];
-      items.push({t:"rodaje",n:(c?c.emoji+" ":"🎬 ")+(p.title||"Sin título"),color:c?c.color:"#6B4EFF",prod:id});
+      items.push({t:"rodaje",n:(c?c.emoji+" ":"🎬 ")+(p.title||"Sin título"),hora:p.time||null,color:c?c.color:"#6B4EFF",prod:id});
     });
     if(d.getDate()===1) items.push({t:"ciclo",n:"arranca "+MONTHS[d.getMonth()],color:"#6B4EFF"});
+    items.sort(porHora);
     salida.push({fecha:d, ds, items});
   }
   return salida;
@@ -2369,16 +2402,12 @@ function renderCabina(){
   const ae=document.activeElement;
   if(ae && host.contains(ae) && /INPUT|SELECT/.test(ae.tagName)){ cabPendiente=true; return; }
 
-  const hoy=new Date();
-  const plan=cicloDe(hoy), dis=cicloDe(habilAtras(hoy,1)), prog=cicloDe(habilAtras(hoy,2));
-  const chip=(nombre,rol)=>{
-    const c=clienteDe(nombre);
-    const quien=c?EQUIPO[rolesOf(c)[rol]||"marcos"]:null;
-    return `<button class="hoy-c" ${c?`data-cliente="${c.id}"`:""}>
-      <i style="background:${c?c.color:'#9A9AA1'}"></i>${c&&c.emoji?c.emoji+" ":""}${escapeHtml(nombre)}${quien?`<span class="q">${quien[0]}</span>`:""}</button>`;
-  };
-  const bloque=(tag,lista,rol)=>`<div class="hoy-b"><div class="hoy-t">${tag}</div>${
-    lista.length?`<div class="hoy-l">${lista.map(n=>chip(n,rol)).join("")}</div>`:'<div class="hoy-nada">nada</div>'}</div>`;
+  const hoy=new Date(), hoyS=ymd(hoy);
+  const mias=tareasDe(hoyS), atrasadas=tareasAtrasadas(hoyS);
+  const faltan=mias.filter(t=>!t.hecha).length+atrasadas.length;
+  const opcionesCli='<option value="">— sin cliente</option>'+
+    Object.entries(CLIENTS).map(([id,c])=>({id,...c})).sort((a,b)=>(a.order??999)-(b.order??999))
+      .map(c=>`<option value="${c.id}">${c.emoji||""} ${escapeHtml(c.name)}</option>`).join("");
 
   const viene=loQueSeViene(14);
   const franja=viene.map(d=>{
@@ -2396,18 +2425,22 @@ function renderCabina(){
   const listaHTML=lista.length ? lista.slice(0,14).map(({d,i})=>`
     <div class="vie ${d.ds===ymd(hoy)?'hoy':''}">
       <span class="d">${d.ds===ymd(hoy)?"hoy":DIAS_CORTOS[d.fecha.getDay()]+" "+d.fecha.getDate()}</span>
+      <span class="hh">${i.hora||""}</span>
       <span class="n">${escapeHtml(i.n)}</span><span class="t">${i.t}</span>
     </div>`).join("") : '<div class="vacio">Nada anotado en estos 14 días.</div>';
 
   const cls=Object.entries(CLIENTS).map(([id,c])=>({id,...c}))
     .sort((a,b)=>(a.order??999)-(b.order??999)||(a.name||"").localeCompare(b.name||""));
-  const sem=cls.map(c=>{
+  const cuadro=c=>{
     const l=luzDe(c);
     return `<button class="sem-c" data-cliente="${c.id}" title="${escapeHtml(c.name+" · "+l.txt)}">
       <span class="bar" style="background:${c.color||'#9A9AA1'}"></span>
       <span class="e">${c.emoji||"•"}</span><span class="n">${escapeHtml(c.name)}</span>
       <span class="p" style="background:${l.color}"></span></button>`;
-  }).join("");
+  };
+  const grupo=cls.filter(esGrupoCo), resto=cls.filter(c=>!esGrupoCo(c));
+  const sem=(grupo.length?`<div class="sem-tag">Grupo Co</div><div class="sem">${grupo.map(cuadro).join("")}</div>`:"")+
+            (resto.length?`<div class="sem-tag">Los demás</div><div class="sem">${resto.map(cuadro).join("")}</div>`:"");
 
   const frenando=Object.entries(NOTES).filter(([id,n])=>n.cat==="pend"&&!n.done)
     .map(([id,n])=>({id,...n}))
@@ -2424,11 +2457,17 @@ function renderCabina(){
   host.innerHTML=`
     <div class="cab-fila">
       <div class="panel">
-        <h3>Hoy <button class="ed" data-ciclo title="Cambiar el ciclo de la semana">✎ ciclo</button></h3>
+        <h3>Hoy ${faltan?`<span class="cuenta">${faltan} sin hacer</span>`:""}</h3>
         <div class="hoy-f">${hoy.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"}).replace(",","")}</div>
-        ${bloque("Planificar",plan,"plani")}
-        ${bloque("Diseñar",dis,"dis")}
-        ${bloque("Programar (vos)",prog,"plani")}
+        <div class="tk-l">
+          ${atrasadas.map(t=>tareaHTML(t,true)).join("")}
+          ${mias.map(t=>tareaHTML(t,false)).join("")}
+          ${(!mias.length&&!atrasadas.length)?'<div class="hoy-nada">Nada anotado todavía.</div>':""}
+        </div>
+        <div class="tk-nueva">
+          <input id="tareaTxt" placeholder="anotá una tarea del día…" />
+          <select id="tareaCli">${opcionesCli}</select>
+        </div>
       </div>
       <div class="panel">
         <h3>Lo que se viene <span class="cuenta">${lista.length} cosa${lista.length===1?"":"s"} en 14 días</span></h3>
@@ -2439,7 +2478,7 @@ function renderCabina(){
     ${espResumenHTML()}
     <div class="panel">
       <h3>Los clientes <span class="cuenta">${cls.length}</span></h3>
-      <div class="sem">${sem}</div>
+      ${sem}
       <div class="sem-ley">
         <span><i style="background:#2ECC71"></i>al día</span>
         <span><i style="background:#F5A623"></i>tiene pendientes</span>
@@ -2491,45 +2530,17 @@ function espResumenHTML(){
 
 /* ---- la ficha de un cliente ---- */
 let cabCliente=null, cabPendiente=false;
-function abrirCliente(cid){
-  const c=CLIENTS[cid]; if(!c) return;
-  cabCliente=cid;
-  const ym=(new Date()).getFullYear()+"-"+String((new Date()).getMonth()+1).padStart(2,"0");
-  const guardado=(CONFIG.frases||{})[cid+"__"+ym]||"";
-  const pend=pendAbiertos(cid), prods=prodsDelMes(cid), r=rolesOf({...c,id:cid});
-  const sel=(campo,val)=>`<select data-role="${campo}">`+Object.entries(EQUIPO)
-    .map(([k,v])=>`<option value="${k}"${k===val?" selected":""}>${v[0]}</option>`).join("")+`</select>`;
-  document.getElementById("cabDlgBody").innerHTML=`
-    <div class="cd-top"><span class="bar" style="background:${c.color||'#9A9AA1'}"></span>
-      <b>${c.emoji||""} ${escapeHtml(c.name)}</b><button class="x" data-cerrar>✕</button></div>
-    <input class="cd-msg" id="cdMsg" value="${escapeHtml(guardado)}" placeholder="qué quiere comunicar este mes…" />
-    <div class="cd-sec">
-      <h4>Pendientes</h4>
-      <div class="mr-list">${pend.length
-        ? pend.map(n=>`<div class="mr-it"><button class="tk" data-tick="${n.id}"></button><span>${escapeHtml(n.text)}</span><button class="x" data-delnote="${n.id}">✕</button></div>`).join("")
-        : '<div class="vacio">Nada pendiente.</div>'}</div>
-      <input class="mr-add" data-addpend="${cid}" placeholder="＋ pendiente…" />
-    </div>
-    <div class="cd-sec">
-      <h4>Producciones de este mes</h4>
-      <div class="mr-list">${prods.length
-        ? prods.map(p=>{const st=statusMeta(p.status); return `<div class="mr-prod" data-openprod="${p.id}"><span class="d">${p.date?p.date.slice(8)+"/"+p.date.slice(5,7):"—"}</span><span>${st[1]}</span><span>${escapeHtml(p.title||"Sin título")}</span></div>`;}).join("")
-        : '<div class="vacio">Sin rodaje agendado.</div>'}</div>
-    </div>
-    <div class="cd-quien"><span>Planifica ${sel("plani",r.plani)}</span><span>Diseña ${sel("dis",r.dis)}</span></div>
-    <div class="cd-acc">
-      <button data-newprod="${cid}">🎬 Agendar una producción</button>
-      <button data-verespejo="${escapeHtml(c.name)}">🪞 Ver qué se sube</button>
-    </div>`;
-  document.getElementById("cabDlg").showModal();
-}
-
-function abrirCiclo(){
-  const c=ciclo();
-  document.getElementById("cicloBody").innerHTML=
-    [1,2,3,4,5].map(d=>`<div class="ci-fila"><label>${DIAS_CORTOS[d]}</label><input data-ciclodia="${d}" value="${escapeHtml(c[d]||"")}" /></div>`).join("")+
-    '<div class="vacio" style="margin-top:10px">Se planifica en estos días. El diseño va siempre un día después, y programar un día después del diseño.</div>';
-  document.getElementById("cicloDlg").showModal();
+/* El cuadradito de un cliente te lleva a SU tarjeta del dashboard: ahí ya están
+   sus pendientes y sus ideas. No hacía falta inventar otro lugar para anotar. */
+function irAlCliente(cid){
+  setTab("dashboard");
+  setTimeout(()=>{
+    const el=document.querySelector('.card[data-client="'+cid+'"]');
+    if(!el) return;
+    el.scrollIntoView({behavior:"smooth", block:"center"});
+    el.classList.add("resaltada");
+    setTimeout(()=>el.classList.remove("resaltada"), 2400);
+  },140);
 }
 
 /* ---- la bandeja ---- */
@@ -2573,24 +2584,12 @@ function capGuardar(){
     capKind=b.dataset.kind; [...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));
   });
 
-  const dlg=document.getElementById("cabDlg"), cdlg=document.getElementById("cicloDlg");
-  dlg.addEventListener("click",e=>{ if(e.target===dlg) cerrarFicha(); });
-  cdlg.addEventListener("click",e=>{ if(e.target===cdlg) cdlg.close(); });
-  function cerrarFicha(){
-    const m=document.getElementById("cdMsg");
-    if(m && cabCliente){
-      const ym=(new Date()).getFullYear()+"-"+String((new Date()).getMonth()+1).padStart(2,"0");
-      const frases=Object.assign({}, CONFIG.frases||{}); frases[cabCliente+"__"+ym]=m.value.trim();
-      CONFIG.frases=frases; store.updateConfig({frases});
-    }
-    cabCliente=null; if(dlg.open) dlg.close();
-  }
-
   document.body.addEventListener("click",e=>{
     const cli=e.target.closest("[data-cliente]");
-    if(cli && (view.contains(cli))){ abrirCliente(cli.dataset.cliente); return; }
-    if(e.target.closest("[data-ciclo]") && view.contains(e.target)){ abrirCiclo(); return; }
-    if(e.target.closest("[data-cerrar]")){ cerrarFicha(); return; }
+    if(cli && view.contains(cli)){ irAlCliente(cli.dataset.cliente); return; }
+    const tk=e.target.closest("[data-tarea]");
+    if(tk){ const t=TAREAS[tk.dataset.tarea]||{}; store.updateTarea(tk.dataset.tarea,{hecha:!t.hecha}); return; }
+    const dtk=e.target.closest("[data-deltarea]"); if(dtk){ store.removeTarea(dtk.dataset.deltarea); return; }
     if(e.target.closest("[data-irespejo]")){ setTab("espejo"); return; }
     const irTab=e.target.closest("[data-tab-ir]"); if(irTab){ setTab(irTab.dataset.tabIr); return; }
     if(e.target.closest("[data-mesa]")){
@@ -2610,14 +2609,24 @@ function capGuardar(){
     const np=e.target.closest("[data-newprod]");  if(np){ const id=np.dataset.newprod; cerrarFicha(); openProd(null,{clientId:id}); return; }
     const esp=e.target.closest("[data-verespejo]");
     if(esp){ espPedido=esp.dataset.verespejo; espCli=null; cerrarFicha(); setTab("espejo"); if(ESP) espCargar(espMes); return; }
-    if(e.target.closest("#cicloGuardar")){
-      const c={};
-      document.querySelectorAll("[data-ciclodia]").forEach(i=>c[i.dataset.ciclodia]=i.value.trim());
-      CONFIG.ciclo=c; store.updateConfig({ciclo:c}); cdlg.close(); renderCabina(); return;
-    }
   });
 
   document.body.addEventListener("keydown",e=>{
+    if(e.target.id==="tareaTxt" && e.key==="Enter"){
+      e.preventDefault();
+      const crudo=e.target.value.trim(); if(!crudo) return;
+      const {hora,txt}=partirHora(crudo);
+      const cid=(document.getElementById("tareaCli")||{}).value||null;
+      store.addTarea({fecha:ymd(new Date()), txt, hora, clientId:cid, hecha:false, createdAt:Date.now()});
+      /* el panel no se repinta solo mientras estás escribiendo (para no pisarte el
+         texto), así que acá lo forzamos y volvemos al campo para seguir anotando */
+      e.target.value=""; e.target.blur();
+      cabPendiente=false; renderCabina();
+      const inp=document.getElementById("tareaTxt"), sel=document.getElementById("tareaCli");
+      if(sel && cid) sel.value=cid;
+      if(inp) inp.focus();
+      return;
+    }
     if(e.target.matches("[data-addpend]") && e.key==="Enter"){
       const t=e.target.value.trim();
       if(t){ store.addNote({clientId:e.target.dataset.addpend, text:t, cat:"pend", fav:false, done:false, createdAt:Date.now()}); e.target.value=""; }
@@ -2626,10 +2635,6 @@ function capGuardar(){
   });
 
   view.addEventListener("change",e=>{ if(cabPendiente){ cabPendiente=false; renderCabina(); } });
-  dlg.addEventListener("change",e=>{
-    const rol=e.target.closest("[data-role]");
-    if(rol && cabCliente){ store.updateClient(cabCliente,{[rol.dataset.role]:rol.value}); }
-  });
 })();
 
 /* ============================================================
@@ -2888,6 +2893,7 @@ function boot(){
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
   store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="cabina") renderCabina(); });
   store.onConfig(m=>{ CONFIG=m||{}; if(activeTab==="cabina") renderCabina(); if(activeTab==="espejo") renderEspejo(); });
+  store.onTareas(t=>{ TAREAS=t||{}; if(activeTab==="cabina") renderCabina(); });
   setTab(activeTab);
 }
 
