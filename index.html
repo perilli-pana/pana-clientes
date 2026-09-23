@@ -596,6 +596,9 @@
   .tk-l{display:flex; flex-direction:column; gap:1px; margin-bottom:10px}
   .tk-it{display:flex; align-items:center; gap:8px; font-size:13.5px; line-height:1.4; padding:5px 6px; border-radius:8px}
   .tk-it:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .tk-it[draggable="true"]{cursor:grab}
+  .tk-it[draggable="true"]:active{cursor:grabbing}
+  .tk-it.arrastrando{opacity:.45; background:var(--accent-soft)}
   .tk-it .tk{width:15px; height:15px; border:1.5px solid var(--ink-faint); border-radius:50%; background:transparent; cursor:pointer; flex:none; padding:0}
   .tk-it .tk:hover{border-color:#2ECC71; background:color-mix(in srgb,#2ECC71 25%,transparent)}
   .tk-it.ok .tk{background:#2ECC71; border-color:#2ECC71}
@@ -607,6 +610,9 @@
   .tk-c b{font-size:11.5px; font-weight:600; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .tk-c:hover b{color:var(--ink)}
   .tk-c i{width:3px; height:14px; border-radius:2px}
+  .tk-mv{display:none; gap:1px; flex:none}
+  .tk-mv button{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:14px; line-height:1; padding:3px 5px}
+  @media (hover:none){ .tk-mv{display:inline-flex} .tk-it .x{opacity:1} }
   .tk-it .x{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; opacity:0; flex:none; padding:0 2px}
   .tk-it:hover .x{opacity:1}
   .tk-nueva{display:flex; gap:7px; align-items:center}
@@ -2338,9 +2344,14 @@ function partirHora(txt){
   return {hora:null, txt:s};
 }
 function porHora(a,b){ return (a.hora||"99:99").localeCompare(b.hora||"99:99"); }
+/* El orden lo manda lo que arrastraste. Mientras no arrastres nada, ninguna tarea
+   tiene `orden` y caen por horario, que es el orden natural del día. */
+const SIN_ORDEN=1e9;
 function tareasDe(fechaStr){
   return Object.entries(TAREAS).filter(([id,t])=>t.fecha===fechaStr).map(([id,t])=>({id,...t}))
-    .sort((a,b)=>(a.hecha?1:0)-(b.hecha?1:0) || porHora(a,b) || (a.createdAt||0)-(b.createdAt||0));
+    .sort((a,b)=>(a.hecha?1:0)-(b.hecha?1:0)
+               || ((a.orden==null?SIN_ORDEN:a.orden)-(b.orden==null?SIN_ORDEN:b.orden))
+               || porHora(a,b) || (a.createdAt||0)-(b.createdAt||0));
 }
 function tareasAtrasadas(hoyStr){
   return Object.entries(TAREAS).filter(([id,t])=>!t.hecha && t.fecha < hoyStr).map(([id,t])=>({id,...t}))
@@ -2348,14 +2359,24 @@ function tareasAtrasadas(hoyStr){
 }
 function tareaHTML(t,atrasada){
   const c=t.clientId&&CLIENTS[t.clientId];
-  return `<div class="tk-it ${t.hecha?'ok':''} ${atrasada?'tarde':''}">
+  return `<div class="tk-it ${t.hecha?'ok':''} ${atrasada?'tarde':''}" ${atrasada?"":`draggable="true" data-id="${t.id}"`}>
     <button class="tk" data-tarea="${t.id}" title="${t.hecha?'Destildar':'Listo'}"></button>
     ${t.hora?`<span class="tk-h">${t.hora}</span>`:""}
     <span class="tk-t">${escapeHtml(t.txt)}</span>
     ${atrasada?`<span class="tk-tarde">${DIAS_CORTOS[parseYmd(t.fecha).getDay()]} ${parseYmd(t.fecha).getDate()}</span>`:""}
     ${c?`<span class="tk-c" title="${escapeHtml(c.name)}" data-cliente="${t.clientId}"><i style="background:${c.color||'#9A9AA1'}"></i>${c.emoji||"◍"}<b>${escapeHtml(c.name)}</b></span>`:""}
+    ${atrasada?"":`<span class="tk-mv"><button data-mover="${t.id}:-1" title="Subir">↑</button><button data-mover="${t.id}:1" title="Bajar">↓</button></span>`}
     <button class="x" data-deltarea="${t.id}" title="Borrar">✕</button>
   </div>`;
+}
+
+/* En el celular no se puede arrastrar, así que ahí aparecen flechitas */
+function moverTarea(id,dir){
+  const lista=tareasDe(ymd(new Date())).filter(t=>!t.hecha);
+  const i=lista.findIndex(t=>t.id===id); if(i<0) return;
+  const j=i+dir; if(j<0 || j>=lista.length) return;
+  const arr=lista.slice(); const [x]=arr.splice(i,1); arr.splice(j,0,x);
+  arr.forEach((t,k)=>{ if(t.orden!==k) store.updateTarea(t.id,{orden:k}); });
 }
 
 /* ---- estado de un cliente: de qué color está su lucecita ---- */
@@ -2477,7 +2498,6 @@ function renderCabina(){
         <div class="vie-l">${listaHTML}</div>
       </div>
     </div>
-    ${espResumenHTML()}
     <div class="panel">
       <h3>Los clientes <span class="cuenta">${cls.length}</span></h3>
       ${sem}
@@ -2502,36 +2522,6 @@ function renderCabina(){
     </div>`;
 }
 
-/* ---- lo que se sube este mes: sale del espejo, si ya está armado ---- */
-let espIntento=false;
-function espResumenHTML(){
-  if(!ESP){
-    if(!espIntento){ espIntento=true; espCargar().then(()=>{ if(activeTab==="cabina") renderCabina(); }).catch(()=>{}); }
-    return "";
-  }
-  let t=0,l=0,no=0,fix=0,fe=0,feFalta=0;
-  ESP.clientes.forEach(cl=>cl.dias.forEach(d=>{
-    d.placas.forEach(p=>{
-      t++; if(p.link)l++; if(p.no)no++;
-      if(fixDe(ESP.mes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) fix++;
-    });
-    (d.feeds||[]).forEach((x,i)=>{ fe++; if(!feedHecho(feedKey(cl,d,i))) feFalta++; });
-  }));
-  return `<div class="panel">
-    <h3>Lo que se sube <span class="cuenta">${escapeHtml(ESP.titulo)}</span></h3>
-    <div class="sube-l">
-      <span class="sube-n"><b>${t}</b>historias listas</span>
-      <span class="sube-n"><b>${l}</b>con link</span>
-      ${fe?`<span class="sube-n ${feFalta?'ojo':''}"><b>${feFalta||fe}</b>${feFalta?"feeds pendientes":"feeds hechos"}</span>`:""}
-      ${no?`<span class="sube-n mal"><b>${no}</b>no suben</span>`:""}
-      ${fix?`<span class="sube-n ojo"><b>${fix}</b>por corregir</span>`:""}
-      <button class="sube-b" data-irespejo>🪞 Abrir el espejo</button>
-    </div>
-  </div>`;
-}
-
-/* ---- la ficha de un cliente ---- */
-let cabCliente=null, cabPendiente=false;
 /* El cuadradito de un cliente te lleva a SU tarjeta del dashboard: ahí ya están
    sus pendientes y sus ideas. No hacía falta inventar otro lugar para anotar. */
 function irAlCliente(cid){
@@ -2589,8 +2579,16 @@ function capGuardar(){
   document.body.addEventListener("click",e=>{
     const cli=e.target.closest("[data-cliente]");
     if(cli && view.contains(cli)){ irAlCliente(cli.dataset.cliente); return; }
+    /* si venías escribiendo, soltá el campo: si no, el panel no se repinta y parece
+       que el clic no hizo nada */
+    if(e.target.closest("[data-tarea],[data-mover],[data-deltarea]")){
+      const ae=document.activeElement;
+      if(ae && /INPUT|SELECT/.test(ae.tagName)) ae.blur();
+    }
     const tk=e.target.closest("[data-tarea]");
     if(tk){ const t=TAREAS[tk.dataset.tarea]||{}; store.updateTarea(tk.dataset.tarea,{hecha:!t.hecha}); return; }
+    const mv=e.target.closest("[data-mover]");
+    if(mv){ const [id,dir]=mv.dataset.mover.split(":"); moverTarea(id,+dir); return; }
     const dtk=e.target.closest("[data-deltarea]"); if(dtk){ store.removeTarea(dtk.dataset.deltarea); return; }
     if(e.target.closest("[data-irespejo]")){ setTab("espejo"); return; }
     const irTab=e.target.closest("[data-tab-ir]"); if(irTab){ setTab(irTab.dataset.tabIr); return; }
@@ -2613,13 +2611,53 @@ function capGuardar(){
     if(esp){ espPedido=esp.dataset.verespejo; espCli=null; cerrarFicha(); setTab("espejo"); if(ESP) espCargar(espMes); return; }
   });
 
+  /* --- arrastrar para reordenar las tareas del día --- */
+  let tkDrag=null;
+  function guardarOrdenTareas(){
+    const filas=[...view.querySelectorAll(".tk-it[data-id]")];
+    filas.forEach((el,i)=>{
+      const t=TAREAS[el.dataset.id];
+      if(t && t.orden!==i) store.updateTarea(el.dataset.id,{orden:i});
+    });
+  }
+  view.addEventListener("dragstart",e=>{
+    const it=e.target.closest(".tk-it[data-id]"); if(!it) return;
+    if(e.target.closest("button")){ e.preventDefault(); return; }
+    tkDrag=it;
+    e.dataTransfer.effectAllowed="move";
+    e.dataTransfer.setData("text/plain", it.dataset.id);
+    requestAnimationFrame(()=>it.classList.add("arrastrando"));
+  });
+  view.addEventListener("dragover",e=>{
+    if(!tkDrag || !tkDrag.parentElement) return;
+    e.preventDefault(); e.dataTransfer.dropEffect="move";
+    const cont=tkDrag.parentElement;
+    const ref=[...cont.querySelectorAll(".tk-it[data-id]")].find(el=>{
+      if(el===tkDrag) return false;
+      const r=el.getBoundingClientRect();
+      return e.clientY < r.top + r.height/2;
+    });
+    if(ref===tkDrag.nextElementSibling) return;   /* ya está ahí: no tocar el DOM */
+    cont.insertBefore(tkDrag, ref||null);
+  });
+  view.addEventListener("drop",e=>{ if(!tkDrag) return; e.preventDefault(); });
+  /* guardamos en dragend y no en drop: "soltar" no siempre llega (depende de dónde
+     soltaste), pero el fin del arrastre llega siempre */
+  view.addEventListener("dragend",()=>{
+    if(!tkDrag) return;
+    tkDrag.classList.remove("arrastrando"); tkDrag=null;
+    guardarOrdenTareas();
+  });
+
   document.body.addEventListener("keydown",e=>{
     if(e.target.id==="tareaTxt" && e.key==="Enter"){
       e.preventDefault();
       const crudo=e.target.value.trim(); if(!crudo) return;
       const {hora,txt}=partirHora(crudo);
       const cid=(document.getElementById("tareaCli")||{}).value||null;
-      store.addTarea({fecha:ymd(new Date()), txt, hora, clientId:cid, hecha:false, createdAt:Date.now()});
+      const ords=tareasDe(ymd(new Date())).map(t=>t.orden).filter(n=>n!=null);
+      store.addTarea({fecha:ymd(new Date()), txt, hora, clientId:cid, hecha:false,
+                      orden:(ords.length?Math.max(...ords)+1:null), createdAt:Date.now()});
       /* el panel no se repinta solo mientras estás escribiendo (para no pisarte el
          texto), así que acá lo forzamos y volvemos al campo para seguir anotando */
       e.target.value=""; e.target.blur();
