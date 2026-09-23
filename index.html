@@ -656,6 +656,59 @@
   .mes-foot button{border:1px dashed var(--tile-edge); background:transparent; color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:7px 13px; border-radius:9px; cursor:pointer}
   .mes-foot button:hover{border-style:solid; color:var(--ink)}
 
+
+  /* ============================================================
+     EL ESPEJO — el mes como va a salir, antes de subirlo
+     ============================================================ */
+  #view-espejo{overflow:auto}
+  .ep-wrap{width:100%; max-width:1280px; margin:0 auto; padding:18px 20px 90px}
+  .ep-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 3px 12px}
+  .ep-top h2{margin:0; font-size:23px; letter-spacing:-.02em; text-transform:capitalize; white-space:nowrap}
+  .ep-sum{font-size:12.5px; color:var(--ink-soft)}
+  .ep-sum b{color:var(--ink)}
+  .ep-filtros{margin-left:auto; display:flex; gap:3px; background:color-mix(in srgb,var(--ink) 5%,transparent); padding:3px; border-radius:10px}
+  .ep-filtros button{border:0; background:transparent; font-family:var(--sans); font-size:12px; color:var(--ink-soft); padding:5px 10px; border-radius:7px; cursor:pointer; white-space:nowrap}
+  .ep-filtros button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
+  .ep-cli{display:flex; gap:6px; flex-wrap:wrap; margin:0 3px 6px}
+  .ep-cli button{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:6px 12px; border-radius:999px; cursor:pointer}
+  .ep-cli button:hover{color:var(--ink)}
+  .ep-cli button.on{color:#fff; border-color:transparent; font-weight:600}
+  .ep-cli .cnt{font-size:11px; opacity:.75}
+
+  .ep-dia{margin-top:24px}
+  .ep-dia h3{margin:0 0 10px; font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); font-weight:650; display:flex; align-items:center; gap:10px}
+  .ep-dia h3 .ln{flex:1; height:1px; background:var(--tile-edge)}
+  .ep-dia h3 .hoy{color:var(--accent)}
+  .ep-fila{display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px}
+  .ep-card{background:var(--tile); border:1px solid var(--tile-edge); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .ep-img{position:relative; aspect-ratio:9/16; background:color-mix(in srgb,var(--ink) 7%,transparent); cursor:zoom-in}
+  .ep-img img{width:100%; height:100%; object-fit:cover; display:block}
+  .ep-n{position:absolute; top:6px; left:6px; background:rgba(0,0,0,.62); color:#fff; font-family:var(--mono); font-size:10px; padding:2px 6px; border-radius:6px}
+  .ep-lk{position:absolute; top:6px; right:6px; background:rgba(0,0,0,.62); font-size:10px; padding:2px 5px; border-radius:6px}
+  .ep-body{padding:8px 9px 9px; display:flex; flex-direction:column; gap:6px; flex:1}
+  .ep-txt{font-size:11.5px; line-height:1.35; color:var(--ink-soft)}
+  .ep-card.no{border-color:color-mix(in srgb,var(--fav) 50%,transparent)}
+  .ep-card.no .ep-img img{opacity:.4}
+  .ep-no{font-size:10.5px; color:var(--fav); font-weight:650; line-height:1.3}
+  .ep-card.fix{border-color:#F5A623; box-shadow:0 0 0 1px color-mix(in srgb,#F5A623 30%,transparent)}
+  .ep-fix{display:flex; gap:5px; align-items:flex-start; font-size:10.5px; line-height:1.35; color:#D68910; cursor:pointer}
+  .ep-btn{margin-top:auto; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
+  .ep-btn:hover{background:var(--accent-soft); color:var(--accent)}
+  .ep-in{width:100%; border:1px solid var(--accent); border-radius:7px; padding:5px 7px; font-family:var(--sans); font-size:11.5px; background:transparent; color:var(--ink); outline:none}
+  .ep-vacio{margin:40px auto; max-width:620px; text-align:center; color:var(--ink-soft); font-size:14px; line-height:1.6}
+  .ep-vacio h3{font-size:17px; color:var(--ink); margin:0 0 10px; letter-spacing:-.01em}
+  .ep-cmd{display:flex; align-items:center; gap:8px; margin:14px auto 0; background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px; padding:10px 12px; text-align:left}
+  .ep-cmd code{flex:1; font-family:var(--mono); font-size:11.5px; color:var(--ink); word-break:break-all}
+  .ep-cmd button{border:0; background:var(--accent); color:#fff; font-family:var(--sans); font-size:11.5px; padding:6px 12px; border-radius:7px; cursor:pointer; flex:none}
+
+  /* la placa agrandada */
+  #epBox{position:fixed; inset:0; z-index:95; background:rgba(0,0,0,.88); display:none; place-items:center; padding:20px; gap:14px; grid-auto-flow:row}
+  #epBox.on{display:grid}
+  #epBox img{max-width:min(460px,90vw); max-height:78vh; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .epb-cap{color:#fff; font-size:13px; text-align:center; max-width:min(460px,90vw); line-height:1.5; opacity:.9}
+  .epb-cap b{display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.6; margin-bottom:4px}
+  #epBox .x{position:fixed; top:16px; right:18px; border:0; background:rgba(255,255,255,.14); color:#fff; width:34px; height:34px; border-radius:50%; font-size:16px; cursor:pointer}
+
   @media (max-width:760px){
 
     /* --- barra de arriba: deja de ser una fila larga, se acomoda en 3 renglones --- */
@@ -793,6 +846,19 @@
     .cap textarea{font-size:16px}
     .mr-add{font-size:16px}
   }
+
+  /* --- EL ESPEJO en el celular --- */
+  @media (max-width:760px){
+    .ep-wrap{padding:14px 13px 90px}
+    .ep-top h2{font-size:20px}
+    .ep-filtros{margin-left:0; width:100%; overflow-x:auto}
+    .ep-filtros button{flex:1}
+    .ep-cli{overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; -webkit-overflow-scrolling:touch}
+    .ep-cli button{flex:none}
+    .ep-fila{grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:9px}
+    .ep-in{font-size:16px}
+    #epBox img{max-height:70vh}
+  }
 </style>
 </head>
 <body>
@@ -836,6 +902,7 @@
 
 <nav class="tabs" id="tabs">
   <button data-tab="mes" class="on"><span class="tico">🎛️</span> El mes</button>
+  <button data-tab="espejo"><span class="tico">🪞</span> El espejo</button>
   <button data-tab="dashboard"><span class="tico">🧱</span> Dashboard</button>
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
   <button data-tab="cal"><span class="tico">🗓️</span> Calendario</button>
@@ -860,6 +927,10 @@
     </div>
     <div id="mesBody"></div>
   </div>
+</div>
+
+<div id="view-espejo" class="view">
+  <div class="ep-wrap"><div id="espBody"></div></div>
 </div>
 
 <div id="view-dashboard" class="view">
@@ -920,6 +991,8 @@
     <div class="prod-sect" id="prodMes"></div>
   </div>
 </div>
+
+<div id="epBox"><button class="x" title="Cerrar">✕</button><img alt="" /><div class="epb-cap"></div></div>
 
 <div id="view-ciclo" class="view">
   <iframe id="cicloFrame" title="Ciclo de trabajo"></iframe>
@@ -1642,6 +1715,7 @@ function setTab(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+name));
   dashTools.style.display = name==="dashboard" ? "contents" : "none";
   if(name==="mes") renderMes();
+  if(name==="espejo"){ if(ESP) renderEspejo(); else espCargar(); }
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
   if(name==="prod") renderProdTab();
@@ -2195,6 +2269,7 @@ function detHTML(c){
         ? prods.map(p=>{const st=statusMeta(p.status); return `<div class="mr-prod" data-openprod="${p.id}"><span class="d">${p.date?p.date.slice(8)+"/"+p.date.slice(5,7):"—"}</span><span>${st[1]}</span><span>${escapeHtml(p.title||"Sin título")}</span></div>`;}).join("")
         : '<div class="mr-empty">Sin rodaje agendado este mes.</div>'}</div>
       <button class="mr-add" data-newprod="${c.id}" style="text-align:left;cursor:pointer">＋ agendar una producción</button>
+      <button class="mr-add" data-verespejo="${escapeHtml(c.name)}" style="text-align:left;cursor:pointer;margin-top:4px">🪞 ver qué se sube este mes</button>
     </div>
     <div class="mr-roles">
       <h4>Quién</h4>
@@ -2317,6 +2392,8 @@ function capGuardar(){
     const np=e.target.closest("[data-newprod]");      if(np){ openProd(null,{clientId:np.dataset.newprod}); return; }
     const pana=e.target.closest("#mesAddPana");
     if(pana){ store.addClient({emoji:"✦",name:"Pana",color:"#6B4EFF",order:-1,createdAt:Date.now()}); return; }
+    const esp=e.target.closest("[data-verespejo]");
+    if(esp){ espPedido=esp.dataset.verespejo; espCli=null; setTab("espejo"); if(ESP) espCargar(espMes); return; }
     const tg=e.target.closest("[data-toggle]");
     if(tg){ const id=tg.dataset.toggle; mesOpen.has(id)?mesOpen.delete(id):mesOpen.add(id); saveMesOpen(); renderMes(); return; }
   });
@@ -2341,13 +2418,191 @@ function capGuardar(){
   view.addEventListener("focusout",()=>{ if(mesPending){ mesPending=false; setTimeout(renderMes,60); } });
 })();
 
+
+/* ============================================================
+   EL ESPEJO — el mes de cada cliente como va a salir
+   (se arma en la compu con armar_espejo.py y se pushea)
+   ============================================================ */
+let ESP=null, espMes=null, espMeses=[], espCli=null, espFil="todas", espPedido=null, espFixAbierto=null;
+const ESP_CMD='cd ~/Desktop/pana-dashboard && python3 armar_espejo.py "$HOME/Desktop/PROGRAMAR 14-30 septiembre" && git add espejo && git commit -m "espejo" && git push';
+
+function pelarNombre(s){ return (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim(); }
+function clienteDe(nombre){
+  const p=pelarNombre(nombre);
+  const hit=Object.entries(CLIENTS).find(([id,c])=>pelarNombre(c.name)===p);
+  return hit?{id:hit[0],...hit[1]}:null;
+}
+function fixDe(key){
+  const e=Object.entries(NOTES).find(([id,n])=>n.esp===key && !n.done);
+  return e?{id:e[0],...e[1]}:null;
+}
+function espClienteActual(){ return ESP ? ESP.clientes.find(c=>c.slug===espCli) : null; }
+
+async function espCargar(mes){
+  const host=document.getElementById("espBody"); if(!host) return;
+  host.innerHTML='<div class="ep-vacio">Buscando el espejo…</div>';
+  try{
+    if(!espMeses.length){
+      const r=await fetch("espejo/indice.json",{cache:"no-store"});
+      if(!r.ok) throw new Error("sin indice");
+      espMeses=(await r.json()).meses||[];
+    }
+    if(!espMeses.length) throw new Error("sin meses");
+    espMes = (mes && espMeses.includes(mes)) ? mes : (espMes||espMeses[espMeses.length-1]);
+    const r2=await fetch("espejo/"+espMes+"/datos.json",{cache:"no-store"});
+    if(!r2.ok) throw new Error("sin datos");
+    ESP=await r2.json();
+    if(espPedido){
+      const p=pelarNombre(espPedido), hit=ESP.clientes.find(c=>pelarNombre(c.nombre)===p);
+      if(hit) espCli=hit.slug;
+      espPedido=null;
+    }
+    if(!espCli || !ESP.clientes.some(c=>c.slug===espCli)) espCli=ESP.clientes[0].slug;
+    renderEspejo();
+  }catch(e){
+    ESP=null;
+    host.innerHTML=`<div class="ep-vacio">
+      <h3>Todavía no hay ningún mes en el espejo</h3>
+      El espejo se arma en la compu, desde la carpeta de entrega que ya tenés entera
+      (la de <b>PROGRAMAR</b>): achica las placas y las sube acá para poder mirarlas
+      desde donde quieras. Abrí la Terminal y pegá esta línea, cambiando el nombre de
+      la carpeta si hace falta.
+      <div class="ep-cmd"><code>${escapeHtml(ESP_CMD)}</code><button id="espCopiar">Copiar</button></div>
+    </div>`;
+  }
+}
+
+function espCardHTML(c, dia, p){
+  const key=espMes+"/"+c.slug+"/"+dia.dia+"-"+p.n;
+  const fix=fixDe(key), abierto=espFixAbierto===key;
+  return `<div class="ep-card ${p.no?'no':''} ${fix?'fix':''}" data-key="${key}">
+    <div class="ep-img" data-ver="${key}">
+      <img loading="lazy" src="espejo/${espMes}/${p.img}" alt="" />
+      <span class="ep-n">${p.n}</span>${p.link?'<span class="ep-lk">🔗</span>':''}
+    </div>
+    <div class="ep-body">
+      <div class="ep-txt">${escapeHtml(p.txt||"—")}</div>
+      ${p.no?`<div class="ep-no">⛔ no sube${p.motivo?" · "+escapeHtml(p.motivo):""}</div>`:""}
+      ${fix?`<div class="ep-fix" data-quitar="${fix.id}" title="Tocá para sacar la corrección">📌<span>${escapeHtml((fix.text||"").replace(/^🪞\s*[^—]*—\s*/,""))}</span></div>`:""}
+      ${abierto
+        ? `<input class="ep-in" data-fixin="${key}" placeholder="¿qué hay que corregir?" />`
+        : (fix?"":`<button class="ep-btn" data-fix="${key}">corregir</button>`)}
+    </div>
+  </div>`;
+}
+
+function renderEspejo(){
+  const host=document.getElementById("espBody"); if(!host||!ESP) return;
+  const c=espClienteActual(); if(!c) return;
+  const hoy=new Date(), hoyStr=ymd(hoy);
+  const i=espMeses.indexOf(espMes);
+
+  const cuenta=cl=>{
+    let t=0,l=0,f=0,n=0;
+    cl.dias.forEach(d=>d.placas.forEach(p=>{
+      t++; if(p.link)l++; if(p.no)n++;
+      if(fixDe(espMes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) f++;
+    }));
+    return {t,l,f,n};
+  };
+  const mio=cuenta(c);
+
+  const chips=ESP.clientes.map(cl=>{
+    const cc=clienteDe(cl.nombre), on=cl.slug===espCli, q=cuenta(cl);
+    return `<button data-espcli="${cl.slug}" class="${on?'on':''}" style="${on?`background:${cc&&cc.color||'var(--accent)'}`:''}">
+      ${cc&&cc.emoji?cc.emoji+" ":""}${escapeHtml(cl.nombre)}<span class="cnt">${q.t}${q.f?" · 📌"+q.f:""}</span></button>`;
+  }).join("");
+
+  const pasa=p=>{
+    if(espFil==="link") return !!p.link;
+    if(espFil==="no")   return !!p.no;
+    return true;
+  };
+  const dias=c.dias.map(d=>{
+    let ps=d.placas.filter(pasa);
+    if(espFil==="fix") ps=ps.filter(p=>fixDe(espMes+"/"+c.slug+"/"+d.dia+"-"+p.n));
+    return {...d, placas:ps};
+  }).filter(d=>d.placas.length);
+
+  host.innerHTML=`
+    <div class="ep-top">
+      <h2>${ESP.titulo}</h2>
+      ${espMeses.length>1?`<div class="mes-nav"><button data-espnav="prev" ${i<=0?"disabled":""}>‹</button><button data-espnav="next" ${i>=espMeses.length-1?"disabled":""}>›</button></div>`:""}
+      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
+      <div class="ep-filtros">
+        <button data-espfil="todas" class="${espFil==='todas'?'on':''}">Todas</button>
+        <button data-espfil="link" class="${espFil==='link'?'on':''}">🔗 Con link</button>
+        <button data-espfil="fix" class="${espFil==='fix'?'on':''}">📌 Marcadas</button>
+        <button data-espfil="no" class="${espFil==='no'?'on':''}">⛔ No suben</button>
+      </div>
+    </div>
+    <div class="ep-cli">${chips}</div>
+    ${dias.length ? dias.map(d=>`
+      <div class="ep-dia">
+        <h3><span class="${d.fecha===hoyStr?'hoy':''}">${d.nombre} ${d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${d.placas.length}</span></h3>
+        <div class="ep-fila">${d.placas.map(p=>espCardHTML(c,d,p)).join("")}</div>
+      </div>`).join("")
+    : '<div class="ep-vacio">Nada con ese filtro.</div>'}
+    <div class="mes-foot"><span>Armado el ${ESP.armado} desde “${escapeHtml(ESP.origen)}”. Tocá una placa para agrandarla.</span></div>`;
+}
+
+function espAbrirBox(key){
+  const c=espClienteActual(); if(!c) return;
+  const [,,resto]=key.split("/"); const [dia,n]=resto.split("-").map(Number);
+  const d=c.dias.find(x=>x.dia===dia); if(!d) return;
+  const p=d.placas.find(x=>x.n===n); if(!p) return;
+  const box=document.getElementById("epBox");
+  box.querySelector("img").src="espejo/"+espMes+"/"+p.img;
+  box.querySelector(".epb-cap").innerHTML=
+    `<b>${c.nombre} · ${d.nombre} ${d.dia} · historia ${p.n}${p.link?" · 🔗 con link":""}</b>${escapeHtml(p.txt||"")}${p.no?`<br><span style="color:#FF7A5C">⛔ no sube${p.motivo?" · "+escapeHtml(p.motivo):""}</span>`:""}`;
+  box.classList.add("on");
+}
+
+(function wireEspejo(){
+  const view=document.getElementById("view-espejo"); if(!view) return;
+  const box=document.getElementById("epBox");
+  box.addEventListener("click",e=>{ if(e.target===box||e.target.classList.contains("x")) box.classList.remove("on"); });
+  addEventListener("keydown",e=>{ if(e.key==="Escape") box.classList.remove("on"); });
+
+  view.addEventListener("click",e=>{
+    const cp=e.target.closest("#espCopiar");
+    if(cp){ navigator.clipboard.writeText(ESP_CMD).then(()=>{cp.textContent="¡Copiado!"; setTimeout(()=>cp.textContent="Copiar",1800);}); return; }
+    const cli=e.target.closest("[data-espcli]");  if(cli){ espCli=cli.dataset.espcli; espFixAbierto=null; renderEspejo(); view.scrollTop=0; return; }
+    const fil=e.target.closest("[data-espfil]");  if(fil){ espFil=fil.dataset.espfil; renderEspejo(); return; }
+    const nav=e.target.closest("[data-espnav]");
+    if(nav){ const i=espMeses.indexOf(espMes)+(nav.dataset.espnav==="next"?1:-1);
+             if(i>=0&&i<espMeses.length) espCargar(espMeses[i]); return; }
+    const ver=e.target.closest("[data-ver]");     if(ver){ espAbrirBox(ver.dataset.ver); return; }
+    const fix=e.target.closest("[data-fix]");
+    if(fix){ espFixAbierto=fix.dataset.fix; renderEspejo();
+             const inp=view.querySelector("[data-fixin]"); if(inp) inp.focus(); return; }
+    const q=e.target.closest("[data-quitar]");    if(q){ store.removeNote(q.dataset.quitar); return; }
+  });
+
+  view.addEventListener("keydown",e=>{
+    if(!e.target.matches("[data-fixin]")) return;
+    if(e.key==="Escape"){ espFixAbierto=null; renderEspejo(); return; }
+    if(e.key!=="Enter") return;
+    e.preventDefault();
+    const txt=e.target.value.trim(); const key=e.target.dataset.fixin;
+    espFixAbierto=null;
+    if(!txt){ renderEspejo(); return; }
+    const c=espClienteActual(), cc=c?clienteDe(c.nombre):null;
+    const [,,resto]=key.split("/"); const [dia,n]=resto.split("-");
+    const etiqueta="🪞 "+dia+"/"+espMes.slice(5)+" #"+n+" — "+txt;
+    if(cc) store.addNote({clientId:cc.id, text:etiqueta, cat:"pend", fav:false, done:false, esp:key, createdAt:Date.now()});
+    else   store.addIdea({text:(c?c.nombre+" · ":"")+etiqueta, color:"#F5C518", pinned:false, createdAt:Date.now()});
+    renderEspejo();
+  });
+})();
+
 /* ---------------- boot ---------------- */
 function boot(){
   store = hasFirebase ? FirebaseStore() : LocalStore();
   const sync=document.getElementById("sync");
   if(store.live){ sync.className="sync-dot live"; sync.title="Sincronizado en la nube"; sync.querySelector("span").innerText="sincronizado"; }
   store.onClients(c=>{ CLIENTS=c||{}; render(); fillCapClients(); if(activeTab==="mes") renderMes(); if(activeTab==="prod") renderProdTab(); });
-  store.onNotes(n=>{ NOTES=n||{}; render(); if(activeTab==="mes") renderMes(); });
+  store.onNotes(n=>{ NOTES=n||{}; render(); if(activeTab==="mes") renderMes(); if(activeTab==="espejo") renderEspejo(); });
   store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); });
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
   store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="mes") renderMes(); });
