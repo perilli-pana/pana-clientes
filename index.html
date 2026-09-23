@@ -715,9 +715,9 @@
   .ep-filtros button.on{background:var(--tile); color:var(--ink); font-weight:650; box-shadow:0 1px 2px rgba(20,20,26,.08)}
   .ep-cli{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:0 3px 6px}
   .ep-sep{flex:1}
-  .ep-cli button{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:6px 12px; border-radius:999px; cursor:pointer}
-  .ep-cli button:hover{color:var(--ink)}
-  .ep-cli button.on{color:#fff; border-color:transparent; font-weight:600}
+  .ep-cli > button{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); font-family:var(--sans); font-size:12.5px; padding:6px 12px; border-radius:999px; cursor:pointer}
+  .ep-cli > button:hover{color:var(--ink)}
+  .ep-cli > button.on{color:#fff; border-color:transparent; font-weight:600}
   .ep-cli .cnt{font-size:11px; opacity:.75}
 
   .ep-dia{margin-top:24px}
@@ -916,8 +916,13 @@
     .ep-top h2{font-size:20px}
     .ep-filtros{margin-left:0; width:100%; overflow-x:auto}
     .ep-filtros button{flex:1}
+    /* en el celu, clientes y filtros van en una sola tira que se desliza al costado:
+       si envuelven, te comen media pantalla antes de ver la primera placa */
     .ep-cli{overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; -webkit-overflow-scrolling:touch}
-    .ep-cli button{flex:none}
+    .ep-sep{display:none}
+    .ep-filtros{width:auto; flex:none}
+    .ep-filtros button{flex:none}
+    .ep-cli > button{flex:none}
     .ep-fila{grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:9px}
     .ep-dia-l{grid-template-columns:1fr; gap:12px}
     .ep-feeds{width:auto; border-left:0; border-top:1px solid var(--tile-edge); padding-left:0; padding-top:12px; flex-direction:row; flex-wrap:wrap}
@@ -2800,6 +2805,7 @@ function renderEspejo(){
         <button data-espfil="feed" class="${espFil==='feed'?'on':''}">📰 Feeds</button>
         <button data-espfil="no" class="${espFil==='no'?'on':''}">⛔ No suben</button>
       </div>
+    </div>
     ${espVista==="calendario" ? espCalendarioHTML(c,dias) : (dias.length ? dias.map(d=>`
       <div class="ep-dia">
         <h3><span class="${d.fecha===hoyStr?'hoy':''}">${/\d/.test(d.nombre)?d.nombre:d.nombre+" "+d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${[d.placas.length?d.placas.length+" historia"+(d.placas.length>1?"s":""):"", d.feeds.length?d.feeds.length+" feed":""].filter(Boolean).join(" + ")}</span></h3>
