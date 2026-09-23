@@ -603,7 +603,9 @@
   .tk-h{font-family:var(--mono); font-size:11px; color:var(--ink-soft); flex:none; min-width:38px}
   .tk-t{flex:1; min-width:0}
   .tk-tarde{font-size:10px; color:var(--fav); background:var(--fav-soft); padding:2px 6px; border-radius:6px; flex:none}
-  .tk-c{display:inline-flex; align-items:center; gap:4px; font-size:13px; flex:none; cursor:pointer; padding:0 2px}
+  .tk-c{display:inline-flex; align-items:center; gap:5px; font-size:13px; flex:none; cursor:pointer; padding:0 2px; max-width:150px}
+  .tk-c b{font-size:11.5px; font-weight:600; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .tk-c:hover b{color:var(--ink)}
   .tk-c i{width:3px; height:14px; border-radius:2px}
   .tk-it .x{border:0; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:11px; opacity:0; flex:none; padding:0 2px}
   .tk-it:hover .x{opacity:1}
@@ -2351,7 +2353,7 @@ function tareaHTML(t,atrasada){
     ${t.hora?`<span class="tk-h">${t.hora}</span>`:""}
     <span class="tk-t">${escapeHtml(t.txt)}</span>
     ${atrasada?`<span class="tk-tarde">${DIAS_CORTOS[parseYmd(t.fecha).getDay()]} ${parseYmd(t.fecha).getDate()}</span>`:""}
-    ${c?`<span class="tk-c" title="${escapeHtml(c.name)}" data-cliente="${t.clientId}"><i style="background:${c.color||'#9A9AA1'}"></i>${c.emoji||"◍"}</span>`:""}
+    ${c?`<span class="tk-c" title="${escapeHtml(c.name)}" data-cliente="${t.clientId}"><i style="background:${c.color||'#9A9AA1'}"></i>${c.emoji||"◍"}<b>${escapeHtml(c.name)}</b></span>`:""}
     <button class="x" data-deltarea="${t.id}" title="Borrar">✕</button>
   </div>`;
 }
