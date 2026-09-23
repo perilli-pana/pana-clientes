@@ -314,16 +314,30 @@ def main():
     if not clientes:
         sys.exit("No encontré ninguna placa adentro de esa carpeta.")
 
-    datos = {
-        "mes": mes,
-        "titulo": "%s %d" % (MESES[num_mes - 1], anio),
-        "origen": os.path.basename(entrega),
-        "armado": date.today().isoformat(),
-        "total": total, "con_link": con_link, "no_suben": no_suben,
-        "feeds": sum(len(d.get("feeds", [])) for c in clientes for d in c["dias"]),
-        "clientes": clientes,
-    }
-    with open(os.path.join(destino_mes, "datos.json"), "w", encoding="utf-8") as f:
+    # mezclar: si ya hay clientes en el espejo que no salen de esta carpeta
+    # (por ejemplo los que trae espejo_notion.js), se respetan.
+    archivo = os.path.join(destino_mes, "datos.json")
+    datos = {"mes": mes, "titulo": "%s %d" % (MESES[num_mes - 1], anio), "clientes": []}
+    if os.path.exists(archivo):
+        with open(archivo, encoding="utf-8") as f:
+            datos = json.load(f)
+    mios = {c["slug"] for c in clientes}
+    otros = [c for c in datos.get("clientes", []) if c["slug"] not in mios]
+    datos["clientes"] = sorted(clientes + otros,
+                               key=lambda c: (1 if c.get("origen") == "notion" else 0, c["nombre"]))
+    datos["mes"] = mes
+    datos["titulo"] = "%s %d" % (MESES[num_mes - 1], anio)
+    datos["origen"] = os.path.basename(entrega)
+    datos["armado"] = date.today().isoformat()
+    cuenta = lambda f: sum(f(d) for c in datos["clientes"] for d in c["dias"])
+    datos["total"]    = cuenta(lambda d: len(d["placas"]))
+    datos["con_link"] = cuenta(lambda d: sum(1 for p in d["placas"] if p.get("link")))
+    datos["no_suben"] = cuenta(lambda d: sum(1 for p in d["placas"] if p.get("no")))
+    datos["feeds"]    = cuenta(lambda d: len(d.get("feeds", [])))
+    if otros:
+        print("  🔗 respeté %d clientes que ya estaban en el espejo (%s)" %
+              (len(otros), ", ".join(c["nombre"] for c in otros)))
+    with open(archivo, "w", encoding="utf-8") as f:
         json.dump(datos, f, ensure_ascii=False, separators=(",", ":"))
 
     # podar meses viejos, si lo pidieron

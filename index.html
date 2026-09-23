@@ -728,6 +728,10 @@
   .ep-img img{width:100%; height:100%; object-fit:cover; display:block}
   .ep-n{position:absolute; top:6px; left:6px; background:rgba(0,0,0,.62); color:#fff; font-family:var(--mono); font-size:10px; padding:2px 6px; border-radius:6px}
   .ep-lk{position:absolute; top:6px; right:6px; background:rgba(0,0,0,.62); font-size:10px; padding:2px 5px; border-radius:6px}
+  .ep-img.plan{aspect-ratio:auto; min-height:150px; display:flex; align-items:center; justify-content:center; padding:18px 12px 24px; background:color-mix(in srgb,var(--ink) 4%,transparent); cursor:zoom-in}
+  .ep-plan-copy{font-size:11.5px; line-height:1.5; color:var(--ink); white-space:pre-wrap; text-align:center; overflow:hidden; max-height:100%}
+  .ep-rec{position:absolute; bottom:7px; left:0; right:0; text-align:center; font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint)}
+  .epb-plan{display:none; max-width:min(460px,90vw); background:var(--tile); color:var(--ink); border-radius:12px; padding:26px 24px; font-size:15px; line-height:1.6; white-space:pre-wrap; text-align:center; max-height:70vh; overflow:auto}
   .ep-body{padding:8px 9px 9px; display:flex; flex-direction:column; gap:6px; flex:1}
   .ep-txt{font-size:11.5px; line-height:1.35; color:var(--ink-soft)}
   .ep-card.no{border-color:color-mix(in srgb,var(--fav) 50%,transparent)}
@@ -1057,7 +1061,7 @@
   </div>
 </div>
 
-<div id="epBox"><button class="x" title="Cerrar">✕</button><img alt="" /><div class="epb-cap"></div></div>
+<div id="epBox"><button class="x" title="Cerrar">✕</button><img alt="" /><div class="epb-plan"></div><div class="epb-cap"></div></div>
 
 <div id="view-ciclo" class="view">
   <iframe id="cicloFrame" title="Ciclo de trabajo"></iframe>
@@ -2642,13 +2646,22 @@ async function espCargar(mes){
 function espCardHTML(c, dia, p){
   const key=espMes+"/"+c.slug+"/"+dia.dia+"-"+p.n;
   const fix=fixDe(key), abierto=espFixAbierto===key;
+  const REC={foto:"📷 con foto", grafica:"▦ gráfica", nota:"✎ a definir"};
+  const arriba = p.img
+    ? `<div class="ep-img" data-ver="${key}">
+         <img loading="lazy" src="espejo/${espMes}/${p.img}" alt="" />
+         <span class="ep-n">${p.n}</span>${p.link?'<span class="ep-lk">🔗</span>':''}
+       </div>`
+    : `<div class="ep-img plan" data-ver="${key}">
+         <div class="ep-plan-copy">${escapeHtml((p.copy||p.txt||"").split("\n").slice(0,7).join("\n"))}</div>
+         <span class="ep-n">${p.n}</span>${p.link?'<span class="ep-lk">🔗</span>':''}
+         ${p.recurso?`<span class="ep-rec">${REC[p.recurso]||p.recurso}</span>`:""}
+       </div>`;
   return `<div class="ep-card ${p.no?'no':''} ${fix?'fix':''}" data-key="${key}">
-    <div class="ep-img" data-ver="${key}">
-      <img loading="lazy" src="espejo/${espMes}/${p.img}" alt="" />
-      <span class="ep-n">${p.n}</span>${p.link?'<span class="ep-lk">🔗</span>':''}
-    </div>
+    ${arriba}
     <div class="ep-body">
-      <div class="ep-txt">${escapeHtml(p.txt||"—")}</div>
+      ${p.img?`<div class="ep-txt">${escapeHtml(p.txt||"—")}</div>`
+             :(p.nota?`<div class="ep-txt">${escapeHtml(p.nota)}</div>`:"")}
       ${p.no?`<div class="ep-no">⛔ no sube${p.motivo?" · "+escapeHtml(p.motivo):""}</div>`:""}
       ${fix?`<div class="ep-fix" data-quitar="${fix.id}" title="Tocá para sacar la corrección">📌<span>${escapeHtml((fix.text||"").replace(/^🪞\s*[^—]*—\s*/,""))}</span></div>`:""}
       ${abierto
@@ -2691,7 +2704,7 @@ function renderEspejo(){
   const chips=ESP.clientes.map(cl=>{
     const cc=clienteDe(cl.nombre), on=cl.slug===espCli, q=cuenta(cl);
     return `<button data-espcli="${cl.slug}" class="${on?'on':''}" style="${on?`background:${cc&&cc.color||'var(--accent)'}`:''}">
-      ${cc&&cc.emoji?cc.emoji+" ":""}${escapeHtml(cl.nombre)}<span class="cnt">${q.t}${q.f?" · 📌"+q.f:""}</span></button>`;
+      ${cc&&cc.emoji?cc.emoji+" ":""}${escapeHtml(cc?cc.name:cl.nombre)}<span class="cnt">${q.t}${q.f?" · 📌"+q.f:""}</span></button>`;
   }).join("");
 
   const pasa=p=>{
@@ -2738,9 +2751,12 @@ function espAbrirBox(key){
   const d=c.dias.find(x=>x.dia===dia); if(!d) return;
   const p=d.placas.find(x=>x.n===n); if(!p) return;
   const box=document.getElementById("epBox");
-  box.querySelector("img").src="espejo/"+espMes+"/"+p.img;
+  const img=box.querySelector("img"), pl=box.querySelector(".epb-plan");
+  if(p.img){ img.style.display=""; pl.style.display="none"; img.src="espejo/"+espMes+"/"+p.img; }
+  else{ img.style.display="none"; img.removeAttribute("src"); pl.style.display="block";
+        pl.textContent=(p.copy||p.txt||"").trim() || "(sin copy)"; }
   box.querySelector(".epb-cap").innerHTML=
-    `<b>${c.nombre} · ${d.nombre} ${d.dia} · historia ${p.n}${p.link?" · 🔗 con link":""}</b>${escapeHtml(p.txt||"")}${p.no?`<br><span style="color:#FF7A5C">⛔ no sube${p.motivo?" · "+escapeHtml(p.motivo):""}</span>`:""}`;
+    `<b>${(clienteDe(c.nombre)||{}).name||c.nombre} · ${d.nombre} ${d.dia} · historia ${p.n}${p.link?" · 🔗 con link":""}</b>${escapeHtml(p.txt||"")}${p.no?`<br><span style="color:#FF7A5C">⛔ no sube${p.motivo?" · "+escapeHtml(p.motivo):""}</span>`:""}`;
   box.classList.add("on");
 }
 
