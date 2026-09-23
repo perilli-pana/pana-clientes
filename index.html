@@ -202,8 +202,6 @@
 
   .view{flex:1; min-height:0; display:none; flex-direction:column}
   .view.active{display:flex}
-  #view-ciclo{padding:0}
-  #cicloFrame{flex:1; width:100%; border:0; min-height:0; background:var(--paper)}
 
   /* ---------- panel de ideas sueltas (tipo Keep) ---------- */
   .ideas-wrap{flex:1; overflow-y:auto; padding:24px 22px 40px}
@@ -731,6 +729,7 @@
   .ep-img.plan{aspect-ratio:auto; min-height:150px; display:flex; align-items:center; justify-content:center; padding:18px 12px 24px; background:color-mix(in srgb,var(--ink) 4%,transparent); cursor:zoom-in}
   .ep-plan-copy{font-size:11.5px; line-height:1.5; color:var(--ink); white-space:pre-wrap; text-align:center; overflow:hidden; max-height:100%}
   .ep-rec{position:absolute; bottom:7px; left:0; right:0; text-align:center; font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint)}
+  .ep-card .ep-rec:first-letter{font-size:11px}
   .epb-plan{display:none; max-width:min(460px,90vw); background:var(--tile); color:var(--ink); border-radius:12px; padding:26px 24px; font-size:15px; line-height:1.6; white-space:pre-wrap; text-align:center; max-height:70vh; overflow:auto}
   .ep-body{padding:8px 9px 9px; display:flex; flex-direction:column; gap:6px; flex:1}
   .ep-txt{font-size:11.5px; line-height:1.35; color:var(--ink-soft)}
@@ -738,7 +737,7 @@
   .ep-card.no .ep-img img{opacity:.4}
   .ep-no{font-size:10.5px; color:var(--fav); font-weight:650; line-height:1.3}
   .ep-card.fix{border-color:#F5A623; box-shadow:0 0 0 1px color-mix(in srgb,#F5A623 30%,transparent)}
-  .ep-fix{display:flex; gap:5px; align-items:flex-start; font-size:10.5px; line-height:1.35; color:#D68910; cursor:pointer}
+  .ep-fix{display:flex; gap:5px; align-items:flex-start; font-size:10.5px; line-height:1.35; color:var(--accent); cursor:pointer}
   .ep-btn{margin-top:auto; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
   .ep-btn:hover{background:var(--accent-soft); color:var(--accent)}
   .ep-in{width:100%; border:1px solid var(--accent); border-radius:7px; padding:5px 7px; font-family:var(--sans); font-size:11.5px; background:transparent; color:var(--ink); outline:none}
@@ -921,6 +920,126 @@
     .ep-in{font-size:16px}
     #epBox img{max-height:70vh}
   }
+
+  /* ============================================================
+     PIEL PANA — blanco, rojo y negro. Tajante.
+     Tomada de la estética que ya usamos en el menú de Leben
+     (títulos tipo Gaspar Noé). Este bloque va último a propósito:
+     pisa lo de arriba, y cuando Bruno cierre la identidad se
+     reemplaza entero sin tocar el resto del archivo.
+     ============================================================ */
+  :root{
+    --paper:#080606; --tile:#0F0D0D; --tile-edge:#241C1C;
+    --ink:#ECE4DE; --ink-soft:#9A8D87; --ink-faint:#6E625D;
+    --accent:#FF1622; --accent-soft:rgba(255,22,34,.14);
+    --fav:#FF1622; --fav-soft:rgba(255,22,34,.14);
+    --radius:11px; --radius-sm:7px;
+    --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.4);
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --paper:#F1EFEC; --tile:#FFFFFF; --tile-edge:#E0DCD7;
+      --ink:#0F0D0D; --ink-soft:#6B615C; --ink-faint:#9A8D87;
+      --accent:#E00D19; --accent-soft:rgba(224,13,25,.10);
+      --fav:#E00D19; --fav-soft:rgba(224,13,25,.10);
+      --shadow:0 1px 2px rgba(15,13,13,.05), 0 10px 28px rgba(15,13,13,.07);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F1EFEC; --tile:#FFFFFF; --tile-edge:#E0DCD7;
+    --ink:#0F0D0D; --ink-soft:#6B615C; --ink-faint:#9A8D87;
+    --accent:#E00D19; --accent-soft:rgba(224,13,25,.10);
+    --fav:#E00D19; --fav-soft:rgba(224,13,25,.10);
+    --shadow:0 1px 2px rgba(15,13,13,.05), 0 10px 28px rgba(15,13,13,.07);
+  }
+  :root[data-theme="dark"]{
+    --paper:#080606; --tile:#0F0D0D; --tile-edge:#241C1C;
+    --ink:#ECE4DE; --ink-soft:#9A8D87; --ink-faint:#6E625D;
+    --accent:#FF1622; --accent-soft:rgba(255,22,34,.14);
+    --fav:#FF1622; --fav-soft:rgba(255,22,34,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.4);
+  }
+
+  /* --- la marca --- */
+  .brand b{font-weight:900; text-transform:uppercase; letter-spacing:-.035em; font-size:21px}
+  .today{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-faint)}
+
+  /* --- las pestañas: sin emoji, tipografía y una línea roja --- */
+  .tabs .tico{display:none}
+  .tabs button{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase}
+  .tabs button.on{color:var(--accent)}
+
+  /* --- dos alturas de texto y nada más ---
+     TÍTULO: Helvetica 900, mayúsculas, apretado.
+     ETIQUETA: monoespaciada, chica, muy separada. */
+  .ep-top h2, .hoy-f, .cd-top b, .cal-top h2{
+    font-weight:900; text-transform:uppercase; letter-spacing:-.025em; line-height:.94;
+  }
+  .ep-top h2, .cal-top h2{font-size:26px}
+  .hoy-f{font-size:19px}
+  .panel h3, .ep-dia h3, .cd-sec h4, .hoy-t, .ef-t, .ep-rec, .mes-legend, .ec-dow, .ep-vista{
+    font-family:var(--mono); font-weight:700; text-transform:uppercase;
+  }
+  .panel h3, .cd-sec h4{font-size:9.5px; letter-spacing:.24em}
+  .ep-dia h3{font-size:9.5px; letter-spacing:.24em}
+  .hoy-t{font-size:9px; letter-spacing:.22em}
+  .ef-t, .ep-rec{font-size:8.5px; letter-spacing:.2em}
+  .panel h3 .cuenta{font-family:var(--sans); font-weight:500}
+
+  /* --- cortes secos: menos redondeo en todo --- */
+  .panel, .cap, .ep-card, .ep-feed, .mes-row, .cd-box, .note, .card, .idea{border-radius:var(--radius)}
+  .st, .hoy-c, .mr-chip, .cap-kinds, .mes-only, .ep-filtros, .sem-c, .fran-d{border-radius:var(--radius-sm)}
+  .ep-cli button{border-radius:var(--radius-sm)}
+
+  /* --- el semáforo sin verde: apagado, encendido, rojo --- */
+  .sem-ley i, .sem-c .p{border-radius:0}
+  .sem-c .p{width:8px; height:8px}
+  .cap-echo{color:var(--ink-soft)}
+  .ep-feed.ok{border-color:var(--tile-edge); background:var(--tile); opacity:.45}
+  .ep-feed.ok .ef-b{color:var(--ink-faint); font-weight:400}
+  .mr-it .tk:hover{border-color:var(--ink); background:color-mix(in srgb,var(--ink) 30%,transparent)}
+  .mr-it.done .tk{background:var(--ink-faint); border-color:var(--ink-faint)}
+  .fre-i .tk:hover{border-color:var(--ink); background:color-mix(in srgb,var(--ink) 30%,transparent)}
+  .fre-i.esp{background:var(--accent-soft)}
+  .ep-fix{color:var(--accent)}
+  .ep-card.fix{border-color:var(--accent); box-shadow:none}
+  .sube-n.ojo b{color:var(--accent)}
+
+  /* --- el número grande, monoespaciado, como un contador --- */
+  .sube-n b, .fran-n, .ec-num{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .sube-n b{font-size:23px; font-weight:700}
+
+  /* ============================================================
+     EL CALENDARIO DEL ESPEJO — el mes de un cliente de un vistazo
+     ============================================================ */
+  .ep-vista{display:flex; gap:3px; background:color-mix(in srgb,var(--ink) 6%,transparent); padding:3px; border-radius:var(--radius-sm)}
+  .ep-vista button{border:0; background:transparent; font-family:var(--mono); font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); padding:6px 12px; border-radius:5px; cursor:pointer}
+  .ep-vista button.on{background:var(--accent); color:#fff}
+  .ec{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--tile-edge); border:1px solid var(--tile-edge); border-radius:var(--radius); overflow:hidden; margin-top:16px}
+  .ec-dow{background:var(--paper); color:var(--ink-faint); font-size:9px; letter-spacing:.2em; padding:8px 10px}
+  .ec-cell{background:var(--tile); min-height:104px; padding:7px 8px 9px; display:flex; flex-direction:column; gap:3px; min-width:0}
+  .ec-cell.pad{background:var(--paper)}
+  .ec-cell.vacio .ec-num{opacity:.3}
+  .ec-cell.hoy{box-shadow:inset 0 0 0 2px var(--accent)}
+  .ec-num{font-size:12px; color:var(--ink-faint); font-weight:700; margin-bottom:2px}
+  .ec-cell.hoy .ec-num{color:var(--accent)}
+  .ec-it{display:flex; align-items:flex-start; gap:5px; font-size:10.5px; line-height:1.3; color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 5%,transparent); padding:3px 5px; border-radius:4px; cursor:pointer; overflow:hidden}
+  .ec-it:hover{color:var(--ink); background:color-mix(in srgb,var(--ink) 11%,transparent)}
+  .ec-it .n{font-family:var(--mono); font-size:9px; color:var(--ink-faint); flex:none; margin-top:1px}
+  .ec-it .t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .ec-it.no{color:var(--accent); background:var(--accent-soft); text-decoration:line-through}
+  .ec-it.fix{box-shadow:inset 0 0 0 1px var(--accent)}
+  .ec-it.feed{background:transparent; border:1px dashed var(--tile-edge); color:var(--ink-faint); font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase}
+  .ec-it.feed.ok{opacity:.4; text-decoration:line-through}
+  @media (max-width:760px){
+    .ec{grid-template-columns:repeat(7,1fr); font-size:9px}
+    .ec-cell{min-height:64px; padding:4px 3px 5px}
+    .ec-it{font-size:8.5px; padding:2px 3px; gap:3px}
+    .ec-it .n{display:none}
+    .ec-dow{padding:5px 3px; font-size:7.5px; letter-spacing:.1em}
+    .ep-top h2, .cal-top h2{font-size:21px}
+  }
 </style>
 </head>
 <body>
@@ -969,7 +1088,6 @@
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
   <button data-tab="cal"><span class="tico">🗓️</span> Calendario</button>
   <button data-tab="prod"><span class="tico">🎬</span> Producciones</button>
-  <button data-tab="ciclo"><span class="tico">🔁</span> Ciclo de trabajo</button>
 </nav>
 
 <div id="view-cabina" class="view active">
@@ -1062,10 +1180,6 @@
 </div>
 
 <div id="epBox"><button class="x" title="Cerrar">✕</button><img alt="" /><div class="epb-plan"></div><div class="epb-cap"></div></div>
-
-<div id="view-ciclo" class="view">
-  <iframe id="cicloFrame" title="Ciclo de trabajo"></iframe>
-</div>
 
 <dialog id="clientDlg">
   <div class="dlg-in">
@@ -1504,7 +1618,6 @@ themeBtn.onclick=()=>{
   const next = cur==="dark" ? "light" : cur==="light" ? "dark" : (matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark");
   document.documentElement.setAttribute("data-theme",next);
   localStorage.setItem("panaTheme",next);
-  syncCicloTheme();
 };
 const savedTheme=localStorage.getItem("panaTheme"); if(savedTheme) document.documentElement.setAttribute("data-theme",savedTheme);
 
@@ -1770,14 +1883,9 @@ if(!localStorage.getItem("panaMesSeen")){ localStorage.setItem("panaMesSeen","1"
 let activeTab = localStorage.getItem("panaTab") || "cabina";
 if(activeTab==="mes") activeTab="cabina";   /* la portada vieja se jubiló */
 const dashTools = document.getElementById("dashTools");
-let cicloLoaded=false;
 
 function currentEffectiveTheme(){
   return document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
-}
-function syncCicloTheme(){
-  const f=document.getElementById("cicloFrame");
-  if(f && f.contentWindow) f.contentWindow.postMessage({__panaTheme:currentEffectiveTheme()}, "*");
 }
 function setTab(name){
   activeTab=name; localStorage.setItem("panaTab",name);
@@ -1789,11 +1897,6 @@ function setTab(name){
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
   if(name==="prod") renderProdTab();
-  if(name==="ciclo"){
-    const f=document.getElementById("cicloFrame");
-    if(!cicloLoaded){ f.src="ciclo.html"; cicloLoaded=true; f.addEventListener("load",syncCicloTheme,{once:true}); }
-    else syncCicloTheme();
-  }
   positionTabs();  /* el header cambia de alto al esconder/mostrar las herramientas */
 }
 document.getElementById("tabs").addEventListener("click",e=>{
@@ -2310,13 +2413,14 @@ function prodsDelMes(cid,base){
     .filter(p=>p.clientId===cid && String(p.date||"").slice(0,7)===ym)
     .sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
 }
+/* Tres estados y nada más: apagado (al día), encendido (algo abierto), rojo (hay
+   que corregir algo de lo que se va a subir). Los colores salen de la piel. */
 function luzDe(c){
   const pend=pendAbiertos(c.id);
   const marcadas=pend.filter(n=>n.esp).length;
-  if(marcadas)        return {color:"#FF5A36", txt:marcadas+" por corregir en lo que se sube"};
-  if(pend.length>2)   return {color:"#F5A623", txt:pend.length+" pendientes abiertos"};
-  if(pend.length)     return {color:"#F5A623", txt:pend.length+" pendiente"+(pend.length>1?"s":"")};
-  return {color:"#2ECC71", txt:"sin pendientes"};
+  if(marcadas)    return {color:"var(--accent)", txt:marcadas+" por corregir en lo que se sube"};
+  if(pend.length) return {color:"var(--ink)",    txt:pend.length+" pendiente"+(pend.length>1?"s":"")};
+  return {color:"var(--ink-faint)", txt:"al día"};
 }
 
 /* ---- lo que se viene: efemérides + producciones, día por día ---- */
@@ -2326,14 +2430,14 @@ function loQueSeViene(dias){
   for(let i=0;i<dias;i++){
     const d=new Date(hoy); d.setDate(d.getDate()+i);
     const ds=ymd(d), items=[];
-    efemFor(d.getFullYear(),d.getMonth(),d.getDate()).forEach(e=>items.push({t:e[1],n:e[0],color:"#9A9AA1"}));
-    efemNotesFor(ds).forEach(e=>items.push({t:"mío",n:e.text,color:"#2ECC71"}));
+    efemFor(d.getFullYear(),d.getMonth(),d.getDate()).forEach(e=>items.push({t:e[1],n:e[0],color:"var(--ink-faint)"}));
+    efemNotesFor(ds).forEach(e=>items.push({t:"mío",n:e.text,color:"var(--ink)"}));
     Object.entries(PRODS).forEach(([id,p])=>{
       if(p.date!==ds) return;
       const c=p.clientId&&CLIENTS[p.clientId];
       items.push({t:"rodaje",n:(c?c.emoji+" ":"🎬 ")+(p.title||"Sin título"),color:c?c.color:"#6B4EFF",prod:id});
     });
-    if(d.getDate()===1) items.push({t:"ciclo",n:"arranca "+MONTHS[d.getMonth()],color:"#6B4EFF"});
+    if(d.getDate()===1) items.push({t:"mes",n:"arranca "+MONTHS[d.getMonth()],color:"var(--accent)"});
     salida.push({fecha:d, ds, items});
   }
   return salida;
@@ -2417,9 +2521,9 @@ function renderCabina(){
       <h3>Los clientes <span class="cuenta">${cls.length}</span></h3>
       <div class="sem">${sem}</div>
       <div class="sem-ley">
-        <span><i style="background:#2ECC71"></i>al día</span>
-        <span><i style="background:#F5A623"></i>tiene pendientes</span>
-        <span><i style="background:#FF5A36"></i>hay algo por corregir en lo que se sube</span>
+        <span><i style="background:var(--ink-faint)"></i>al día</span>
+        <span><i style="background:var(--ink)"></i>tiene pendientes</span>
+        <span><i style="background:var(--accent)"></i>hay algo por corregir en lo que se sube</span>
       </div>
     </div>
     <div class="panel">
@@ -2595,6 +2699,7 @@ function capGuardar(){
    (se arma en la compu con armar_espejo.py y se pushea)
    ============================================================ */
 let ESP=null, espMes=null, espMeses=[], espCli=null, espFil="todas", espPedido=null, espFixAbierto=null;
+let espVista=localStorage.getItem("panaEspVista")||"tira";   /* tira | calendario */
 const ESP_CMD='cd ~/Desktop/pana-dashboard && python3 armar_espejo.py "$HOME/Desktop/PROGRAMAR 14-30 septiembre" && git add espejo && git commit -m "espejo" && git push';
 
 function pelarNombre(s){ return (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim(); }
@@ -2646,7 +2751,7 @@ async function espCargar(mes){
 function espCardHTML(c, dia, p){
   const key=espMes+"/"+c.slug+"/"+dia.dia+"-"+p.n;
   const fix=fixDe(key), abierto=espFixAbierto===key;
-  const REC={foto:"📷 con foto", grafica:"▦ gráfica", nota:"✎ a definir"};
+  const REC={foto:"📷 con foto", grafica:"▦ gráfica", nota:"✎ a definir", nocompartida:"⚠ foto sin compartir"};
   const arriba = p.img
     ? `<div class="ep-img" data-ver="${key}">
          <img loading="lazy" src="espejo/${espMes}/${p.img}" alt="" />
@@ -2669,6 +2774,31 @@ function espCardHTML(c, dia, p){
         : (fix?"":`<button class="ep-btn" data-fix="${key}">corregir</button>`)}
     </div>
   </div>`;
+}
+
+/* El mes entero de un cliente en una grilla, como el calendario de planificación */
+function espCalendarioHTML(c,dias){
+  const [y,m]=espMes.split("-").map(Number);
+  const primero=new Date(y,m-1,1), nd=new Date(y,m,0).getDate();
+  const arranque=(primero.getDay()+6)%7;            /* lunes primero */
+  const porDia={}; dias.forEach(d=>porDia[d.dia]=d);
+  const hoyStr=ymd(new Date());
+  let celdas=["lun","mar","mié","jue","vie","sáb","dom"].map(d=>`<div class="ec-dow">${d}</div>`).join("");
+  for(let i=0;i<arranque;i++) celdas+='<div class="ec-cell pad"></div>';
+  for(let dia=1; dia<=nd; dia++){
+    const d=porDia[dia], ds=ymd(new Date(y,m-1,dia));
+    const placas=d ? d.placas.map(p=>{
+      const key=espMes+"/"+c.slug+"/"+dia+"-"+p.n;
+      return `<div class="ec-it ${p.no?'no':''} ${fixDe(key)?'fix':''}" data-ver="${key}" title="${escapeHtml(p.txt||"")}">
+        <span class="n">${p.n}</span><span class="t">${escapeHtml(p.txt||"—")}${p.link?" 🔗":""}</span></div>`;
+    }).join("") : "";
+    const feeds=d ? (d.feeds||[]).map((f,i)=>{
+      const k=feedKey(c,d,i);
+      return `<div class="ec-it feed ${feedHecho(k)?'ok':''}" data-feed="${k}"><span class="t">feed · ${escapeHtml(f)}</span></div>`;
+    }).join("") : "";
+    celdas+=`<div class="ec-cell ${ds===hoyStr?'hoy':''} ${d?'':'vacio'}"><span class="ec-num">${dia}</span>${placas}${feeds}</div>`;
+  }
+  return `<div class="ec">${celdas}</div>`;
 }
 
 function feedKey(c,d,i){ return espMes+"/"+c.slug+"/"+d.dia+"-f"+i; }
@@ -2723,7 +2853,11 @@ function renderEspejo(){
     <div class="ep-top">
       <h2>${ESP.titulo}</h2>
       ${espMeses.length>1?`<div class="mes-nav"><button data-espnav="prev" ${i<=0?"disabled":""}>‹</button><button data-espnav="next" ${i>=espMeses.length-1?"disabled":""}>›</button></div>`:""}
-      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.fe?` · <b>${mio.fe}</b> feed${mio.fe>1?"s":""}${mio.feOk?" ("+mio.feOk+" hecho"+(mio.feOk>1?"s":"")+")":""}`:""}${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
+      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.fe?` · <b>${mio.fe}</b> feed${mio.fe>1?"s":""}${mio.feOk?" ("+mio.feOk+" hecho"+(mio.feOk>1?"s":"")+")":""}`:""}${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:var(--accent)">${mio.f} marcadas</span>`:""}</div>
+      <div class="ep-vista">
+        <button data-espvista="tira" class="${espVista==='tira'?'on':''}">Tira</button>
+        <button data-espvista="calendario" class="${espVista==='calendario'?'on':''}">Calendario</button>
+      </div>
       <div class="ep-filtros">
         <button data-espfil="todas" class="${espFil==='todas'?'on':''}">Todas</button>
         <button data-espfil="link" class="${espFil==='link'?'on':''}">🔗 Con link</button>
@@ -2733,7 +2867,7 @@ function renderEspejo(){
       </div>
     </div>
     <div class="ep-cli">${chips}</div>
-    ${dias.length ? dias.map(d=>`
+    ${espVista==="calendario" ? espCalendarioHTML(c,dias) : (dias.length ? dias.map(d=>`
       <div class="ep-dia">
         <h3><span class="${d.fecha===hoyStr?'hoy':''}">${d.nombre} ${d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${[d.placas.length?d.placas.length+" historia"+(d.placas.length>1?"s":""):"", d.feeds.length?d.feeds.length+" feed":""].filter(Boolean).join(" + ")}</span></h3>
         <div class="ep-dia-l">
@@ -2741,7 +2875,7 @@ function renderEspejo(){
           ${d.feeds.length?`<div class="ep-feeds">${d.feeds.map((f,i)=>espFeedHTML(c,d,f,i)).join("")}</div>`:""}
         </div>
       </div>`).join("")
-    : '<div class="ep-vacio">Nada con ese filtro.</div>'}
+    : '<div class="ep-vacio">Nada con ese filtro.</div>')}
     <div class="mes-foot"><span>Armado el ${ESP.armado} desde “${escapeHtml(ESP.origen)}”. Tocá una placa para agrandarla.</span></div>`;
 }
 
@@ -2771,6 +2905,8 @@ function espAbrirBox(key){
     if(cp){ navigator.clipboard.writeText(ESP_CMD).then(()=>{cp.textContent="¡Copiado!"; setTimeout(()=>cp.textContent="Copiar",1800);}); return; }
     const cli=e.target.closest("[data-espcli]");  if(cli){ espCli=cli.dataset.espcli; espFixAbierto=null; renderEspejo(); view.scrollTop=0; return; }
     const fil=e.target.closest("[data-espfil]");  if(fil){ espFil=fil.dataset.espfil; renderEspejo(); return; }
+    const vis=e.target.closest("[data-espvista]");
+    if(vis){ espVista=vis.dataset.espvista; localStorage.setItem("panaEspVista",espVista); renderEspejo(); return; }
     const nav=e.target.closest("[data-espnav]");
     if(nav){ const i=espMeses.indexOf(espMes)+(nav.dataset.espnav==="next"?1:-1);
              if(i>=0&&i<espMeses.length) espCargar(espMeses[i]); return; }
