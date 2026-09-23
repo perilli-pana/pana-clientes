@@ -28,6 +28,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 
 MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
          "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+NOMBRE_DIA = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 
 # Cómo se llama en la carpeta  ->  cómo se llama el cliente en el dashboard.
 # Si una marca no está acá, se usa el nombre de la carpeta tal cual.
@@ -46,6 +47,21 @@ ALIAS = {
     "solgast": "Solgast",
     "canntek": "Canntek",
     "degennaro": "De Gennaro Giaccone",
+}
+
+# El Excel de Franco: las solapas se llaman "THUNDER SEPTIEMBRE", "BODE SEPTIEMBRE"...
+# y adentro de cada día él escribe los feeds como  FEED COMIDA / FEED VIDEO JODA.
+DIAS_SEMANA = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
+MARCAS_EXCEL = {
+    "CHINITA": "Chinita", "THUNDER": "Thunder", "PASTA": "Pasta Co", "PASTAS": "Pasta Co",
+    "BODE": "Bodegón Co", "BODEGON": "Bodegón Co", "PARRILLA": "Parrilla Co",
+    "MAR": "Pasta Mar & Vino", "MARYVINO": "Pasta Mar & Vino",
+}
+# y así se llaman las marcas en el JSON ya parseado (franco_<mes>.json)
+SLUG_EXCEL = {
+    "chinita": "Chinita", "thunder": "Thunder", "pasta-co": "Pasta Co",
+    "bodegon-co": "Bodegón Co", "parrilla-co": "Parrilla Co",
+    "pasta-mar-y-vino": "Pasta Mar & Vino",
 }
 
 ANCHO_MINIATURA = 700      # px del lado largo: alcanza para LEER un precio adentro de la placa
@@ -109,6 +125,74 @@ def miniatura(origen, destino, rehacer=False):
     return r.returncode == 0 and os.path.exists(destino)
 
 
+def _es_fila_dias(fila):
+    vals = [pelar(c) for c in fila if c is not None and str(c).strip()]
+    return len(vals) >= 5 and sum(1 for v in vals if v in DIAS_SEMANA) >= 5
+
+
+def _parsear_solapa(ws, anio, num_mes):
+    """La grilla de Franco: una fila con los días, abajo los números, abajo los items."""
+    filas = [[c.value for c in f] for f in ws.iter_rows()]
+    dias, i = {}, 0
+    while i < len(filas):
+        if not _es_fila_dias(filas[i]):
+            i += 1
+            continue
+        col_fecha = {}
+        for col, v in enumerate(filas[i + 1] if i + 1 < len(filas) else []):
+            txt = str(v or "").strip()
+            if re.fullmatch(r"\d{1,2}(\.0)?", txt):
+                col_fecha[col] = int(float(txt))
+        if not col_fecha:
+            i += 1
+            continue
+        j = i + 2
+        while j < len(filas) and not _es_fila_dias(filas[j]):
+            for col, v in enumerate(filas[j]):
+                txt = str(v or "").strip()
+                if txt and col in col_fecha:
+                    dias.setdefault("%04d-%02d-%02d" % (anio, num_mes, col_fecha[col]), []).append(txt)
+            j += 1
+        i = j
+    return dias
+
+
+def leer_feeds(ruta, anio, num_mes):
+    """Devuelve {nombre_cliente: {fecha: [texto del feed, ...]}} leyendo el Excel de
+    Franco (.xlsx) o el JSON que ya dejó parse_franco.py."""
+    ruta = os.path.abspath(os.path.expanduser(ruta))
+    crudo = {}
+    if ruta.lower().endswith(".json"):
+        with open(ruta, encoding="utf-8") as f:
+            data = json.load(f)
+        for slug, v in data.items():
+            if slug.startswith("_"):
+                continue
+            nombre = SLUG_EXCEL.get(slug, slug.replace("-", " ").title())
+            crudo[nombre] = v.get("dias", {})
+    else:
+        import openpyxl
+        wb = openpyxl.load_workbook(ruta, data_only=True)
+        mes_txt = pelar(MESES[num_mes - 1]).upper()
+        for ws in wb:
+            t = pelar(ws.title).upper()
+            if mes_txt not in t:
+                continue
+            marca = MARCAS_EXCEL.get(ws.title.split()[0].upper())
+            if not marca:
+                continue
+            crudo.setdefault(marca, {}).update(_parsear_solapa(ws, anio, num_mes))
+
+    feeds = {}
+    for nombre, dias in crudo.items():
+        for fecha, items in dias.items():
+            for it in items:
+                if re.match(r"^\s*feed\b", str(it), re.I):
+                    txt = re.sub(r"^\s*feed\s*", "", str(it), flags=re.I).strip() or "feed"
+                    feeds.setdefault(nombre, {}).setdefault(fecha, []).append(txt)
+    return feeds
+
+
 def dias_de(carpeta_marca):
     """Las subcarpetas '16 MIERCOLES' ordenadas por número de día."""
     salida = []
@@ -133,6 +217,9 @@ def main():
                     help="rehace todas las miniaturas aunque ya existan")
     ap.add_argument("--guardar", type=int, default=0, metavar="N",
                     help="deja sólo los últimos N meses en espejo/ y borra los más viejos")
+    ap.add_argument("--franco", metavar="ARCHIVO",
+                    help="el Excel de Franco (.xlsx) o el franco_<mes>.json ya parseado, "
+                         "para traer los FEED de cada día")
     args = ap.parse_args()
 
     entrega = os.path.abspath(os.path.expanduser(args.entrega))
@@ -154,6 +241,15 @@ def main():
     anio, num_mes = int(mes[:4]), int(mes[5:7])
     destino_mes = os.path.join(args.salida, mes)
     os.makedirs(destino_mes, exist_ok=True)
+
+    feeds_por_cliente = {}
+    if args.franco:
+        try:
+            feeds_por_cliente = leer_feeds(args.franco, anio, num_mes)
+            n = sum(len(v) for d in feeds_por_cliente.values() for v in d.values())
+            print("  📰 %d feeds del Excel de Franco, en %d marcas" % (n, len(feeds_por_cliente)))
+        except Exception as e:
+            print("  ⚠️  no pude leer los feeds (%s). Sigo sin ellos." % e)
 
     clientes, total, con_link, no_suben = [], 0, 0, 0
 
@@ -194,9 +290,26 @@ def main():
                     "placas": placas,
                 })
 
+        # los feeds que anotó Franco para esta marca, aunque caigan en un día sin placas
+        mis_feeds = feeds_por_cliente.get(nombre, {})
+        por_dia = {d["dia"]: d for d in cliente["dias"]}
+        for fecha, textos in sorted(mis_feeds.items()):
+            numero = int(fecha[8:10])
+            d = por_dia.get(numero)
+            if not d:
+                nombre_dia = NOMBRE_DIA[date(anio, num_mes, numero).weekday()]
+                d = {"dia": numero, "nombre": nombre_dia, "fecha": fecha, "placas": [], "feeds": []}
+                por_dia[numero] = d
+                cliente["dias"].append(d)
+            d.setdefault("feeds", []).extend(textos)
+        cliente["dias"].sort(key=lambda d: d["dia"])
+        total_feeds = sum(len(d.get("feeds", [])) for d in cliente["dias"])
+
         if cliente["dias"]:
             clientes.append(cliente)
-            print("  %-22s %3d placas en %2d días" % (nombre, sum(len(d["placas"]) for d in cliente["dias"]), len(cliente["dias"])))
+            print("  %-22s %3d placas en %2d días%s" % (
+                nombre, sum(len(d["placas"]) for d in cliente["dias"]), len(cliente["dias"]),
+                (" · %d feeds" % total_feeds) if total_feeds else ""))
 
     if not clientes:
         sys.exit("No encontré ninguna placa adentro de esa carpeta.")
@@ -207,6 +320,7 @@ def main():
         "origen": os.path.basename(entrega),
         "armado": date.today().isoformat(),
         "total": total, "con_link": con_link, "no_suben": no_suben,
+        "feeds": sum(len(d.get("feeds", [])) for c in clientes for d in c["dias"]),
         "clientes": clientes,
     }
     with open(os.path.join(destino_mes, "datos.json"), "w", encoding="utf-8") as f:
@@ -229,8 +343,8 @@ def main():
 
     peso = sum(os.path.getsize(os.path.join(r, a))
                for r, _, aa in os.walk(destino_mes) for a in aa) / 1e6
-    print("\n✅ Espejo de %s: %d placas · %d con link · %d marcadas NO SUBIR · %.1f MB" %
-          (datos["titulo"], total, con_link, no_suben, peso))
+    print("\n✅ Espejo de %s: %d placas · %d con link · %d marcadas NO SUBIR · %d feeds · %.1f MB" %
+          (datos["titulo"], total, con_link, no_suben, datos["feeds"], peso))
     print("   Quedó en: %s" % destino_mes)
     print("   Para que lo vean todos:  cd %s && git add espejo && git commit -m 'espejo %s' && git push" % (AQUI, mes))
 

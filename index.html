@@ -738,6 +738,16 @@
   .ep-btn{margin-top:auto; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
   .ep-btn:hover{background:var(--accent-soft); color:var(--accent)}
   .ep-in{width:100%; border:1px solid var(--accent); border-radius:7px; padding:5px 7px; font-family:var(--sans); font-size:11.5px; background:transparent; color:var(--ink); outline:none}
+  .ep-dia-l{display:grid; grid-template-columns:1fr auto; gap:20px; align-items:start}
+  .ep-feeds{width:210px; border-left:1px solid var(--tile-edge); padding-left:18px; display:flex; flex-direction:column; gap:8px}
+  .ep-feed{border:1px solid var(--tile-edge); border-radius:12px; padding:10px 12px; background:var(--tile); display:flex; flex-direction:column; gap:7px}
+  .ep-feed.ok{border-color:color-mix(in srgb,#2ECC71 50%,transparent); background:color-mix(in srgb,#2ECC71 7%,var(--tile))}
+  .ef-t{font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); font-weight:700}
+  .ef-n{font-size:13px; font-weight:600; line-height:1.3; color:var(--ink); text-transform:lowercase}
+  .ef-n::first-letter{text-transform:uppercase}
+  .ef-b{border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
+  .ef-b:hover{background:var(--accent-soft); color:var(--accent)}
+  .ep-feed.ok .ef-b{background:transparent; color:#2ECC71; font-weight:650}
   .ep-vacio{margin:40px auto; max-width:620px; text-align:center; color:var(--ink-soft); font-size:14px; line-height:1.6}
   .ep-vacio h3{font-size:17px; color:var(--ink); margin:0 0 10px; letter-spacing:-.01em}
   .ep-cmd{display:flex; align-items:center; gap:8px; margin:14px auto 0; background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px; padding:10px 12px; text-align:left}
@@ -901,6 +911,9 @@
     .ep-cli{overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; -webkit-overflow-scrolling:touch}
     .ep-cli button{flex:none}
     .ep-fila{grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:9px}
+    .ep-dia-l{grid-template-columns:1fr; gap:12px}
+    .ep-feeds{width:auto; border-left:0; border-top:1px solid var(--tile-edge); padding-left:0; padding-top:12px; flex-direction:row; flex-wrap:wrap}
+    .ep-feed{flex:1; min-width:140px}
     .ep-in{font-size:16px}
     #epBox img{max-height:70vh}
   }
@@ -2418,16 +2431,20 @@ function espResumenHTML(){
     if(!espIntento){ espIntento=true; espCargar().then(()=>{ if(activeTab==="cabina") renderCabina(); }).catch(()=>{}); }
     return "";
   }
-  let t=0,l=0,no=0,fix=0;
-  ESP.clientes.forEach(cl=>cl.dias.forEach(d=>d.placas.forEach(p=>{
-    t++; if(p.link)l++; if(p.no)no++;
-    if(fixDe(ESP.mes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) fix++;
-  })));
+  let t=0,l=0,no=0,fix=0,fe=0,feFalta=0;
+  ESP.clientes.forEach(cl=>cl.dias.forEach(d=>{
+    d.placas.forEach(p=>{
+      t++; if(p.link)l++; if(p.no)no++;
+      if(fixDe(ESP.mes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) fix++;
+    });
+    (d.feeds||[]).forEach((x,i)=>{ fe++; if(!feedHecho(feedKey(cl,d,i))) feFalta++; });
+  }));
   return `<div class="panel">
     <h3>Lo que se sube <span class="cuenta">${escapeHtml(ESP.titulo)}</span></h3>
     <div class="sube-l">
       <span class="sube-n"><b>${t}</b>historias listas</span>
       <span class="sube-n"><b>${l}</b>con link</span>
+      ${fe?`<span class="sube-n ${feFalta?'ojo':''}"><b>${feFalta||fe}</b>${feFalta?"feeds pendientes":"feeds hechos"}</span>`:""}
       ${no?`<span class="sube-n mal"><b>${no}</b>no suben</span>`:""}
       ${fix?`<span class="sube-n ojo"><b>${fix}</b>por corregir</span>`:""}
       <button class="sube-b" data-irespejo>🪞 Abrir el espejo</button>
@@ -2641,6 +2658,17 @@ function espCardHTML(c, dia, p){
   </div>`;
 }
 
+function feedKey(c,d,i){ return espMes+"/"+c.slug+"/"+d.dia+"-f"+i; }
+function feedHecho(k){ return !!((CONFIG.feeds||{})[k]); }
+function espFeedHTML(c,d,txt,i){
+  const k=feedKey(c,d,i), ok=feedHecho(k);
+  return `<div class="ep-feed ${ok?'ok':''}">
+    <div class="ef-t">Feed${d.fecha?" · "+d.dia:""}</div>
+    <div class="ef-n">${escapeHtml(txt)}</div>
+    <button class="ef-b" data-feed="${k}">${ok?"✓ hecho":"marcar hecho"}</button>
+  </div>`;
+}
+
 function renderEspejo(){
   const host=document.getElementById("espBody"); if(!host||!ESP) return;
   const c=espClienteActual(); if(!c) return;
@@ -2648,12 +2676,15 @@ function renderEspejo(){
   const i=espMeses.indexOf(espMes);
 
   const cuenta=cl=>{
-    let t=0,l=0,f=0,n=0;
-    cl.dias.forEach(d=>d.placas.forEach(p=>{
-      t++; if(p.link)l++; if(p.no)n++;
-      if(fixDe(espMes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) f++;
-    }));
-    return {t,l,f,n};
+    let t=0,l=0,f=0,n=0,fe=0,feOk=0;
+    cl.dias.forEach(d=>{
+      d.placas.forEach(p=>{
+        t++; if(p.link)l++; if(p.no)n++;
+        if(fixDe(espMes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) f++;
+      });
+      (d.feeds||[]).forEach((x,i)=>{ fe++; if(feedHecho(feedKey(cl,d,i))) feOk++; });
+    });
+    return {t,l,f,n,fe,feOk};
   };
   const mio=cuenta(c);
 
@@ -2668,29 +2699,34 @@ function renderEspejo(){
     if(espFil==="no")   return !!p.no;
     return true;
   };
+  const verFeeds = espFil==="todas" || espFil==="feed";
   const dias=c.dias.map(d=>{
-    let ps=d.placas.filter(pasa);
+    let ps=espFil==="feed" ? [] : d.placas.filter(pasa);
     if(espFil==="fix") ps=ps.filter(p=>fixDe(espMes+"/"+c.slug+"/"+d.dia+"-"+p.n));
-    return {...d, placas:ps};
-  }).filter(d=>d.placas.length);
+    return {...d, placas:ps, feeds:(verFeeds?(d.feeds||[]):[])};
+  }).filter(d=>d.placas.length || d.feeds.length);
 
   host.innerHTML=`
     <div class="ep-top">
       <h2>${ESP.titulo}</h2>
       ${espMeses.length>1?`<div class="mes-nav"><button data-espnav="prev" ${i<=0?"disabled":""}>‹</button><button data-espnav="next" ${i>=espMeses.length-1?"disabled":""}>›</button></div>`:""}
-      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
+      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.fe?` · <b>${mio.fe}</b> feed${mio.fe>1?"s":""}${mio.feOk?" ("+mio.feOk+" hecho"+(mio.feOk>1?"s":"")+")":""}`:""}${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
       <div class="ep-filtros">
         <button data-espfil="todas" class="${espFil==='todas'?'on':''}">Todas</button>
         <button data-espfil="link" class="${espFil==='link'?'on':''}">🔗 Con link</button>
         <button data-espfil="fix" class="${espFil==='fix'?'on':''}">📌 Marcadas</button>
+        <button data-espfil="feed" class="${espFil==='feed'?'on':''}">📰 Feeds</button>
         <button data-espfil="no" class="${espFil==='no'?'on':''}">⛔ No suben</button>
       </div>
     </div>
     <div class="ep-cli">${chips}</div>
     ${dias.length ? dias.map(d=>`
       <div class="ep-dia">
-        <h3><span class="${d.fecha===hoyStr?'hoy':''}">${d.nombre} ${d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${d.placas.length}</span></h3>
-        <div class="ep-fila">${d.placas.map(p=>espCardHTML(c,d,p)).join("")}</div>
+        <h3><span class="${d.fecha===hoyStr?'hoy':''}">${d.nombre} ${d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${[d.placas.length?d.placas.length+" historia"+(d.placas.length>1?"s":""):"", d.feeds.length?d.feeds.length+" feed":""].filter(Boolean).join(" + ")}</span></h3>
+        <div class="ep-dia-l">
+          <div class="ep-fila">${d.placas.map(p=>espCardHTML(c,d,p)).join("")}</div>
+          ${d.feeds.length?`<div class="ep-feeds">${d.feeds.map((f,i)=>espFeedHTML(c,d,f,i)).join("")}</div>`:""}
+        </div>
       </div>`).join("")
     : '<div class="ep-vacio">Nada con ese filtro.</div>'}
     <div class="mes-foot"><span>Armado el ${ESP.armado} desde “${escapeHtml(ESP.origen)}”. Tocá una placa para agrandarla.</span></div>`;
@@ -2727,6 +2763,10 @@ function espAbrirBox(key){
     if(fix){ espFixAbierto=fix.dataset.fix; renderEspejo();
              const inp=view.querySelector("[data-fixin]"); if(inp) inp.focus(); return; }
     const q=e.target.closest("[data-quitar]");    if(q){ store.removeNote(q.dataset.quitar); return; }
+    const fd=e.target.closest("[data-feed]");
+    if(fd){ const k=fd.dataset.feed, f=Object.assign({},CONFIG.feeds||{});
+            if(f[k]) delete f[k]; else f[k]=true;
+            CONFIG.feeds=f; store.updateConfig({feeds:f}); renderEspejo(); return; }
   });
 
   view.addEventListener("keydown",e=>{
@@ -2756,7 +2796,7 @@ function boot(){
   store.onEvents(e=>{ EVENTS=e||{}; render(); if(document.getElementById("efemDlg").open) renderEfem(); if(activeTab==="cal") renderCalTab(); if(activeTab==="cabina") renderCabina(); });
   store.onIdeas(it=>{ IDEAS=it||{}; if(activeTab==="ideas") renderIdeas(); });
   store.onProds(p=>{ PRODS=p||{}; if(activeTab==="prod") renderProdTab(); if(activeTab==="cabina") renderCabina(); });
-  store.onConfig(m=>{ CONFIG=m||{}; if(activeTab==="cabina") renderCabina(); });
+  store.onConfig(m=>{ CONFIG=m||{}; if(activeTab==="cabina") renderCabina(); if(activeTab==="espejo") renderEspejo(); });
   setTab(activeTab);
 }
 
