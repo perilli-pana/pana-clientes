@@ -777,6 +777,26 @@
   .ep-fix{display:flex; gap:5px; align-items:flex-start; font-size:10.5px; line-height:1.35; color:#D68910; cursor:pointer}
   .ep-btn{margin-top:auto; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
   .ep-btn:hover{background:var(--accent-soft); color:var(--accent)}
+  .sm-tot{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:6px 0 4px}
+  .sm-t{background:var(--tile); border:1px solid var(--tile-edge); border-radius:10px; padding:6px 12px; min-width:74px}
+  .sm-t b{display:block; font-size:20px; line-height:1.1} .sm-t i{font-style:normal; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft)}
+  .sm-t.escrita b{color:#8E8E93} .sm-t.foto b{color:#5AC8FA} .sm-t.notion b{color:#AF52DE} .sm-t.disenada b{color:#FF9F0A} .sm-t.programada b{color:#2ECC71}
+  .sm-falta{margin-left:auto; border:1px solid var(--tile-edge); background:var(--tile); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:6px 10px; border-radius:8px; cursor:pointer}
+  .sm-falta.on{background:var(--accent-soft); color:var(--accent); border-color:var(--accent)}
+  .sm-ley{font-size:10.5px; color:var(--ink-soft); margin:0 0 10px}
+  .sm-dia{margin:0 0 12px} .sm-dia-h{font-size:12px; color:var(--ink-soft); margin:0 0 4px} .sm-dia-h b{font-size:15px; color:var(--ink); margin-right:4px}
+  .sm-dia.hoy .sm-dia-h b{color:var(--accent)}
+  .sm-row{display:grid; grid-template-columns:34px 1fr 96px 120px 96px; gap:8px; align-items:center; padding:5px 8px; border-radius:8px; background:var(--tile); border:1px solid var(--tile-edge); margin-bottom:3px; font-size:12px}
+  .sm-row.ok{opacity:.55}
+  .sm-n{font-weight:700; color:var(--ink-soft); font-size:11px}
+  .sm-tit{overflow:hidden; text-overflow:ellipsis; white-space:nowrap} .sm-tit small{display:block; color:var(--ink-soft); font-size:10px}
+  .sm-luces{display:flex; gap:5px} .sm-luces i{width:13px; height:13px; border-radius:50%; background:color-mix(in srgb,var(--ink) 12%,transparent); display:inline-block}
+  .sm-luces i.on.l0{background:#8E8E93} .sm-luces i.on.l1{background:#5AC8FA} .sm-luces i.on.l2{background:#AF52DE} .sm-luces i.on.l3{background:#FF9F0A} .sm-luces i.on.l4{background:#2ECC71}
+  .sm-falta-t{font-size:11px; color:var(--ink-soft)}
+  .sm-btn{border:0; background:color-mix(in srgb,#F5A623 14%,transparent); color:#B7791F; font-family:var(--sans); font-size:11px; padding:5px 8px; border-radius:7px; cursor:pointer}
+  .sm-btn.ok{background:color-mix(in srgb,#2ECC71 10%,transparent); color:#2ECC71; font-weight:650}
+  .sm-pie{font-size:10.5px; color:var(--ink-soft); margin-top:8px}
+  @media (max-width:640px){ .sm-row{grid-template-columns:28px 1fr 80px; } .sm-falta-t,.sm-btn{grid-column:2 / span 2} }
   .ep-acc{display:flex; gap:6px; margin-top:auto}
   .ep-acc .ep-btn{flex:1; margin-top:0}
   .ep-btn.prog{background:color-mix(in srgb,#F5A623 14%,transparent); color:#B7791F}
@@ -2689,7 +2709,49 @@ function capGuardar(){
    (se arma en la compu con armar_espejo.py y se pushea)
    ============================================================ */
 let ESP=null, espMes=null, espMeses=[], espCli=null, espFil="todas", espPedido=null, espFixAbierto=null;
-let espVista=localStorage.getItem("panaEspVista")||"tira";   /* tira | calendario */
+let espVista=localStorage.getItem("panaEspVista")||"tira";   /* tira | calendario | semaforo */
+let SEM=null, semMes=null, semSoloFalta=localStorage.getItem("panaSemFalta")==="1";
+/* El semáforo: una fila por pieza con cinco luces (semaforo.js lo arma en la compu de Marcos).
+   Cuatro luces vienen del archivo; la quinta (programada) es el tilde de Cami en CONFIG. */
+async function semCargar(){
+  if(SEM && semMes===espMes) return SEM;
+  try{ const r=await fetch("espejo/"+espMes+"/semaforo.json",{cache:"no-store"}); SEM=r.ok?await r.json():null; }
+  catch(e){ SEM=null; }
+  semMes=espMes; return SEM;
+}
+function espSemaforoHTML(c){
+  const sc=SEM && SEM.clientes.find(x=>x.slug===c.slug || x.clave===c.slug);
+  if(!SEM) return `<div class="ep-vacio">Todavía no hay semáforo de este mes.<br><small>En la compu de Marcos: <code>node semaforo.js --mes ${espMes}</code> y subir la carpeta espejo.</small></div>`;
+  if(!sc) return `<div class="ep-vacio">Este cliente no tiene el mes bajado a la mesa de luz todavía.</div>`;
+  const t=sc.totales, hoyStr=ymd(new Date());
+  let prog=0, sinProg=0;
+  sc.dias.forEach(d=>d.piezas.forEach(p=>{ if(p.feed) return; if(progHecha(espMes+"/"+sc.slug+"/"+d.dia+"-"+p.n)) prog++; else if(p.luces.disenada) sinProg++; }));
+  const L=[["escrita","escritas",t.escrita],["foto","con foto",t.foto],["notion","en Notion",t.notion],["disenada","diseñadas",t.disenada],["programada","programadas",prog]];
+  const cab=`<div class="sm-tot">${L.map(([k,l,v])=>`<div class="sm-t ${k}"><b>${v}</b><i>${l}</i></div>`).join("")}<div class="sm-t"><b>${t.piezas}</b><i>piezas</i></div>
+    <button class="sm-falta ${semSoloFalta?'on':''}" data-semfalta="1">${semSoloFalta?"viendo sólo lo que falta":"ver sólo lo que falta"}</button></div>
+    <div class="sm-ley">● escrita · ● con foto · ● en Notion · ● diseñada · ● programada — gris = todavía no</div>`;
+  const dias=sc.dias.map(d=>{
+    const filas=d.piezas.map(p=>{
+      const k=espMes+"/"+sc.slug+"/"+d.dia+"-"+p.n;
+      const pr=!p.feed && progHecha(k);
+      const luces=[p.luces.escrita,p.luces.foto,p.luces.notion,p.luces.disenada,pr];
+      const completa=luces.every(Boolean);
+      if(semSoloFalta && completa) return "";
+      const paso=luces.findIndex(x=>!x);
+      const falta=["escribir","elegir foto","bajar a Notion","diseñar","programar"][paso<0?4:paso];
+      return `<div class="sm-row ${completa?'ok':''}">
+        <span class="sm-n">${p.feed?"feed":p.n}</span>
+        <span class="sm-tit" title="${escapeHtml(p.notas||"")}">${escapeHtml(p.titulo||"—")}${p.pieza&&p.pieza!=="— libre —"?`<small>${escapeHtml(p.pieza)}</small>`:""}</span>
+        <span class="sm-luces">${luces.map((x,i)=>`<i class="${x?'on':''} l${i}"></i>`).join("")}</span>
+        <span class="sm-falta-t">${completa?"✓":(p.feed&&paso===4?"feed":"falta "+falta)}</span>
+        ${!p.feed&&p.luces.disenada?`<button class="sm-btn ${pr?'ok':''}" data-prog="${k}">${pr?"✓ programada":"programar"}</button>`:""}
+      </div>`;
+    }).join("");
+    if(!filas.trim()) return "";
+    return `<div class="sm-dia ${d.fecha===hoyStr?'hoy':''}"><div class="sm-dia-h"><b>${d.dia}</b> ${d.nombre}</div>${filas}</div>`;
+  }).join("");
+  return cab+(dias||`<div class="ep-vacio">No falta nada 🎉</div>`)+`<div class="sm-pie">Armado ${SEM.armado||""}. Fuentes: ${sc.fuentes.calendario?"calendario ✓":"calendario ✗"} · ${sc.fuentes.mesa?"mesa ✓":"mesa ✗"} · ${sc.fuentes.entrega?"entrega ✓":"entrega ✗"}${sinProg?` · <b>${sinProg}</b> diseñadas sin programar`:""}</div>`;
+}
 const ESP_CMD='cd ~/Desktop/pana-dashboard && python3 armar_espejo.py "$HOME/Desktop/PROGRAMAR 14-30 septiembre" && git add espejo && git commit -m "espejo" && git push';
 
 function pelarNombre(s){ return (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim(); }
@@ -2724,6 +2786,7 @@ async function espCargar(mes){
       espPedido=null;
     }
     if(!espCli || !ESP.clientes.some(c=>c.slug===espCli)) espCli=ESP.clientes[0].slug;
+    SEM=null; if(espVista==="semaforo") await semCargar();
     renderEspejo();
   }catch(e){
     ESP=null;
@@ -2853,6 +2916,7 @@ function renderEspejo(){
       <div class="ep-vista">
         <button data-espvista="tira" class="${espVista==='tira'?'on':''}">Tira</button>
         <button data-espvista="calendario" class="${espVista==='calendario'?'on':''}">Calendario</button>
+        <button data-espvista="semaforo" class="${espVista==='semaforo'?'on':''}">🚦 Semáforo</button>
       </div>
     </div>
     <div class="ep-cli">${chips}<span class="ep-sep"></span>
@@ -2865,7 +2929,7 @@ function renderEspejo(){
         <button data-espfil="sinprog" class="${espFil==='sinprog'?'on':''}">⏳ Sin programar</button>
       </div>
     </div>
-    ${espVista==="calendario" ? espCalendarioHTML(c,dias) : (dias.length ? dias.map(d=>`
+    ${espVista==="semaforo" ? espSemaforoHTML(c) : espVista==="calendario" ? espCalendarioHTML(c,dias) : (dias.length ? dias.map(d=>`
       <div class="ep-dia">
         <h3><span class="${d.fecha===hoyStr?'hoy':''}">${/\d/.test(d.nombre)?d.nombre:d.nombre+" "+d.dia}${d.fecha===hoyStr?" · hoy":""}</span><span class="ln"></span><span>${[d.placas.length?d.placas.length+" historia"+(d.placas.length>1?"s":""):"", d.feeds.length?d.feeds.length+" feed":""].filter(Boolean).join(" + ")}</span></h3>
         <div class="ep-dia-l ${d.feeds.length?"":"sinfeed"}">
@@ -2904,7 +2968,10 @@ function espAbrirBox(key){
     const cli=e.target.closest("[data-espcli]");  if(cli){ espCli=cli.dataset.espcli; espFixAbierto=null; renderEspejo(); view.scrollTop=0; return; }
     const fil=e.target.closest("[data-espfil]");  if(fil){ espFil=fil.dataset.espfil; renderEspejo(); return; }
     const vis=e.target.closest("[data-espvista]");
-    if(vis){ espVista=vis.dataset.espvista; localStorage.setItem("panaEspVista",espVista); renderEspejo(); return; }
+    if(vis){ espVista=vis.dataset.espvista; localStorage.setItem("panaEspVista",espVista);
+             if(espVista==="semaforo") semCargar().then(renderEspejo); renderEspejo(); return; }
+    const sf=e.target.closest("[data-semfalta]");
+    if(sf){ semSoloFalta=!semSoloFalta; localStorage.setItem("panaSemFalta",semSoloFalta?"1":"0"); renderEspejo(); return; }
     const nav=e.target.closest("[data-espnav]");
     if(nav){ const i=espMeses.indexOf(espMes)+(nav.dataset.espnav==="next"?1:-1);
              if(i>=0&&i<espMeses.length) espCargar(espMeses[i]); return; }
