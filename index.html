@@ -2778,8 +2778,17 @@ async function espCargar(mes){
     if(!espMeses.length) throw new Error("sin meses");
     espMes = (mes && espMeses.includes(mes)) ? mes : (espMes||espMeses[espMeses.length-1]);
     const r2=await fetch("espejo/"+espMes+"/datos.json",{cache:"no-store"});
-    if(!r2.ok) throw new Error("sin datos");
-    ESP=await r2.json();
+    if(r2.ok) ESP=await r2.json();
+    else {
+      // todavía no hay placas de este mes, pero puede haber semáforo (el mes recién
+      // bajado a la mesa): armamos la lista de clientes desde ahí para poder verlo
+      const r3=await fetch("espejo/"+espMes+"/semaforo.json",{cache:"no-store"});
+      if(!r3.ok) throw new Error("sin datos");
+      const sem=await r3.json(); SEM=sem; semMes=espMes;
+      ESP={mes:espMes, titulo:sem.mes, origen:"semaforo", total:0, con_link:0, no_suben:0, feeds:0,
+           clientes:sem.clientes.map(c=>({nombre:c.nombre, slug:c.slug, dias:[], origen:"semaforo"}))};
+      if(espVista!=="semaforo"){ espVista="semaforo"; localStorage.setItem("panaEspVista",espVista); }
+    }
     if(espPedido){
       const p=pelarNombre(espPedido), hit=ESP.clientes.find(c=>pelarNombre(c.nombre)===p);
       if(hit) espCli=hit.slug;

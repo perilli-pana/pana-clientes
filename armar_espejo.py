@@ -84,7 +84,9 @@ def nombre_cliente(carpeta):
     crudo = re.sub(r"^\d+\s+", "", carpeta).strip()
     crudo = re.sub(r"\s+\d+$", "", crudo).strip()     # las carpetas '... 2' partidas
     p = pelar(crudo)
-    for clave, lindo in ALIAS.items():
+    # la clave más larga primero: "pasta co mar y vino" tiene que caer en "mar y vino",
+    # no en "pasta co"
+    for clave, lindo in sorted(ALIAS.items(), key=lambda kv: -len(kv[0])):
         if p == clave or p.startswith(clave) or clave in p:
             return lindo
     return crudo.title()
@@ -193,8 +195,19 @@ def leer_feeds(ruta, anio, num_mes):
     return feeds
 
 
-def dias_de(carpeta_marca):
-    """Las subcarpetas '16 MIERCOLES' ordenadas por número de día."""
+def dias_de(carpeta_marca, mes=None):
+    """Las subcarpetas '16 MIERCOLES' ordenadas por número de día.
+
+    Acepta las dos formas del estudio:
+      PROGRAMAR septiembre/2 BODEGON/16 MIERCOLES/...          (la vieja)
+      ENTREGA/Bodegon Co/2026-10/16 MIERCOLES/...              (el estándar desde oct-2026,
+                                                                la arma entregar.js)
+    Si adentro de la marca hay carpetas de mes (2026-10), entra a la del mes pedido."""
+    meses = sorted(d for d in os.listdir(carpeta_marca)
+                   if re.match(r"^\d{4}-\d{2}$", d) and os.path.isdir(os.path.join(carpeta_marca, d)))
+    if meses:
+        elegido = mes if mes in meses else meses[-1]
+        carpeta_marca = os.path.join(carpeta_marca, elegido)
     salida = []
     for d in sorted(os.listdir(carpeta_marca)):
         ruta = os.path.join(carpeta_marca, d)
@@ -257,7 +270,7 @@ def main():
         ruta_marca = os.path.join(entrega, marca_dir)
         if not os.path.isdir(ruta_marca) or marca_dir.startswith("."):
             continue
-        dias = dias_de(ruta_marca)
+        dias = dias_de(ruta_marca, mes)
         if not dias:
             continue                      # las carpetas partidas que quedaron vacías
 
