@@ -777,6 +777,13 @@
   .ep-fix{display:flex; gap:5px; align-items:flex-start; font-size:10.5px; line-height:1.35; color:#D68910; cursor:pointer}
   .ep-btn{margin-top:auto; border:0; background:color-mix(in srgb,var(--ink) 5%,transparent); color:var(--ink-soft); font-family:var(--sans); font-size:11px; padding:5px; border-radius:7px; cursor:pointer}
   .ep-btn:hover{background:var(--accent-soft); color:var(--accent)}
+  .ep-acc{display:flex; gap:6px; margin-top:auto}
+  .ep-acc .ep-btn{flex:1; margin-top:0}
+  .ep-btn.prog{background:color-mix(in srgb,#F5A623 14%,transparent); color:#B7791F}
+  .ep-btn.prog.ok{background:color-mix(in srgb,#2ECC71 10%,transparent); color:#2ECC71; font-weight:650}
+  .ep-card.prog{border-color:color-mix(in srgb,#2ECC71 45%,transparent)}
+  .ec-it.prog{opacity:.5}
+  .ec-it.prog .n::after{content:"✓"; color:#2ECC71; margin-left:2px}
   .ep-in{width:100%; border:1px solid var(--accent); border-radius:7px; padding:5px 7px; font-family:var(--sans); font-size:11.5px; background:transparent; color:var(--ink); outline:none}
   .ep-dia-l{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:20px; align-items:start}
   .ep-dia-l.sinfeed{grid-template-columns:minmax(0,1fr)}
@@ -2733,7 +2740,7 @@ async function espCargar(mes){
 
 function espCardHTML(c, dia, p){
   const key=espMes+"/"+c.slug+"/"+dia.dia+"-"+p.n;
-  const fix=fixDe(key), abierto=espFixAbierto===key;
+  const fix=fixDe(key), abierto=espFixAbierto===key, prog=progHecha(key);
   const REC={foto:"📷 con foto", grafica:"▦ gráfica", nota:"✎ a definir", nocompartida:"⚠ foto sin compartir"};
   const arriba = p.img
     ? `<div class="ep-img" data-ver="${key}">
@@ -2745,7 +2752,7 @@ function espCardHTML(c, dia, p){
          <span class="ep-n">${p.n}</span>${p.link?'<span class="ep-lk">🔗</span>':''}
          ${p.recurso?`<span class="ep-rec">${REC[p.recurso]||p.recurso}</span>`:""}
        </div>`;
-  return `<div class="ep-card ${p.no?'no':''} ${fix?'fix':''}" data-key="${key}">
+  return `<div class="ep-card ${p.no?'no':''} ${fix?'fix':''} ${prog?'prog':''}" data-key="${key}">
     ${arriba}
     <div class="ep-body">
       ${p.img?`<div class="ep-txt">${escapeHtml(p.txt||"—")}</div>`
@@ -2754,7 +2761,7 @@ function espCardHTML(c, dia, p){
       ${fix?`<div class="ep-fix" data-quitar="${fix.id}" title="Tocá para sacar la corrección">📌<span>${escapeHtml((fix.text||"").replace(/^🪞\s*[^—]*—\s*/,""))}</span></div>`:""}
       ${abierto
         ? `<input class="ep-in" data-fixin="${key}" placeholder="¿qué hay que corregir?" />`
-        : (fix?"":`<button class="ep-btn" data-fix="${key}">corregir</button>`)}
+        : `<div class="ep-acc">${p.no?"":`<button class="ep-btn prog ${prog?'ok':''}" data-prog="${key}" title="${prog?'Ya está programada en Meta. Tocá para desmarcar':'Todavía nadie la programó en Meta. Tocá cuando la subas'}">${prog?'✓ programada':'⏳ sin programar'}</button>`}${fix?"":`<button class="ep-btn" data-fix="${key}">corregir</button>`}</div>`}
     </div>
   </div>`;
 }
@@ -2772,7 +2779,7 @@ function espCalendarioHTML(c,dias){
     const d=porDia[dia], ds=ymd(new Date(y,m-1,dia));
     const placas=d ? d.placas.map(p=>{
       const key=espMes+"/"+c.slug+"/"+dia+"-"+p.n;
-      return `<div class="ec-it ${p.no?'no':''} ${fixDe(key)?'fix':''}" data-ver="${key}" title="${escapeHtml(p.txt||"")}">
+      return `<div class="ec-it ${p.no?'no':''} ${fixDe(key)?'fix':''} ${progHecha(key)?'prog':''}" data-ver="${key}" title="${escapeHtml(p.txt||"")}">
         <span class="n">${p.n}</span><span class="t">${escapeHtml(p.txt||"—")}${p.link?" 🔗":""}</span></div>`;
     }).join("") : "";
     const feeds=d ? (d.feeds||[]).map((f,i)=>{
@@ -2786,6 +2793,9 @@ function espCalendarioHTML(c,dias){
 
 function feedKey(c,d,i){ return espMes+"/"+c.slug+"/"+d.dia+"-f"+i; }
 function feedHecho(k){ return !!((CONFIG.feeds||{})[k]); }
+// "programada" = alguien (Cami) la subió a Meta y lo tildó acá. Una placa nueva o
+// corregida no tiene el tilde, así que aparece sola como "sin programar".
+function progHecha(k){ return !!((CONFIG.programadas||{})[k]); }
 function espFeedHTML(c,d,txt,i){
   const k=feedKey(c,d,i), ok=feedHecho(k);
   return `<div class="ep-feed ${ok?'ok':''}">
@@ -2802,22 +2812,24 @@ function renderEspejo(){
   const i=espMeses.indexOf(espMes);
 
   const cuenta=cl=>{
-    let t=0,l=0,f=0,n=0,fe=0,feOk=0;
+    let t=0,l=0,f=0,n=0,fe=0,feOk=0,pr=0,sp=0;
     cl.dias.forEach(d=>{
       d.placas.forEach(p=>{
         t++; if(p.link)l++; if(p.no)n++;
-        if(fixDe(espMes+"/"+cl.slug+"/"+d.dia+"-"+p.n)) f++;
+        const k=espMes+"/"+cl.slug+"/"+d.dia+"-"+p.n;
+        if(fixDe(k)) f++;
+        if(!p.no){ if(progHecha(k)) pr++; else sp++; }
       });
       (d.feeds||[]).forEach((x,i)=>{ fe++; if(feedHecho(feedKey(cl,d,i))) feOk++; });
     });
-    return {t,l,f,n,fe,feOk};
+    return {t,l,f,n,fe,feOk,pr,sp};
   };
   const mio=cuenta(c);
 
   const chips=ESP.clientes.map(cl=>{
     const cc=clienteDe(cl.nombre), on=cl.slug===espCli, q=cuenta(cl);
     return `<button data-espcli="${cl.slug}" class="${on?'on':''}" style="${on?`background:${cc&&cc.color||'var(--accent)'}`:''}">
-      ${cc&&cc.emoji?cc.emoji+" ":""}${escapeHtml(cc?cc.name:cl.nombre)}<span class="cnt">${q.t}${q.f?" · 📌"+q.f:""}</span></button>`;
+      ${cc&&cc.emoji?cc.emoji+" ":""}${escapeHtml(cc?cc.name:cl.nombre)}<span class="cnt">${q.t}${q.f?" · 📌"+q.f:""}${q.sp?" · ⏳"+q.sp:""}</span></button>`;
   }).join("");
 
   const pasa=p=>{
@@ -2829,6 +2841,7 @@ function renderEspejo(){
   const dias=c.dias.map(d=>{
     let ps=espFil==="feed" ? [] : d.placas.filter(pasa);
     if(espFil==="fix") ps=ps.filter(p=>fixDe(espMes+"/"+c.slug+"/"+d.dia+"-"+p.n));
+    if(espFil==="sinprog") ps=ps.filter(p=>!p.no && !progHecha(espMes+"/"+c.slug+"/"+d.dia+"-"+p.n));
     return {...d, placas:ps, feeds:(verFeeds?(d.feeds||[]):[])};
   }).filter(d=>d.placas.length || d.feeds.length);
 
@@ -2836,7 +2849,7 @@ function renderEspejo(){
     <div class="ep-top">
       <h2>${ESP.titulo}</h2>
       ${espMeses.length>1?`<div class="mes-nav"><button data-espnav="prev" ${i<=0?"disabled":""}>‹</button><button data-espnav="next" ${i>=espMeses.length-1?"disabled":""}>›</button></div>`:""}
-      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.fe?` · <b>${mio.fe}</b> feed${mio.fe>1?"s":""}${mio.feOk?" ("+mio.feOk+" hecho"+(mio.feOk>1?"s":"")+")":""}`:""}${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
+      <div class="ep-sum"><b>${mio.t}</b> historias · ${mio.l} con link${mio.fe?` · <b>${mio.fe}</b> feed${mio.fe>1?"s":""}${mio.feOk?" ("+mio.feOk+" hecho"+(mio.feOk>1?"s":"")+")":""}`:""}${mio.n?` · <span style="color:var(--fav)">${mio.n} no suben</span>`:""}${mio.t?(mio.sp?` · <span style="color:#F5A623">⏳ ${mio.sp} sin programar</span>`:` · <span style="color:#2ECC71">✓ todo programado</span>`):""}${mio.f?` · <span style="color:#D68910">${mio.f} marcadas</span>`:""}</div>
       <div class="ep-vista">
         <button data-espvista="tira" class="${espVista==='tira'?'on':''}">Tira</button>
         <button data-espvista="calendario" class="${espVista==='calendario'?'on':''}">Calendario</button>
@@ -2849,6 +2862,7 @@ function renderEspejo(){
         <button data-espfil="fix" class="${espFil==='fix'?'on':''}">📌 Marcadas</button>
         <button data-espfil="feed" class="${espFil==='feed'?'on':''}">📰 Feeds</button>
         <button data-espfil="no" class="${espFil==='no'?'on':''}">⛔ No suben</button>
+        <button data-espfil="sinprog" class="${espFil==='sinprog'?'on':''}">⏳ Sin programar</button>
       </div>
     </div>
     ${espVista==="calendario" ? espCalendarioHTML(c,dias) : (dias.length ? dias.map(d=>`
@@ -2903,6 +2917,10 @@ function espAbrirBox(key){
     if(fd){ const k=fd.dataset.feed, f=Object.assign({},CONFIG.feeds||{});
             if(f[k]) delete f[k]; else f[k]=true;
             CONFIG.feeds=f; store.updateConfig({feeds:f}); renderEspejo(); return; }
+    const pg=e.target.closest("[data-prog]");
+    if(pg){ const k=pg.dataset.prog, f=Object.assign({},CONFIG.programadas||{});
+            if(f[k]) delete f[k]; else f[k]={cuando:Date.now()};
+            CONFIG.programadas=f; store.updateConfig({programadas:f}); renderEspejo(); return; }
   });
 
   view.addEventListener("keydown",e=>{
