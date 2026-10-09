@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Planificación — Pana</title>
+<link rel="icon" href="marca/firma.svg">
+<style>
+/* Piel Pana (manual de Bruno): negro de pliego, hueso, humo y un solo rojo. Títulos RG Black, texto RG, acento Editorial. */
+@font-face{font-family:"RG Black";src:url(marca/PPRightGrotesk-CompactBlack.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"RG";src:url(marca/PPRightGrotesk-CompactRegular.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Editorial";src:url(marca/PPEditorialNew-UltralightItalic.woff2) format("woff2");font-display:swap}
+:root{
+  --bg:#0A0808; --pliego:#110E0D; --alza:#181312; --ink:#EDE6E1; --humo:#8A7F7B; --linea:#2A2422;
+  --rojo:#F50000; --ok:#EDE6E1; --falta:#3a302d; --aviso:#F5A623;
+  --f-tit:"RG Black","Arial Narrow",Impact,sans-serif;
+  --f-txt:"RG","Arial Narrow",Helvetica,sans-serif;
+  --f-acento:"Editorial",Georgia,serif;
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --bg:#EDE6E1; --pliego:#E4DCD6; --alza:#F6F1EE; --ink:#0A0808; --humo:#6F6460; --linea:#CFC4BE;
+  --ok:#0A0808; --falta:#CFC4BE; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--f-txt);-webkit-font-smoothing:antialiased;padding-inline:20px;padding-block:0 60px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--rojo);outline-offset:2px}
+.lbl{font:400 11px/1 var(--f-txt);letter-spacing:.18em;text-transform:uppercase;color:var(--humo)}
+.hidden{display:none!important}
+
+/* ---------- barra de arriba ---------- */
+.top{display:flex;align-items:center;gap:16px;padding-block:18px 4px}
+.top img{width:34px;height:34px;display:block}
+.top .seccion{font:400 13px var(--f-txt);letter-spacing:.2em;text-transform:uppercase}
+.top .sp{flex:1}
+.clientes{display:flex;gap:6px;padding-block:14px;border-bottom:1px solid var(--linea);overflow-x:auto;scrollbar-width:none}
+.clientes::-webkit-scrollbar{display:none}
+.cli{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--linea);border-radius:999px;padding:5px 12px 5px 9px;font-size:14px;color:var(--humo)}
+.cli .pt{width:7px;height:7px;border-radius:50%}
+.cli[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+.cli:hover{color:var(--ink)}
+.grupo{flex:none;display:flex;align-items:center;gap:6px}
+.grupo + .grupo{padding-left:10px;border-left:1px solid var(--linea)}
+.quien{font-size:13px;color:var(--humo);border-bottom:1px dashed var(--linea)}
+
+/* ---------- el mes ---------- */
+.mes{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 32px;align-items:end;padding-block:28px 22px}
+.mes-nav{display:flex;align-items:center;gap:14px}
+.mes-nav button.fl{width:40px;height:40px;border:1px solid var(--linea);border-radius:50%;font-size:20px;line-height:1;color:var(--humo)}
+.mes-nav button.fl:hover{color:var(--ink);border-color:var(--ink)}
+h1{font:400 clamp(48px,7vw,96px)/.86 var(--f-tit);text-transform:uppercase;letter-spacing:-.01em;margin:0}
+h1 small{display:block;font:300 italic clamp(18px,2vw,24px)/1.2 var(--f-acento);text-transform:none;color:var(--humo);letter-spacing:0;margin-top:6px}
+.cuenta{display:flex;flex-wrap:wrap;gap:18px 28px;justify-content:flex-end}
+.cuenta div{display:grid;gap:4px;min-width:84px}
+.cuenta b{font:400 34px/1 var(--f-tit);font-variant-numeric:tabular-nums}
+.cuenta b i{font-style:normal;color:var(--humo);font-size:20px}
+
+/* adelanto: los meses que vienen */
+.adelanto{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px}
+.am{flex:none;display:grid;gap:6px;width:118px;padding:10px 12px;border:1px solid var(--linea);border-radius:6px;text-align:left}
+.am[aria-current="true"]{border-color:var(--rojo)}
+.am .n{font:400 15px/1 var(--f-tit);text-transform:uppercase;letter-spacing:.02em}
+.am .bar{height:3px;background:var(--falta);border-radius:2px;overflow:hidden;display:flex}
+.am .bar span{background:var(--ink)}
+.am .bar span.r{background:var(--rojo)}
+.am .t{font-size:12px;color:var(--humo)}
+
+.vistas{display:flex;gap:4px;align-items:center;margin-bottom:12px}
+.vistas button{padding:6px 14px;border-radius:999px;font-size:14px;color:var(--humo);border:1px solid transparent}
+.vistas button[aria-pressed="true"]{color:var(--ink);border-color:var(--linea);background:var(--pliego)}
+.vistas .sp{flex:1}
+.leyenda{display:flex;gap:14px;font-size:12px;color:var(--humo);flex-wrap:wrap}
+.leyenda span{display:inline-flex;align-items:center;gap:5px}
+
+/* luces: escrito · foto · notion · diseñada · programada */
+.luces{display:inline-flex;gap:3px;align-items:center}
+.luz{width:7px;height:7px;border-radius:50%;background:var(--falta)}
+.luz.on{background:var(--ok)}
+.luz.cambio{background:var(--aviso)}
+button.luz{width:10px;height:10px}
+
+/* ---------- calendario ---------- */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .dow{font:400 11px var(--f-txt);letter-spacing:.18em;text-transform:uppercase;color:var(--humo);padding:0 4px 4px}
+.dia{min-height:118px;background:var(--pliego);border:1px solid transparent;border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:5px;text-align:left;min-width:0;cursor:pointer}
+.dia:hover{border-color:var(--linea)}
+.dia.hoy{border-color:var(--rojo)}
+.dia.fuera{visibility:hidden}
+.dia .num{display:flex;justify-content:space-between;align-items:baseline;font:400 20px/1 var(--f-tit)}
+.dia .ef{font:300 italic 13px/1.15 var(--f-acento);color:var(--humo);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{display:flex;align-items:center;gap:6px;background:var(--alza);border-radius:4px;padding:4px 6px;font-size:13px;min-width:0}
+.pill .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill .tx.vacio{color:var(--humo);font-style:italic}
+.canal{display:inline-flex;gap:2px;flex:none}
+.canal i{font:400 9px/1 var(--f-txt);letter-spacing:.05em;padding:2px 3px;border-radius:2px;font-style:normal}
+.canal i.f{background:var(--rojo);color:#fff}
+.canal i.s{border:1px solid var(--humo);color:var(--humo)}
+.dia .mas{font-size:12px;color:var(--humo);opacity:0;margin-top:auto}
+.dia:hover .mas{opacity:1}
+
+/* ---------- lista (el mes escrito, día por día) ---------- */
+.lista{display:grid;gap:0}
+.fila{display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;padding-block:18px;border-top:1px solid var(--linea)}
+.fila.hoy .fd b{color:var(--rojo)}
+.fd{display:grid;gap:2px;align-content:start}
+.fd b{font:400 44px/.9 var(--f-tit)}
+.fd span{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--humo)}
+.fd em{font:300 italic 14px/1.2 var(--f-acento);color:var(--humo);margin-top:6px}
+.posts{display:grid;gap:10px;min-width:0}
+.agregar{justify-self:start;font-size:14px;color:var(--humo);padding:6px 0}
+.agregar:hover{color:var(--ink)}
+
+/* ---------- un posteo ---------- */
+.post{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;background:var(--pliego);border-radius:6px;padding:12px;min-width:0}
+.post.nuevo{outline:1px solid var(--rojo)}
+.fotos{display:grid;gap:6px;align-content:start}
+.foto{position:relative;aspect-ratio:4/5;background:var(--alza);border-radius:4px;overflow:hidden}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .x{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(10,8,8,.75);color:#EDE6E1;font-size:14px;line-height:22px;text-align:center;opacity:0}
+.foto:hover .x{opacity:1}
+.foto.chica{aspect-ratio:1/1}
+.fotos .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.pegar{border:1px dashed var(--linea);border-radius:4px;padding:10px 8px;font-size:12px;color:var(--humo);text-align:center;background:transparent;width:100%;resize:none;min-height:56px}
+.pegar:focus{border-color:var(--ink);color:var(--ink);outline:none}
+.grafica{aspect-ratio:4/5;border-radius:4px;display:grid;place-items:center;background:var(--rojo);color:#fff;font:400 22px/1 var(--f-tit);text-transform:uppercase;letter-spacing:.02em}
+.cuerpo{display:grid;gap:8px;min-width:0}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tog{font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--linea);color:var(--humo)}
+.tog[aria-pressed="true"].f{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.tog[aria-pressed="true"].s{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tog[aria-pressed="true"].g{border-color:var(--ink);color:var(--ink)}
+.ctl .sp{flex:1}
+.ctl .ic{color:var(--humo);font-size:14px;padding:2px 5px}
+.ctl .ic:hover{color:var(--ink)}
+.ctl .ic:disabled{opacity:.25;cursor:default}
+textarea.copy,textarea.notas{width:100%;resize:none;border:0;border-radius:4px;padding:10px 12px;line-height:1.35;overflow:hidden}
+textarea.copy{background:var(--alza);font-size:17px;min-height:72px}
+textarea.notas{background:transparent;border:1px dashed var(--linea);font-size:14px;color:var(--humo);min-height:40px}
+textarea.notas:focus{color:var(--ink)}
+textarea:focus{outline:1px solid var(--humo)}
+.estado{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--humo);flex-wrap:wrap}
+.estado label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.estado input{accent-color:var(--rojo);margin:0}
+.firmado{margin-left:auto;font-size:11px;letter-spacing:.06em}
+
+/* ---------- panel del día (desde el calendario) ---------- */
+.panel{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) min(720px,100%);z-index:20}
+.panel .fondo{background:rgba(10,8,8,.6)}
+.panel .hoja{background:var(--bg);border-left:1px solid var(--linea);overflow-y:auto;padding:22px 22px 60px;display:grid;gap:14px;align-content:start}
+.hoja .cab{display:flex;align-items:center;gap:10px}
+.hoja .cab h2{font:400 40px/.9 var(--f-tit);text-transform:uppercase;margin:0;flex:1}
+.hoja .cab button{width:36px;height:36px;border:1px solid var(--linea);border-radius:50%;color:var(--humo);font-size:18px}
+.hoja .ef{font:300 italic 16px var(--f-acento);color:var(--humo)}
+
+/* ---------- puerta ---------- */
+.puerta{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:50}
+.puerta form{display:grid;gap:12px;justify-items:center}
+.puerta input{background:var(--pliego);border:1px solid var(--linea);border-radius:999px;padding:10px 18px;text-align:center;width:220px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.vacio-mes{padding:40px 0;color:var(--humo);font:300 italic 22px var(--f-acento)}
+
+@media (max-width:760px){
+  body{padding-inline:14px}
+  .mes{grid-template-columns:1fr}
+  .cuenta{justify-content:flex-start}
+  .fila{grid-template-columns:1fr;gap:10px}
+  .fd{grid-auto-flow:column;justify-content:start;align-items:baseline;gap:10px}
+  .post{grid-template-columns:96px minmax(0,1fr)}
+  .panel{grid-template-columns:1fr}
+  .panel .fondo{display:none}
+  .vistas [data-v="cal"]{display:none}
+  .grupo + .grupo{padding-left:0;border-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="puerta hidden" id="puerta">
+  <form id="puertaForm">
+    <img src="marca/firma.svg" alt="" width="64" height="64">
+    <input id="clave" type="password" placeholder="clave" autocomplete="off" aria-label="Clave">
+  </form>
+</div>
+
+<header class="top">
+  <img src="marca/firma.svg" alt="Pana">
+  <span class="seccion">Planificación</span>
+  <span class="sp"></span>
+  <button class="quien" id="quien" title="Para firmar lo que tocás">—</button>
+</header>
+<nav class="clientes" id="clientes" aria-label="Clientes"></nav>
+
+<section class="mes">
+  <div class="mes-nav">
+    <button class="fl" id="prev" aria-label="Mes anterior">‹</button>
+    <h1 id="titulo">—<small>—</small></h1>
+    <button class="fl" id="next" aria-label="Mes siguiente">›</button>
+  </div>
+  <div class="cuenta" id="cuenta"></div>
+</section>
+
+<nav class="adelanto" id="adelanto" aria-label="Meses"></nav>
+
+<div class="vistas">
+  <button data-v="cal" aria-pressed="true">Calendario</button>
+  <button data-v="lista" aria-pressed="false">Escribir</button>
+  <span class="sp"></span>
+  <div class="leyenda">
+    <span><span class="luces"><span class="luz on"></span><span class="luz"></span><span class="luz"></span><span class="luz"></span><span class="luz"></span></span>escrito · foto · Notion · diseñada · programada</span>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<div class="panel hidden" id="panel">
+  <div class="fondo" id="panelFondo"></div>
+  <div class="hoja" id="hoja"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const EFEM={
+  "01-01":[["Año Nuevo","feriado"]],
+  "02-09":[["Día mundial de la pizza","gastro"]],
+  "02-14":[["San Valentín","comercial"]],
+  "02-16":[["Carnaval","feriado"]],
+  "02-17":[["Carnaval","feriado"]],
+  "03-08":[["Día de la mujer","comercial"]],
+  "03-24":[["Día de la memoria","feriado"]],
+  "04-02":[["Malvinas","feriado"]],
+  "04-03":[["Viernes Santo","feriado"]],
+  "04-17":[["Día mundial del Malbec","gastro"]],
+  "05-01":[["Día del trabajador","feriado"]],
+  "05-25":[["Revolución de Mayo","feriado"]],
+  "05-28":[["Día de la hamburguesa","gastro"]],
+  "06-17":[["Paso a la inmortalidad de Güemes","feriado"]],
+  "06-20":[["Día de la bandera","feriado"]],
+  "06-21":[["Día del padre","comercial"]],
+  "07-09":[["Día de la independencia","feriado"]],
+  "07-20":[["Día del amigo","comercial"]],
+  "08-07":[["Día internacional de la cerveza","gastro"]],
+  "08-16":[["Día del niño","comercial"]],
+  "08-17":[["Paso a la inmortalidad de San Martín","feriado"]],
+  "09-11":[["Día del maestro","comercial"]],
+  "09-21":[["Primavera / Día del estudiante","comercial"]],
+  "10-12":[["Día de la diversidad cultural","feriado"]],
+  "10-18":[["Día de la madre","comercial"]],
+  "10-31":[["Halloween","comercial"]],
+  "11-20":[["Día de la soberanía nacional","feriado"]],
+  "11-27":[["Black Friday","comercial"]],
+  "12-08":[["Inmaculada Concepción","feriado"]],
+  "12-24":[["Nochebuena","comercial"]],
+  "12-25":[["Navidad","feriado"]],
+  "12-31":[["Año nuevo (víspera)","comercial"]],
+};
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDOO8I1vEghkARrgKXALa55a8q9XTFgJBg",
+  authDomain: "pana-clientes.firebaseapp.com",
+  databaseURL: "https://pana-clientes-default-rtdb.firebaseio.com",
+  projectId: "pana-clientes",
+  storageBucket: "pana-clientes.firebasestorage.app",
+  messagingSenderId: "782717934210",
+  appId: "1:782717934210:web:c439e2ca44f9a87942329b",
+};
+const CLAVE = "pana2026";
+
+// Quién planifica qué: arriba los de Cami, después Grupo Co, después el resto.
+const GRUPOS = [
+  ["Cami", ["AP","Aurelia","Cantina Bernardo","Clínica de Fracturas","Solgast","Vialmaq","Canntek"]],
+  ["Grupo Co", ["Thunder","Bodegón Co","Chinita","Parrilla Co","Pasta Co","Pasta Mar & Vino"]],
+];
+const FUERA = ["Audiovisual","Pana","Katuka","Leben"];   // no se planifican mes a mes acá
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const DIAS  = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const ADELANTO = 6;   // cuántos meses para adelante se ven en la tira
+
+/* ---------- preferencias de este navegador ---------- */
+const pref = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:v; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+};
+const tema = pref.get("panaTheme",null);
+if(tema) document.documentElement.setAttribute("data-theme",tema);
+addEventListener("storage",e=>{ if(e.key==="panaTheme" && e.newValue) document.documentElement.setAttribute("data-theme",e.newValue); });
+addEventListener("message",e=>{ if(e.data && e.data.panaTheme) document.documentElement.setAttribute("data-theme",e.data.panaTheme); });
+
+/* ---------- utilidades ---------- */
+const $ = s=>document.querySelector(s);
+function el(tag,cls,txt){ const n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
+const pad = n=>String(n).padStart(2,"0");
+const ymd = (y,m,d)=>y+"-"+pad(m+1)+"-"+pad(d);
+const ymKey = (y,m)=>y+"-"+pad(m+1);
+function hoyISO(){ const d=new Date(); return ymd(d.getFullYear(),d.getMonth(),d.getDate()); }
+function toast(t){ const n=$("#toast"); n.textContent=t; n.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>n.classList.remove("on"),2200); }
+function driveId(s){
+  s=String(s||"");
+  let m=s.match(/\/d\/([A-Za-z0-9_-]{20,})/) || s.match(/[?&]id=([A-Za-z0-9_-]{20,})/);
+  return m ? m[1] : null;
+}
+function fotoDe(id,name){ return { id, name:name||"", link:"https://drive.google.com/file/d/"+id+"/view", thumb:"https://drive.google.com/thumbnail?id="+id+"&sz=w600" }; }
+function efemDe(iso){
+  const out=[]; const mmdd=iso.slice(5);
+  (EFEM[mmdd]||[]).forEach(e=>out.push(e[0]));
+  Object.values(EVENTS).forEach(e=>{ if(e.date===iso && e.text) out.push(e.text); });
+  return out;
+}
+
+/* ---------- estado ---------- */
+let CLIENTS={}, EVENTS={}, PLAN={};     // PLAN = {ym: {postId: post}} del cliente abierto
+let cur = { client: pref.get("plani.client",""), y:0, m:0, vista: pref.get("plani.vista","cal"), dia:null };
+{ const d=new Date(); const s=pref.get("plani.ym",""); const p=s.split("-").map(Number);
+  if(p.length===2 && p[0]>2000){ cur.y=p[0]; cur.m=p[1]-1; } else { cur.y=d.getFullYear(); cur.m=d.getMonth(); } }
+if(innerWidth<=760) cur.vista="lista";
+let quien = pref.get("plani.quien","");
+let db=null, refPlan=null, recienCreado=null;
+
+/* ---------- luces de un posteo ---------- */
+function firma(p){ return [p.fecha,!!p.feed,!!p.story,p.copy||"",p.notas||"",!!p.grafica,(p.fotos||[]).map(f=>f.id).join(",")].join("|"); }
+function luces(p){
+  const notion = p.notion ? (p.notion.sig===firma(p) ? "on" : "cambio") : "";
+  return [
+    ["escrito", (p.copy||"").trim() ? "on":""],
+    ["foto", ((p.fotos||[]).length || p.grafica) ? "on":""],
+    ["en Notion", notion],
+    ["diseñada", p.disenada ? "on":""],
+    ["programada", p.programada ? "on":""],
+  ];
+}
+function lucesEl(p){
+  const w=el("span","luces");
+  luces(p).forEach(([nom,st])=>{ const l=el("span","luz"+(st?" "+st:"")); l.title=nom+(st==="on"?" ✓":st==="cambio"?" (cambió después de mandarlo)":""); w.appendChild(l); });
+  return w;
+}
+
+/* ---------- datos ---------- */
+function postsDelMes(ym){ return Object.entries(PLAN[ym]||{}).map(([id,p])=>({id,...p})); }
+function postsDelDia(iso){
+  return postsDelMes(iso.slice(0,7)).filter(p=>p.fecha===iso)
+    .sort((a,b)=>(a.orden??0)-(b.orden??0) || (a.createdAt||0)-(b.createdAt||0));
+}
+function ruta(p){ return "plani/"+cur.client+"/"+p.fecha.slice(0,7)+"/"+p.id; }
+function guardar(p,patch){
+  patch.updatedAt=Date.now(); if(quien) patch.by=quien;
+  const ym=p.fecha.slice(0,7);
+  // escritura optimista: el siguiente toque ya ve el cambio aunque la nube no haya contestado
+  if(PLAN[ym] && PLAN[ym][p.id]) Object.assign(PLAN[ym][p.id],patch);
+  return db.ref("panaDashboard/"+ruta(p)).update(patch);
+}
+function nuevoPost(iso){
+  const hermanos=postsDelDia(iso);
+  const orden=hermanos.length ? Math.max(...hermanos.map(p=>p.orden??0))+1 : 0;
+  const p={ fecha:iso, orden, copy:"", notas:"", feed:false, story:true, grafica:false, fotos:[], disenada:false, programada:false, createdAt:Date.now(), updatedAt:Date.now(), by:quien||"" };
+  const ref=db.ref("panaDashboard/plani/"+cur.client+"/"+iso.slice(0,7)).push(p);
+  recienCreado=ref.key;
+  (PLAN[iso.slice(0,7)] ||= {})[ref.key]=p;
+  return ref.key;
+}
+function borrar(p){
+  if(!confirm("¿Borrar este posteo del "+Number(p.fecha.slice(8))+"?")) return;
+  delete PLAN[p.fecha.slice(0,7)][p.id];
+  db.ref("panaDashboard/"+ruta(p)).remove();
+  render();
+}
+function mover(p,delta){
+  const hs=postsDelDia(p.fecha); const i=hs.findIndex(x=>x.id===p.id); const j=i+delta;
+  if(j<0||j>=hs.length) return;
+  hs.splice(j,0,hs.splice(i,1)[0]);
+  hs.forEach((x,k)=>{ if((x.orden??0)!==k) guardar(x,{orden:k}); });
+  render();
+}
+function cambiarFecha(p,iso){
+  if(!iso || iso===p.fecha) return;
+  const viejo={...p}; delete viejo.id;
+  const ymV=p.fecha.slice(0,7), ymN=iso.slice(0,7);
+  const nuevo={...viejo, fecha:iso, orden:postsDelDia(iso).length, updatedAt:Date.now(), by:quien||viejo.by||""};
+  delete PLAN[ymV][p.id];
+  db.ref("panaDashboard/plani/"+cur.client+"/"+ymV+"/"+p.id).remove();
+  db.ref("panaDashboard/plani/"+cur.client+"/"+ymN+"/"+p.id).set(nuevo);
+  (PLAN[ymN] ||= {})[p.id]=nuevo;
+  toast("Pasó al "+Number(iso.slice(8))+" de "+MESES[Number(iso.slice(5,7))-1]);
+  render();
+}
+
+/* ---------- no repintar encima de lo que estás escribiendo ---------- */
+let pendiente=false;
+function escribiendo(){ const a=document.activeElement; return a && (a.tagName==="TEXTAREA"||a.tagName==="INPUT") && a.closest(".post"); }
+function render(){
+  if(escribiendo()){ pendiente=true; return; }
+  pendiente=false;
+  renderClientes(); renderMes(); renderAdelanto(); renderMain();
+  if(cur.dia) renderPanel();
+}
+// se espera un poco: si el foco salió por un clic en otro botón, ese clic tiene que llegar antes de repintar
+document.addEventListener("focusout",()=>setTimeout(()=>{ if(pendiente && !escribiendo()) render(); },250));
+
+/* ---------- clientes ---------- */
+function clientesOrdenados(){
+  const lista=Object.entries(CLIENTS).map(([id,c])=>({id,...c})).filter(c=>!FUERA.includes(c.name));
+  const grupos=GRUPOS.map(([nom,names])=>[nom, names.map(n=>lista.find(c=>c.name===n)).filter(Boolean)]);
+  const usados=new Set(grupos.flatMap(g=>g[1].map(c=>c.id)));
+  const resto=lista.filter(c=>!usados.has(c.id)).sort((a,b)=>(a.order||0)-(b.order||0));
+  if(resto.length) grupos.push(["Otros",resto]);
+  return grupos;
+}
+function renderClientes(){
+  const w=$("#clientes"); w.innerHTML="";
+  clientesOrdenados().forEach(([nom,cs])=>{
+    if(!cs.length) return;
+    const g=el("div","grupo");
+    cs.forEach(c=>{
+      const b=el("button","cli"); b.setAttribute("aria-pressed",String(c.id===cur.client));
+      const pt=el("span","pt"); pt.style.background=c.color||"#888"; b.append(pt, document.createTextNode(c.name));
+      b.onclick=()=>abrirCliente(c.id);
+      g.appendChild(b);
+    });
+    w.appendChild(g);
+  });
+  $("#quien").textContent = quien ? "Sos "+quien : "¿Quién sos?";
+}
+function abrirCliente(id){
+  if(refPlan) refPlan.off();
+  cur.client=id; pref.set("plani.client",id); PLAN={};
+  refPlan=db.ref("panaDashboard/plani/"+id);
+  refPlan.on("value",s=>{ PLAN=s.val()||{}; render(); });
+  render();
+}
+
+/* ---------- encabezado del mes: dónde está parada ---------- */
+function resumen(ym){
+  const ps=postsDelMes(ym); const c={total:ps.length, escrito:0, foto:0, notion:0, disenada:0, programada:0};
+  ps.forEach(p=>{ const l=luces(p); if(l[0][1]) c.escrito++; if(l[1][1]) c.foto++; if(l[2][1]==="on") c.notion++; if(l[3][1]) c.disenada++; if(l[4][1]) c.programada++; });
+  const dias=new Set(ps.map(p=>p.fecha)); c.dias=dias.size;
+  return c;
+}
+function renderMes(){
+  const c=CLIENTS[cur.client];
+  $("#titulo").innerHTML=""; $("#titulo").append(document.createTextNode(MESES[cur.m]+" "+cur.y));
+  const sm=el("small",null,c ? c.name : "Elegí un cliente"); $("#titulo").appendChild(sm);
+  const r=resumen(ymKey(cur.y,cur.m)), w=$("#cuenta"); w.innerHTML="";
+  const diasMes=new Date(cur.y,cur.m+1,0).getDate();
+  [["Posteos",r.total,""],["Días con algo",r.dias,"/"+diasMes],["Escritos",r.escrito,"/"+r.total],["Con foto",r.foto,"/"+r.total],["En Notion",r.notion,"/"+r.total],["Diseñadas",r.disenada,"/"+r.total],["Programadas",r.programada,"/"+r.total]]
+    .forEach(([k,v,de])=>{ const d=el("div"); const b=el("b",null,String(v)); if(de){ const i=el("i",null,de); b.appendChild(i); } d.append(el("span","lbl",k),b); w.appendChild(d); });
+}
+function renderAdelanto(){
+  const w=$("#adelanto"); w.innerHTML="";
+  const hoy=new Date(); let y=hoy.getFullYear(), m=hoy.getMonth()-1;
+  for(let i=0;i<ADELANTO+2;i++){
+    const d=new Date(y,m+i,1), ym=ymKey(d.getFullYear(),d.getMonth()), r=resumen(ym);
+    const b=el("button","am"); b.setAttribute("aria-current",String(d.getFullYear()===cur.y&&d.getMonth()===cur.m));
+    b.appendChild(el("span","n",MESES[d.getMonth()].slice(0,3)+" "+String(d.getFullYear()).slice(2)));
+    const bar=el("span","bar"); const diasMes=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    const pE=Math.round(r.dias/diasMes*100), pN=r.total?Math.round(r.notion/r.total*pE):0;
+    const sN=el("span","r"); sN.style.width=pN+"%"; const sE=el("span"); sE.style.width=(pE-pN)+"%"; bar.append(sN,sE);
+    b.appendChild(bar);
+    b.appendChild(el("span","t", r.total ? r.total+" posteos · "+r.dias+" días" : "vacío"));
+    b.onclick=()=>irA(d.getFullYear(),d.getMonth());
+    w.appendChild(b);
+  }
+}
+function irA(y,m){ cur.y=y; cur.m=m; pref.set("plani.ym",ymKey(y,m)); render(); }
+
+/* ---------- vistas ---------- */
+function renderMain(){
+  document.querySelectorAll(".vistas button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===cur.vista)));
+  const w=$("#main"); w.innerHTML="";
+  if(!cur.client){ w.appendChild(el("p","vacio-mes","Elegí un cliente arriba.")); return; }
+  if(cur.vista==="cal") w.appendChild(vistaCal()); else w.appendChild(vistaLista());
+}
+function vistaCal(){
+  const g=el("div","cal");
+  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>g.appendChild(el("div","dow",d)));
+  const primero=(new Date(cur.y,cur.m,1).getDay()+6)%7, n=new Date(cur.y,cur.m+1,0).getDate(), hoy=hoyISO();
+  for(let i=0;i<primero;i++) g.appendChild(el("div","dia fuera"));
+  for(let d=1;d<=n;d++){
+    const iso=ymd(cur.y,cur.m,d), c=el("div","dia"+(iso===hoy?" hoy":""));
+    c.tabIndex=0; c.setAttribute("role","button"); c.setAttribute("aria-label",d+" de "+MESES[cur.m]);
+    const num=el("div","num"); num.appendChild(el("span",null,String(d))); c.appendChild(num);
+    const ef=efemDe(iso); if(ef.length){ const e=el("div","ef",ef.join(" · ")); e.title=ef.join("\n"); c.appendChild(e); }
+    postsDelDia(iso).forEach(p=>{
+      const pl=el("div","pill");
+      pl.appendChild(canalEl(p));
+      const primera=(p.copy||"").trim().split("\n")[0];
+      pl.appendChild(el("span","tx"+(primera?"":" vacio"), primera || (p.grafica?"gráfica":(p.fotos||[]).length?"foto":"sin escribir")));
+      pl.appendChild(lucesEl(p));
+      c.appendChild(pl);
+    });
+    c.appendChild(el("span","mas","+ abrir"));
+    const abrir=()=>{ cur.dia=iso; renderPanel(); };
+    c.onclick=abrir; c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); abrir(); } };
+    g.appendChild(c);
+  }
+  return g;
+}
+function canalEl(p){ const w=el("span","canal"); if(p.feed) w.appendChild(el("i","f","F")); if(p.story) w.appendChild(el("i","s","S")); return w; }
+function vistaLista(){
+  const w=el("div","lista"), n=new Date(cur.y,cur.m+1,0).getDate(), hoy=hoyISO();
+  for(let d=1;d<=n;d++){
+    const iso=ymd(cur.y,cur.m,d), f=el("div","fila"+(iso===hoy?" hoy":"")); f.id="d"+iso;
+    const fd=el("div","fd"); fd.append(el("b",null,String(d)), el("span",null,DIAS[new Date(cur.y,cur.m,d).getDay()]));
+    efemDe(iso).forEach(t=>fd.appendChild(el("em",null,t)));
+    f.appendChild(fd);
+    f.appendChild(postsDe(iso));
+    w.appendChild(f);
+  }
+  return w;
+}
+function postsDe(iso){
+  const w=el("div","posts");
+  postsDelDia(iso).forEach((p,i,arr)=>w.appendChild(editor(p,i,arr.length)));
+  const a=el("button","agregar","+ posteo"); a.onclick=()=>{ nuevoPost(iso); render(); };
+  w.appendChild(a);
+  return w;
+}
+
+/* ---------- el editor de un posteo ---------- */
+function autosize(t){ t.style.height="auto"; t.style.height=t.scrollHeight+"px"; }
+function editor(p,i,total){
+  const card=el("article","post"+(p.id===recienCreado?" nuevo":""));
+  // fotos
+  const fs=el("div","fotos"), fotos=p.fotos||[];
+  if(p.grafica && !fotos.length){ fs.appendChild(el("div","grafica","Gráfica")); }
+  fotos.forEach((f,k)=>{
+    const box=el("div","foto"+(k>0?" chica":""));
+    const im=el("img"); im.src=f.thumb; im.alt=f.name||"foto"; im.loading="lazy"; im.referrerPolicy="no-referrer";
+    const a=el("a"); a.href=f.link; a.target="_blank"; a.rel="noopener"; a.appendChild(im);
+    const x=el("button","x","×"); x.title="Quitar foto"; x.onclick=()=>{ guardar(p,{fotos:fotos.filter((_,j)=>j!==k)}); render(); };
+    box.append(a,x);
+    if(k===0) fs.appendChild(box); else { let mini=fs.querySelector(".mini"); if(!mini){ mini=el("div","mini"); fs.appendChild(mini); } mini.appendChild(box); }
+  });
+  const peg=el("textarea","pegar"); peg.rows=2; peg.placeholder="pegá links de Drive";
+  peg.setAttribute("aria-label","Pegar links de Drive");
+  const tomar=()=>{
+    const ids=[...new Set(peg.value.split(/\s+/).map(driveId).filter(Boolean))];
+    if(!ids.length){ if(peg.value.trim()) toast("No veo un link de Drive ahí"); return; }
+    const ya=new Set(fotos.map(f=>f.id));
+    guardar(p,{fotos:fotos.concat(ids.filter(id=>!ya.has(id)).map(id=>fotoDe(id)))});
+    peg.value=""; peg.blur(); render();
+  };
+  peg.addEventListener("paste",()=>setTimeout(tomar,0));
+  peg.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); tomar(); } });
+  fs.appendChild(peg);
+  card.appendChild(fs);
+
+  // cuerpo
+  const cu=el("div","cuerpo");
+  const ctl=el("div","ctl");
+  const tg=(txt,cls,on,fn)=>{ const b=el("button","tog "+cls,txt); b.setAttribute("aria-pressed",String(!!on)); b.onclick=fn; return b; };
+  ctl.append(
+    tg("Feed","f",p.feed,()=>{ guardar(p,{feed:!p.feed}); render(); }),
+    tg("Story","s",p.story,()=>{ guardar(p,{story:!p.story}); render(); }),
+    tg("Gráfica","g",p.grafica,()=>{ guardar(p,{grafica:!p.grafica}); render(); })
+  );
+  ctl.appendChild(el("span","sp"));
+  const up=el("button","ic","▲"); up.title="Subir"; up.disabled=i===0; up.onclick=()=>mover(p,-1);
+  const dn=el("button","ic","▼"); dn.title="Bajar"; dn.disabled=i===total-1; dn.onclick=()=>mover(p,1);
+  const fe=el("input"); fe.type="date"; fe.value=p.fecha; fe.className="ic"; fe.title="Mover a otro día"; fe.style.width="120px"; fe.style.background="transparent"; fe.style.border="0";
+  fe.onchange=()=>{ fe.blur(); cambiarFecha(p,fe.value); };
+  const del=el("button","ic","Borrar"); del.onclick=()=>borrar(p);
+  ctl.append(up,dn,fe,del);
+  cu.appendChild(ctl);
+
+  const tc=el("textarea","copy"); tc.value=p.copy||""; tc.placeholder="Lo que dice la placa. Una línea por renglón."; tc.setAttribute("aria-label","Copy");
+  const tn=el("textarea","notas"); tn.value=p.notas||""; tn.placeholder="Para diseño: no se publica"; tn.setAttribute("aria-label","Notas para diseño");
+  [[tc,"copy"],[tn,"notas"]].forEach(([t,campo])=>{
+    let tm=null;
+    t.addEventListener("input",()=>{ autosize(t); clearTimeout(tm); tm=setTimeout(()=>guardar(p,{[campo]:t.value}),500); });
+    t.addEventListener("blur",()=>{ clearTimeout(tm); if((p[campo]||"")!==t.value) guardar(p,{[campo]:t.value}); });
+    requestAnimationFrame(()=>autosize(t));
+  });
+  cu.append(tc,tn);
+
+  const es=el("div","estado");
+  es.appendChild(lucesEl(p));
+  const chk=(txt,campo)=>{ const l=el("label"); const c=el("input"); c.type="checkbox"; c.checked=!!p[campo]; c.onchange=()=>{ guardar(p,{[campo]:c.checked}); c.blur(); render(); }; l.append(c,document.createTextNode(txt)); return l; };
+  es.append(chk("diseñada","disenada"), chk("programada","programada"));
+  if(p.by) es.appendChild(el("span","firmado",p.by+" · "+new Date(p.updatedAt||p.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"})));
+  cu.appendChild(es);
+  card.appendChild(cu);
+  if(p.id===recienCreado) requestAnimationFrame(()=>{ tc.focus(); recienCreado=null; });
+  return card;
+}
+
+/* ---------- panel del día ---------- */
+function renderPanel(){
+  if(escribiendo()){ pendiente=true; return; }
+  const iso=cur.dia, d=new Date(iso+"T12:00"), h=$("#hoja"); h.innerHTML="";
+  const cab=el("div","cab");
+  const pv=el("button",null,"‹"); pv.title="Día anterior"; pv.onclick=()=>pasarDia(-1);
+  const nx=el("button",null,"›"); nx.title="Día siguiente"; nx.onclick=()=>pasarDia(1);
+  const cx=el("button",null,"×"); cx.title="Cerrar"; cx.onclick=cerrarPanel;
+  cab.append(el("h2",null,DIAS[d.getDay()]+" "+d.getDate()),pv,nx,cx);
+  h.appendChild(cab);
+  const ef=efemDe(iso); if(ef.length) h.appendChild(el("div","ef",ef.join(" · ")));
+  h.appendChild(postsDe(iso));
+  $("#panel").classList.remove("hidden");
+}
+function pasarDia(k){
+  const d=new Date(cur.dia+"T12:00"); d.setDate(d.getDate()+k);
+  if(d.getMonth()!==cur.m||d.getFullYear()!==cur.y) irA(d.getFullYear(),d.getMonth());
+  cur.dia=ymd(d.getFullYear(),d.getMonth(),d.getDate()); renderPanel();
+}
+function cerrarPanel(){ cur.dia=null; $("#panel").classList.add("hidden"); render(); }
+$("#panelFondo").onclick=cerrarPanel;
+addEventListener("keydown",e=>{ if(e.key==="Escape" && cur.dia && !escribiendo()) cerrarPanel(); });
+
+/* ---------- controles ---------- */
+$("#prev").onclick=()=>{ const d=new Date(cur.y,cur.m-1,1); irA(d.getFullYear(),d.getMonth()); };
+$("#next").onclick=()=>{ const d=new Date(cur.y,cur.m+1,1); irA(d.getFullYear(),d.getMonth()); };
+document.querySelectorAll(".vistas button").forEach(b=>b.onclick=()=>{ cur.vista=b.dataset.v; pref.set("plani.vista",cur.vista); render(); });
+$("#quien").onclick=()=>{
+  const op=["Cami","Marcos","Bruno"]; const i=(op.indexOf(quien)+1)%op.length;
+  quien=op[i]; pref.set("plani.quien",quien); renderClientes(); toast("Lo que toques queda firmado por "+quien);
+};
+
+/* ---------- arranque ---------- */
+function arrancar(){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.database();
+  db.ref("panaDashboard/clients").on("value",s=>{
+    CLIENTS=s.val()||{};
+    if(!cur.client || !CLIENTS[cur.client]){ const g=clientesOrdenados(); const pri=g[0]&&g[0][1][0]; if(pri) return abrirCliente(pri.id); }
+    else if(!refPlan) return abrirCliente(cur.client);
+    render();
+  });
+  db.ref("panaDashboard/events").on("value",s=>{ EVENTS=s.val()||{}; render(); });
+}
+if(pref.get("panaAuth","")==="ok") arrancar();
+else {
+  $("#puerta").classList.remove("hidden");
+  $("#puertaForm").onsubmit=e=>{ e.preventDefault();
+    if($("#clave").value.trim().toLowerCase()===CLAVE){ pref.set("panaAuth","ok"); $("#puerta").classList.add("hidden"); arrancar(); }
+    else { $("#clave").value=""; $("#clave").placeholder="no"; } };
+}
+</script>
+</body>
+</html>

@@ -1023,6 +1023,9 @@
     .ec-dow{padding:5px 3px; font-size:7.5px; letter-spacing:.1em}
     .ep-top h2, .cal-top h2{font-size:21px}
   }
+  /* Planificación: página aparte (plani.html) con la piel Pana, metida a pantalla completa */
+  #view-plani{padding:0}
+  #planiFrame{display:block;width:100%;height:calc(100vh - 110px);border:0;background:#0A0808}
 </style>
 </head>
 <body>
@@ -1066,6 +1069,7 @@
 
 <nav class="tabs" id="tabs">
   <button data-tab="cabina" class="on"><span class="tico">🎛️</span> Cabina</button>
+  <button data-tab="plani"><span class="tico">📝</span> Planificación</button>
   <button data-tab="espejo"><span class="tico">🪞</span> El espejo</button>
   <button data-tab="dashboard"><span class="tico">🧱</span> Dashboard</button>
   <button data-tab="ideas"><span class="tico">💡</span> Ideas sueltas</button>
@@ -1092,6 +1096,8 @@
   </div>
 </div>
 
+
+<div id="view-plani" class="view"><iframe id="planiFrame" title="Planificación" loading="lazy"></iframe></div>
 
 <div id="view-espejo" class="view">
   <div class="ep-wrap"><div id="espBody"></div></div>
@@ -1883,6 +1889,7 @@ function setTab(name){
   if(name==="ideas") renderIdeas();
   if(name==="cal") renderCalTab();
   if(name==="prod") renderProdTab();
+  if(name==="plani"){ const f=document.getElementById("planiFrame"); if(!f.src) f.src="plani.html"; }
   positionTabs();  /* el header cambia de alto al esconder/mostrar las herramientas */
 }
 document.getElementById("tabs").addEventListener("click",e=>{
