@@ -115,29 +115,33 @@ button.lb{
 button.lb:hover{border-color:var(--muted); color:var(--muted)}
 button.lb.lleno{color:var(--ink); border-style:solid; border-color:var(--ok); text-transform:none; letter-spacing:0; font-family:"Instrument Sans",sans-serif; font-size:11px; font-weight:500}
 button.lb.feed{border-style:solid; border-color:var(--c); border-width:2px; color:var(--c); font-weight:700; background:color-mix(in srgb, var(--c) 14%, var(--surface))}
-button.lb.foto::before{content:"📷 "}
+button.lb .cn{font-family:"Archivo Narrow",sans-serif; font-weight:800; font-size:9.5px; letter-spacing:.04em; color:var(--c); margin-right:4px}
+button.lb.confoto::after{content:" 📷"}
+button.lb.ennotion::after{content:" ✓"}
+button.lb.confoto.ennotion::after{content:" 📷✓"}
+button.lb.pega{display:none; border:1px dashed var(--c); color:var(--c); cursor:copy}
+body.conporta .day:hover button.lb.pega, body.conporta button.lb.pega:focus-visible{display:inline-block}
+button.lb.pega{font-family:"Archivo Narrow",sans-serif; text-transform:uppercase; letter-spacing:.06em}
 button.lb.mas{border-color:transparent; color:var(--faint); padding:2px 5px; cursor:pointer}
 button.lb.mas:hover{border-color:var(--line); color:var(--ink)}
 button.lb.mas.solo{opacity:0}
 .day:hover button.lb.mas.solo, button.lb.mas.solo:focus-visible{opacity:1}
 
 /* editor de una pieza, abierto adentro del día */
-.brow{position:relative}
-/* el editor flota sobre el calendario (la columna de un día es muy angosta para escribir) */
-.edit{position:absolute; top:-6px; left:44px; z-index:6; width:300px; display:flex; flex-direction:column; gap:4px; padding:8px; border-radius:8px; background:var(--surface); border:1px solid var(--c); box-shadow:0 12px 40px -12px rgba(0,0,0,.35)}
-.edit.der{left:auto; right:0}
-.edit input,.edit textarea{font:inherit; font-size:12px; width:100%; padding:4px 7px; border-radius:4px; background:var(--field); color:var(--ink); border:1px solid var(--line); outline:none}
-.edit input:focus,.edit textarea:focus{border-color:var(--c)}
-.edit textarea{font-size:13px; line-height:1.4; resize:vertical; min-height:68px}
-.edit .ejlbl{font-family:"Archivo Narrow",sans-serif; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin-top:2px}
+/* el rectángulo para escribir, en el lugar de la pieza (como Octubre Escrito) */
+.edit{flex:none; display:flex; flex-direction:column; gap:4px; width:max(100%,260px); position:relative; z-index:6; padding:6px; border-radius:6px; background:var(--surface); border:1px solid var(--c); box-shadow:0 12px 40px -14px rgba(0,0,0,.35)}
+.edit.der{margin-left:min(0px, calc(100% - 260px))}
+.edit textarea{font:inherit; font-size:13px; line-height:1.4; width:100%; resize:vertical; padding:5px 7px; border-radius:4px; background:var(--field); color:var(--ink); border:1px solid var(--line); outline:none}
+.edit textarea:focus{border-color:var(--c)}
+.edit input.nota{font:inherit; font-size:11.5px; width:100%; padding:3px 7px; border-radius:4px; background:transparent; color:var(--ink); border:1px dashed var(--line); outline:none}
+.edit input.nota:focus{border-color:var(--c)}
 .edit .fila{display:flex; gap:4px; align-items:center; flex-wrap:wrap}
-.edit .fila button{font-family:"Archivo Narrow",sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:2px 7px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer}
+.edit .fila button{font-family:"Archivo Narrow",sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer}
+.edit .fila button:hover{color:var(--ink); border-color:var(--muted)}
 .edit .fila button[aria-pressed="true"]{border-color:var(--c); color:var(--c); background:color-mix(in srgb, var(--c) 14%, var(--surface))}
 .edit .fila .sp{flex:1}
-.edit .fila button.chau{border-color:transparent; background:none}
+.edit .fila button.rep,.edit .fila button.chau{border-color:transparent; background:none; padding:2px 3px}
 .edit .fila button.chau:hover{color:var(--hito)}
-.edit .fila button.listo{border-color:var(--ink); color:var(--ink)}
-.edit .fila input[type=date]{width:auto; font-size:11px; padding:2px 4px}
 
 /* ---------- lista para revisar ---------- */
 .rev{display:flex; flex-direction:column; gap:40px}
@@ -153,7 +157,10 @@ button.lb.mas.solo{opacity:0}
 .rwhat input{font-family:"Archivo Narrow",sans-serif; font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); background:none; border:none; border-bottom:1px dashed var(--line); padding:6px 0 3px; width:100%}
 .rwhat input:focus{outline:none; border-color:var(--c); color:var(--ink)}
 .rrow.esfeed .rwhat input{color:var(--c); font-weight:800}
-.rwhat .canal{font-family:"Archivo Narrow",sans-serif; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint)}
+.rwhat .canal{display:flex; gap:4px; align-items:center; flex-wrap:wrap}
+.rwhat .canal button{font-family:"Archivo Narrow",sans-serif; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:1px 7px; border-radius:999px; border:1px solid var(--line); background:none; color:var(--faint); cursor:pointer}
+.rwhat .canal button[aria-pressed="true"]{border-color:var(--c); color:var(--c)}
+.rwhat .canal .marca{font-size:11px; color:var(--ok)}
 .rrow textarea{font:inherit; font-size:14px; line-height:1.45; width:100%; resize:vertical; padding:8px 10px; border-radius:8px; background:var(--field); color:var(--ink); border:1px solid var(--line); min-height:58px}
 .rrow textarea:focus{outline:2px solid var(--c); outline-offset:1px; border-color:transparent}
 .rrow .rfoto{font:inherit; font-size:13px; width:100%; padding:8px 10px; border-radius:8px; background:transparent; color:var(--ink); border:1px dashed var(--line)}
@@ -170,6 +177,8 @@ body.solofeed .rrow:not(.esfeed){display:none}
 
 /* ---------- barra de guardado ---------- */
 .savebar{position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:20; display:flex; align-items:center; gap:14px; padding:10px 12px 10px 18px; background:var(--surface); border:1px solid var(--line); border-radius:999px; box-shadow:0 6px 28px -8px rgba(0,0,0,.3); font-size:13.5px; max-width:calc(100vw - 32px)}
+.savebar .porta{display:flex; align-items:center; gap:8px; color:var(--ink); font-weight:500; white-space:nowrap; overflow:hidden}
+.savebar .porta button{padding:4px 10px}
 .savebar .est{color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .savebar .est.ok{color:var(--ok)}
 .savebar .est.sucio{color:var(--pend); font-weight:500}
@@ -193,9 +202,12 @@ body.solofeed .rrow:not(.esfeed){display:none}
   .bname{width:44px}
   button.lb{white-space:normal}
   button.lb.mas.solo{opacity:1}
-  .edit,.edit.der{position:static; width:100%}
+  body.conporta button.lb.pega{display:inline-block}
+  .edit,.edit.der{width:100%; margin-left:0}
 }
-@media (max-width:760px){ .rrow{grid-template-columns:40px 1fr} .rrow textarea,.rrow .rfoto{grid-column:1/-1} .savebar .est{display:none} }
+@media (max-width:760px){ .rrow{grid-template-columns:40px 1fr} .rrow textarea,.rrow .rfoto{grid-column:1/-1} .savebar .porta{display:flex; align-items:center; gap:8px; color:var(--ink); font-weight:500; white-space:nowrap; overflow:hidden}
+.savebar .porta button{padding:4px 10px}
+.savebar .est{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -231,6 +243,7 @@ body.solofeed .rrow:not(.esfeed){display:none}
 </div>
 
 <div class="savebar">
+  <span class="porta hidden" id="porta"><span id="portaTxt"></span><button class="ghost" id="portaX">soltar</button></span>
   <span class="est ok" id="est">Se guarda solo</span>
   <button class="ghost" id="deshacer" disabled>↶ Deshacer</button>
   <button id="copiar">Copiar el mes</button>
@@ -298,6 +311,7 @@ const GRUPOS = {
 };
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 const DCORTO= ["dom","lun","mar","mié","jue","vie","sáb"];
+const DLARGO= ["domingos","lunes","martes","miércoles","jueves","viernes","sábados"];
 
 /* ---------- preferencias de este navegador ---------- */
 const pref = {
@@ -321,6 +335,7 @@ function efemDe(iso){
   return out;
 }
 function est(t,cls){ const n=$("#est"); n.textContent=t; n.className="est "+(cls||""); }
+const nadaEscrito = p=> !(p.copy||"").trim() && !(p.foto||"").trim() && !(p.pieza||"").trim();
 
 /* ---------- estado ---------- */
 let CLIENTS={}, EVENTS={}, PLAN={};          // PLAN[clientId][ym][postId]
@@ -332,8 +347,9 @@ let cur = { y:0, m:0, vista: pref.get("plani.vista","cal") };
 let quien = pref.get("plani.quien","");
 let filtro = new Set();           // clientes elegidos en la barra (vacío = todos)
 let soloFeed = false;
-let abierto = null;               // pieza con el editor abierto en el calendario
-const deshacer = [];              // [{cid, ym, id, antes}] — antes=null: no existía
+let abierto = null;               // pieza que se está escribiendo sobre el calendario
+let porta = null;                 // pieza copiada {pieza, copy, foto, feed, story, txt}
+const deshacer = [];              // pasos {cid, ym, id, antes, g}: antes=null → no existía; mismo g → se deshacen juntos
 
 /* ---------- clientes del grupo ---------- */
 function clientesDelGrupo(){
@@ -352,54 +368,69 @@ function postsDe(cid,ym){ return Object.entries((PLAN[cid]||{})[ym]||{}).map(([i
 function postsDelDia(cid,iso){
   return postsDe(cid,iso.slice(0,7)).filter(p=>p.fecha===iso).sort((a,b)=>(a.orden??0)-(b.orden??0)||(a.createdAt||0)-(b.createdAt||0));
 }
+function vivo(p){ return ((PLAN[p.cid]||{})[p.fecha.slice(0,7)]||{})[p.id]; }
 function ruta(cid,ym,id){ return "panaDashboard/plani/"+cid+"/"+ym+"/"+id; }
 function crudo(p){ const o={...p}; delete o.id; delete o.cid; return o; }
-function anotar(paso){ deshacer.push(paso); if(deshacer.length>200) deshacer.shift(); $("#deshacer").disabled=false; }
+let grupoN=0; const nuevoGrupo=()=>++grupoN;
+function anotar(paso){ deshacer.push(paso); if(deshacer.length>300) deshacer.shift(); $("#deshacer").disabled=false; }
 function guardar(p,patch,conDeshacer=true){
-  if(conDeshacer) anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes:crudo(p)});
+  if(conDeshacer) anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes:crudo(p), g:nuevoGrupo()});
   patch.updatedAt=Date.now(); if(quien) patch.by=quien;
-  const ym=p.fecha.slice(0,7);
-  const vivo=((PLAN[p.cid]||{})[ym]||{})[p.id]; if(vivo) Object.assign(vivo,patch);   // optimista: el próximo toque ya lo ve
+  const v=vivo(p); if(v) Object.assign(v,patch);       // optimista: el próximo toque ya lo ve
   Object.assign(p,patch);
   est("Guardando…","sucio");
-  db.ref(ruta(p.cid,ym,p.id)).update(patch).then(()=>est("Guardado"+(quien?" · "+quien:""),"ok")).catch(()=>est("No se pudo guardar: revisá internet","sucio"));
+  db.ref(ruta(p.cid,p.fecha.slice(0,7),p.id)).update(patch).then(()=>est("Guardado"+(quien?" · "+quien:""),"ok")).catch(()=>est("No se pudo guardar: revisá internet","sucio"));
 }
-function nuevo(cid,iso){
+function crear(cid,iso,datos,g){
   const hs=postsDelDia(cid,iso), ym=iso.slice(0,7);
-  const p={ fecha:iso, orden:hs.length?Math.max(...hs.map(x=>x.orden??0))+1:0, pieza:"", copy:"", foto:"", feed:false, story:true, createdAt:Date.now(), updatedAt:Date.now(), by:quien||"" };
+  const p={ pieza:"", copy:"", foto:"", feed:false, story:true, ...datos,
+            fecha:iso, orden:hs.length?Math.max(...hs.map(x=>x.orden??0))+1:0, createdAt:Date.now(), updatedAt:Date.now(), by:quien||"" };
   const ref=db.ref("panaDashboard/plani/"+cid+"/"+ym).push(p);
   ((PLAN[cid] ||= {})[ym] ||= {})[ref.key]=p;
-  anotar({cid, ym, id:ref.key, antes:null});
+  anotar({cid, ym, id:ref.key, antes:null, g:g||nuevoGrupo()});
   return ref.key;
 }
-function borrar(p){
+function quitar(p,g,silencio){
   const ym=p.fecha.slice(0,7);
-  anotar({cid:p.cid, ym, id:p.id, antes:crudo(p)});
-  delete PLAN[p.cid][ym][p.id];
+  if(!silencio) anotar({cid:p.cid, ym, id:p.id, antes:crudo(p), g:g||nuevoGrupo()});
+  if(PLAN[p.cid] && PLAN[p.cid][ym]) delete PLAN[p.cid][ym][p.id];
   db.ref(ruta(p.cid,ym,p.id)).remove();
-  abierto=null; est("Borrada · se puede deshacer","ok"); render();
-}
-function moverDia(p,iso){
-  if(!iso||iso===p.fecha) return;
-  const ymV=p.fecha.slice(0,7), ymN=iso.slice(0,7);
-  const datos={...crudo(p), fecha:iso, orden:postsDelDia(p.cid,iso).length, updatedAt:Date.now()};
-  // dos pasos que se deshacen juntos: reponer la vieja y sacar la nueva
-  anotar({cid:p.cid, ym:ymV, id:p.id, antes:crudo(p), junto:true});
-  anotar({cid:p.cid, ym:ymN, id:p.id, antes:(ymN===ymV?crudo(p):null)});
-  if(ymN!==ymV){ delete PLAN[p.cid][ymV][p.id]; db.ref(ruta(p.cid,ymV,p.id)).remove(); }
-  ((PLAN[p.cid] ||= {})[ymN] ||= {})[p.id]=datos; db.ref(ruta(p.cid,ymN,p.id)).set(datos);
-  abierto=null; render();
 }
 $("#deshacer").onclick=()=>{
-  let paso=deshacer.pop(); if(!paso) return;
-  aplicar(paso);
-  if(deshacer.length && deshacer[deshacer.length-1].junto) aplicar(deshacer.pop());
+  const top=deshacer[deshacer.length-1]; if(!top) return;
+  while(deshacer.length && deshacer[deshacer.length-1].g===top.g) aplicar(deshacer.pop());
   $("#deshacer").disabled=!deshacer.length; abierto=null; est("Deshecho","ok"); render();
 };
 function aplicar(paso){
   const r=db.ref(ruta(paso.cid,paso.ym,paso.id));
   if(paso.antes===null){ if(PLAN[paso.cid]&&PLAN[paso.cid][paso.ym]) delete PLAN[paso.cid][paso.ym][paso.id]; r.remove(); }
   else { ((PLAN[paso.cid] ||= {})[paso.ym] ||= {})[paso.id]={...paso.antes}; r.set(paso.antes); }
+}
+
+/* ---------- copiar, cortar, pegar, repetir ---------- */
+function copiar(p,cortar){
+  porta={ pieza:p.pieza||"", copy:p.copy||"", foto:p.foto||"", feed:!!p.feed, story:!!p.story };
+  try{ navigator.clipboard.writeText(p.copy||""); }catch(e){}
+  if(cortar){ quitar(p); }
+  est(cortar?"Cortada":"Copiada","ok");
+}
+function pegar(cid,iso){
+  if(!porta) return;
+  crear(cid,iso,{pieza:porta.pieza, copy:porta.copy, foto:porta.foto, feed:porta.feed, story:porta.story});
+  est("Pegada el "+Number(iso.slice(8))+" · podés seguir pegando","ok");
+  render();
+}
+function soltarPorta(){ porta=null; render(); }
+function repetir(p){
+  const d0=new Date(p.fecha+"T12:00"), dw=d0.getDay(), n=new Date(cur.y,cur.m+1,0).getDate(), g=nuevoGrupo();
+  const txt=(p.copy||"").trim(); let k=0;
+  for(let d=1; d<=n; d++){
+    const iso=ymd(cur.y,cur.m,d);
+    if(iso===p.fecha || new Date(cur.y,cur.m,d).getDay()!==dw) continue;
+    if(postsDelDia(p.cid,iso).some(x=>(x.copy||"").trim()===txt)) continue;   // ya está ese día
+    crear(p.cid,iso,{pieza:p.pieza||"", copy:p.copy||"", foto:p.foto||"", feed:!!p.feed, story:!!p.story},g); k++;
+  }
+  est(k ? "Repetida en "+k+" "+DLARGO[dw]+" más · Deshacer la saca de todos" : "Ya estaba en todos los "+DLARGO[dw],"ok");
 }
 
 /* ---------- no repintar encima de lo que estás escribiendo ---------- */
@@ -409,16 +440,20 @@ function render(){
   if(escribiendo()){ pendiente=true; return; }
   pendiente=false;
   document.body.classList.toggle("solofeed",soloFeed);
-  renderTop(); renderMeses(); renderBar(); renderMain();
+  document.body.classList.toggle("conporta",!!porta);
+  renderTop(); renderMeses(); renderBar(); renderMain(); renderPorta();
 }
 // se espera un poco: si el foco salió por un clic en otro botón, ese clic tiene que llegar antes de repintar
 document.addEventListener("focusout",()=>setTimeout(()=>{ if(pendiente && !escribiendo()) render(); },250));
 
 /* ---------- cabecera ---------- */
+// lo que devuelve la mesa de luz (si ya pasó por ahí): mesa.foto y mesa.notion
+const conFoto = p=> !!(p.mesa && p.mesa.foto);
+const enNotion = p=> !!(p.mesa && p.mesa.notion);
 function cuentas(ym, cids){
-  let n=0, escritos=0, fotos=0, feed=0; const dias=new Set();
-  cids.forEach(cid=>postsDe(cid,ym).forEach(p=>{ n++; if((p.copy||"").trim()) escritos++; if((p.foto||"").trim()) fotos++; if(p.feed) feed++; dias.add(p.fecha); }));
-  return {n,escritos,fotos,feed,dias:dias.size};
+  let n=0, escritos=0, fotos=0, notion=0, feed=0; const dias=new Set();
+  cids.forEach(cid=>postsDe(cid,ym).forEach(p=>{ n++; if((p.copy||"").trim()) escritos++; if(conFoto(p)) fotos++; if(enNotion(p)) notion++; if(p.feed) feed++; dias.add(p.fecha); }));
+  return {n,escritos,fotos,notion,feed,dias:dias.size};
 }
 function visibles(){ const cs=clientesDelGrupo(); return filtro.size ? cs.filter(c=>filtro.has(c.id)) : cs; }
 function renderTop(){
@@ -428,10 +463,10 @@ function renderTop(){
   const h=$("#titulo"); h.innerHTML=""; h.append(document.createTextNode(MESES[cur.m][0].toUpperCase()+MESES[cur.m].slice(1)+" "), el("span",null,String(cur.y)));
   const ym=ymKey(cur.y,cur.m), c=cuentas(ym, visibles().map(x=>x.id)), diasMes=new Date(cur.y,cur.m+1,0).getDate();
   $("#sub").textContent = c.n
-    ? "Tocá una pieza para escribirla; el + al lado de cada cliente suma otra ese día. Se guarda solo y lo ven los tres."
-    : "Mes en blanco. Pasá por un día y tocá el + de un cliente para empezar. Se guarda solo y lo ven los tres.";
+    ? "Tocá una pieza y escribí ahí mismo; el + de cada cliente suma otra ese día. Las fotos se ponen en la mesa de luz. Se guarda solo y lo ven los tres."
+    : "Mes en blanco. Pasá por un día y tocá el + de un cliente para empezar a escribir. Se guarda solo y lo ven los tres.";
   const s=$("#stats"); s.innerHTML="";
-  [[c.n,"posteos"],[c.escritos+"/"+c.n,"escritos",c.n&&c.escritos===c.n],[c.fotos+"/"+c.n,"con foto",c.n&&c.fotos===c.n],[c.feed,"📰 feed"],[c.dias+"/"+diasMes,"días con algo"]]
+  [[c.n,"posteos"],[c.escritos+"/"+c.n,"escritos",c.n&&c.escritos===c.n],[c.fotos+"/"+c.n,"con foto",c.n&&c.fotos===c.n],[c.notion+"/"+c.n,"en Notion",c.n&&c.notion===c.n],[c.feed,"📰 feed"],[c.dias+"/"+diasMes,"días con algo"]]
     .forEach(([v,k,ok])=>{ const d=el("div","stat"+(ok?" hecho":"")); d.append(el("b",null,String(v)), el("i",null,k)); s.appendChild(d); });
 }
 function renderMeses(){
@@ -461,16 +496,22 @@ function renderBar(){
   tv.onclick=()=>{ cur.vista=cur.vista==="cal"?"lista":"cal"; pref.set("plani.vista",cur.vista); abierto=null; render(); };
   w.append(tf,tv);
 }
+function renderPorta(){
+  const w=$("#porta");
+  if(!porta){ w.classList.add("hidden"); return; }
+  w.classList.remove("hidden");
+  $("#portaTxt").textContent = "Copiada: «"+((porta.copy||porta.pieza||"pieza").split("\n")[0].slice(0,40))+"» · pasá por un día y tocá PEGAR";
+}
 
 /* ---------- calendario ---------- */
+let enfocar=false;
 function renderMain(){
   const w=$("#main"); w.innerHTML="";
   if(!clientesDelGrupo().length){ w.appendChild(el("p","nada","Cargando clientes…")); return; }
   if(cur.vista==="cal") w.append(dowEl(), calEl()); else w.appendChild(listaEl());
-  if(abierto){ const t=w.querySelector(".edit textarea"); if(t && enfocar){ t.focus(); t.setSelectionRange(t.value.length,t.value.length); } }
+  if(abierto && enfocar){ const t=w.querySelector(".edit textarea"); if(t){ t.focus(); t.setSelectionRange(t.value.length,t.value.length); } }
   enfocar=false;
 }
-let enfocar=false;
 function abrir(id){ abierto=id; enfocar=true; render(); }
 function dowEl(){ const d=el("div","dow"); ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"].forEach(t=>d.appendChild(el("div",null,t))); return d; }
 function calEl(){
@@ -485,53 +526,90 @@ function calEl(){
       const r=el("div","brow"+(filtro.size&&!filtro.has(cl.id)?" off":"")); r.style.setProperty("--c",cl.color);
       r.appendChild(el("span","bname",cl.corto));
       const ps=el("div","pieces"), hs=postsDelDia(cl.id,iso);
-      hs.forEach(p=>{ ps.appendChild(piezaEl(p)); if(p.id===abierto){ const e=editorEl(p); if(dw===0||dw===5||dw===6) e.classList.add("der"); r.appendChild(e); } });
-      const mas=el("button","lb mas"+(hs.length?"":" solo"),"+"); mas.title="Sumar una pieza de "+cl.name+" el "+d;
-      mas.onclick=()=>abrir(nuevo(cl.id,iso));
+      hs.forEach(p=>ps.appendChild(p.id===abierto ? editorEl(p, dw===0||dw===6) : piezaEl(p)));
+      const mas=el("button","lb mas"+(hs.length?"":" solo"),"+"); mas.title="Escribir una pieza de "+cl.name+" el "+d;
+      mas.onclick=()=>abrir(crear(cl.id,iso,{}));
       ps.appendChild(mas);
+      const pg=el("button","lb pega","pegar"); pg.title="Pegar acá la pieza copiada";
+      pg.onclick=()=>pegar(cl.id,iso);
+      ps.appendChild(pg);
       r.appendChild(ps); c.appendChild(r);
     });
     g.appendChild(c);
   }
   return g;
 }
+function canalTxt(p){ return p.feed&&p.story ? "F+S" : p.feed ? "F" : p.story ? "S" : "—"; }
 function piezaEl(p){
   const copy=(p.copy||"").trim(), pieza=(p.pieza||"").trim();
-  const b=el("button","lb"+(copy?" lleno":"")+(p.feed?" feed":"")+((p.foto||"").trim()?" foto":""));
-  b.textContent = copy ? copy.split("\n")[0] : (pieza||"sin escribir");
-  b.title = (p.feed?"FEED · ":"")+(pieza?pieza+"\n":"")+(copy||"")+((p.foto||"").trim()?"\n📷 "+p.foto:"");
+  const b=el("button","lb"+(copy?" lleno":"")+(p.feed?" feed":"")+(conFoto(p)?" confoto":"")+(enNotion(p)?" ennotion":""));
+  b.appendChild(el("span","cn",canalTxt(p)));
+  b.appendChild(document.createTextNode(copy ? copy.split("\n")[0] : (pieza||"sin escribir")));
+  b.title = (p.feed?"FEED":"")+(p.feed&&p.story?" + ":"")+(p.story?"STORY":"")+"\n"+(pieza?pieza+"\n":"")+(copy||"")+((p.foto||"").trim()?"\nnota: "+p.foto:"")
+          + (conFoto(p)?"\n📷 con foto en la mesa":"") + (enNotion(p)?"\n✓ en Notion":"");
   b.onclick=()=>abrir(p.id);
   return b;
 }
+// el rectángulo para escribir, en el lugar de la pieza (como en Octubre Escrito)
+function editorEl(p, alaDerecha){
+  const e=el("span","edit"+(alaDerecha?" der":"")); 
+  const sinFoco=ev=>ev.preventDefault();            // los botones no le roban el foco al texto
+  const arriba=el("span","fila");
+  const tg=(txt,key)=>{ const b=el("button",null,txt); b.type="button"; b.setAttribute("aria-pressed",String(!!p[key]));
+    b.addEventListener("mousedown",sinFoco);
+    b.onclick=()=>{ guardar(p,{[key]:!p[key]}); b.setAttribute("aria-pressed",String(!!p[key])); }; return b; };
+  arriba.append(tg("feed","feed"), tg("story","story"));
+  const t=el("textarea"); t.value=p.copy||""; t.placeholder="qué dice la placa"; t.rows=Math.max(3,(p.copy||"").split("\n").length+1);
+  t.setAttribute("aria-label","Copy");
+  const nota=el("input","nota"); nota.value=p.foto||""; nota.placeholder="nota o foto (opcional)"; nota.setAttribute("aria-label","Nota o foto");
+  const abajo=el("span","fila");
+  const ac=(txt,fn,cls)=>{ const b=el("button",cls||null,txt); b.type="button"; b.addEventListener("mousedown",sinFoco); b.onclick=()=>terminar(fn); return b; };
+  const dw=new Date(p.fecha+"T12:00").getDay();
+  abajo.append(ac("⟳ todos los "+DLARGO[dw],()=>repetir(p),"rep"), ac("⧉ copiar",()=>copiar(p,false)), ac("✂ cortar",()=>copiar(p,true)), el("span","sp"), ac("borrar",()=>{ quitar(p); render(); },"chau"));
+  e.append(arriba,t,nota,abajo);
+
+  let antes=crudo(p), tm=null, cerrado=false;
+  const pendientes=()=>{ const patch={}; if((p.copy||"")!==t.value) patch.copy=t.value; if((p.foto||"")!==nota.value) patch.foto=nota.value; return patch; };
+  function volcar(){ clearTimeout(tm); const patch=pendientes(); if(Object.keys(patch).length) guardar(p,patch,false); }
+  [t,nota].forEach(x=>x.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(volcar,600); if(x===t) t.rows=Math.max(3,t.value.split("\n").length+1); }));
+  // cierra el rectángulo: guarda lo escrito, deja un paso de Deshacer, y si quedó vacío lo saca
+  function terminar(accion){
+    if(cerrado) return; cerrado=true;
+    volcar();
+    if(abierto===p.id) abierto=null;
+    const top=deshacer[deshacer.length-1], recienCreada = top && top.id===p.id && top.antes===null;
+    if(nadaEscrito(p) && !accion){
+      if(recienCreada) deshacer.pop();
+      $("#deshacer").disabled=!deshacer.length;
+      quitar(p,null,true);
+    } else if(!recienCreada && ((antes.copy||"")!==(p.copy||"") || (antes.foto||"")!==(p.foto||""))){
+      anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes, g:nuevoGrupo()});
+    }
+    if(e.contains(document.activeElement)) document.activeElement.blur();
+    if(accion) accion();
+    setTimeout(render,0);
+  }
+  function cerrar(){ terminar(null); }
+  e.addEventListener("focusout",()=>setTimeout(()=>{ if(!e.contains(document.activeElement)) cerrar(); },150));
+  e.addEventListener("keydown",ev=>{
+    if(ev.key==="Escape"){ ev.preventDefault(); t.value=antes.copy||""; nota.value=antes.foto||""; document.activeElement.blur(); }
+    if(ev.key==="Enter" && (ev.metaKey||ev.ctrlKey)){ ev.preventDefault(); document.activeElement.blur(); }
+  });
+  return e;
+}
+
+/* ---------- lista (para revisar de corrido) ---------- */
 function campo(p,key,tag,ph,cls){
   const t=el(tag,cls); t.value=p[key]||""; t.placeholder=ph; t.setAttribute("aria-label",ph);
   let antes=null, tm=null;
   t.addEventListener("focus",()=>{ antes=crudo(p); });
   t.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(()=>guardar(p,{[key]:t.value},false),600); if(cls==="rfoto") t.classList.toggle("lleno",!!t.value.trim()); });
   t.addEventListener("blur",()=>{ clearTimeout(tm);
-    // un solo paso de deshacer por cada vez que entrás y salís del campo
-    if(antes && (antes[key]||"")!==t.value){ anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes}); }
+    if(antes && (antes[key]||"")!==t.value) anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes, g:nuevoGrupo()});
     if((p[key]||"")!==t.value) guardar(p,{[key]:t.value},false);
     antes=null; });
   return t;
 }
-function editorEl(p){
-  const e=el("div","edit");
-  e.append(el("span","ejlbl","qué es (opcional)"), campo(p,"pieza","input","ej: promo del finde, producto, efeméride"),
-           el("span","ejlbl","copy"), campo(p,"copy","textarea","Lo que dice la placa. Una línea por renglón."),
-           el("span","ejlbl","foto"), campo(p,"foto","input","qué foto va acá (o el link de Drive)"));
-  const f=el("div","fila");
-  const tg=(txt,key)=>{ const b=el("button",null,txt); b.setAttribute("aria-pressed",String(!!p[key])); b.onclick=()=>{ guardar(p,{[key]:!p[key]}); render(); }; return b; };
-  const fe=el("input"); fe.type="date"; fe.value=p.fecha; fe.title="Pasarla a otro día"; fe.onchange=()=>moverDia(p,fe.value);
-  const chau=el("button","chau","borrar"); chau.onclick=()=>borrar(p);
-  const ok=el("button","listo","listo"); ok.onclick=()=>{ abierto=null; if(document.activeElement) document.activeElement.blur(); setTimeout(render,0); };
-  f.append(tg("feed","feed"), tg("story","story"), fe, el("span","sp"), chau, ok);
-  e.appendChild(f);
-  e.addEventListener("keydown",ev=>{ if(ev.key==="Escape") ok.click(); });
-  return e;
-}
-
-/* ---------- lista (para revisar de corrido) ---------- */
 function listaEl(){
   const w=el("div","rev"), ym=ymKey(cur.y,cur.m);
   visibles().forEach(cl=>{
@@ -543,14 +621,18 @@ function listaEl(){
       const d=new Date(p.fecha+"T12:00");
       const r=el("div","rrow"+((p.copy||"").trim()?"":" vacio")+(p.feed?" esfeed":""));
       const wn=el("div","rwhen"); wn.append(el("b",null,String(d.getDate())), el("i",null,DCORTO[d.getDay()]));
-      const wh=el("div","rwhat"); wh.append(campo(p,"pieza","input","qué es"), el("span","canal",[p.feed?"feed":"",p.story?"story":""].filter(Boolean).join(" + ")||"—"));
-      const fo=campo(p,"foto","input","qué foto va acá","rfoto"); if((p.foto||"").trim()) fo.classList.add("lleno");
+      const wh=el("div","rwhat");
+      const cn=el("div","canal");
+      [["feed","feed"],["story","story"]].forEach(([txt,key])=>{ const b=el("button",null,txt); b.setAttribute("aria-pressed",String(!!p[key])); b.onclick=()=>{ guardar(p,{[key]:!p[key]}); render(); }; cn.appendChild(b); });
+      if(conFoto(p)) cn.appendChild(el("span","marca","📷")); if(enNotion(p)) cn.appendChild(el("span","marca","✓ Notion"));
+      wh.append(cn, campo(p,"pieza","input","qué es"));
+      const fo=campo(p,"foto","input","nota o foto (opcional)","rfoto"); if((p.foto||"").trim()) fo.classList.add("lleno");
       r.append(wn, wh, campo(p,"copy","textarea","copy"), fo);
       s.appendChild(r);
     });
     const add=el("div","radd"), di=el("input"), last=new Date(cur.y,cur.m+1,0).getDate();
     di.type="date"; di.min=ymd(cur.y,cur.m,1); di.max=ymd(cur.y,cur.m,last); di.value=ymd(cur.y,cur.m,1);
-    const bt=el("button",null,"+ agregar"); bt.onclick=()=>{ if(di.value){ nuevo(cl.id,di.value); render(); } };
+    const bt=el("button",null,"+ agregar"); bt.onclick=()=>{ if(di.value){ crear(cl.id,di.value,{copy:" "}); render(); } };
     add.append(document.createTextNode("Otra pieza de "+cl.name+" el"), di, bt);
     s.appendChild(add);
     w.appendChild(s);
@@ -566,8 +648,8 @@ $("#copiar").onclick=async()=>{
     if(!ps.length) return;
     out.push("== "+cl.name.toUpperCase()+" ==");
     ps.forEach(p=>{ const d=new Date(p.fecha+"T12:00");
-      out.push(DCORTO[d.getDay()]+" "+d.getDate()+(p.feed?" · FEED":"")+(p.pieza?" · "+p.pieza:""));
-      if(p.copy) out.push(p.copy); if(p.foto) out.push("foto: "+p.foto); out.push(""); });
+      out.push(DCORTO[d.getDay()]+" "+d.getDate()+" · "+canalTxt(p)+(p.pieza?" · "+p.pieza:""));
+      if(p.copy) out.push(p.copy.trim()); if(p.foto) out.push("nota: "+p.foto); out.push(""); });
   });
   try{ await navigator.clipboard.writeText(out.join("\n")); est("Mes copiado ✓","ok"); }catch(e){ est("No pude copiar","sucio"); }
 };
@@ -579,7 +661,12 @@ function setGrupo(g){ grupo=g; pref.set("plani.grupo",g); filtro.clear(); docume
 $("#gCami").onclick=()=>setGrupo("cami");
 $("#gCo").onclick=()=>setGrupo("co");
 $("#quien").onclick=()=>{ const op=["Cami","Marcos","Bruno"]; quien=op[(op.indexOf(quien)+1)%op.length]; pref.set("plani.quien",quien); render(); };
-addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey) && e.key==="z" && !e.shiftKey && !escribiendo()){ e.preventDefault(); $("#deshacer").click(); } });
+$("#portaX").onclick=soltarPorta;
+addEventListener("keydown",e=>{
+  if(escribiendo()) return;
+  if((e.metaKey||e.ctrlKey) && e.key==="z" && !e.shiftKey){ e.preventDefault(); $("#deshacer").click(); }
+  if(e.key==="Escape" && porta) soltarPorta();
+});
 
 /* ---------- arranque ---------- */
 function arrancar(){
@@ -596,5 +683,6 @@ else {
     else { $("#clave").value=""; $("#clave").placeholder="no"; } };
 }
 </script>
+
 </body>
 </html>
