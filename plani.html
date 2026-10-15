@@ -360,9 +360,11 @@ const nadaEscrito = p=> !(p.copy||"").trim() && !(p.foto||"").trim() && !(p.piez
 let CLIENTS={}, EVENTS={}, PLAN={};          // PLAN[clientId][ym][postId]
 let HIST={};                                 // lo que ya salió (Notion, mesa, Octubre Escrito): HIST[clientId][ym][id], sólo se lee
 let db=null; const refs={};
-let grupo = pref.get("plani.grupo","cami");
+// la app puede abrirlo ya en un grupo y un mes: plani.html?grupo=co&ym=2026-11
+const URLQ = new URLSearchParams(location.search);
+let grupo = URLQ.get("grupo") || pref.get("plani.grupo","cami");
 let cur = { y:0, m:0, vista: pref.get("plani.vista","cal") };
-{ const d=new Date(); const p=pref.get("plani.ym","").split("-").map(Number);
+{ const d=new Date(); const p=(URLQ.get("ym")||pref.get("plani.ym","")).split("-").map(Number);
   if(p.length===2 && p[0]>2000){ cur.y=p[0]; cur.m=p[1]-1; } else { cur.y=d.getFullYear(); cur.m=d.getMonth(); } }
 let quien = pref.get("plani.quien","");
 let filtro = new Set();           // clientes elegidos en la barra (vacío = todos)
