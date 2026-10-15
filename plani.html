@@ -633,17 +633,24 @@ function editorEl(p, alaDerecha, antesIn){
   });
   return e;
 }
-// "así salió": lo que se dijo antes en ese cliente, primero el mismo día de la semana, lo más nuevo arriba
+// "así salió": lo que se dijo el mismo día del mes pasado (el mismo jueves: 3er jueves ↔ 3er jueves).
+// Si ese día no hubo nada, prueba el de hace dos meses. Nunca muestra otros días.
+function mismoDiaAntes(iso, atras){
+  const d=new Date(iso+"T12:00"), dw=d.getDay(), n=Math.ceil(d.getDate()/7);
+  const y=d.getFullYear(), m=d.getMonth()-atras, ult=new Date(y,m+1,0).getDate();
+  const dias=[]; for(let k=1;k<=ult;k++) if(new Date(y,m,k).getDay()===dw) dias.push(k);
+  const dd=new Date(y,m,dias[Math.min(n,dias.length)-1]);
+  return ymd(dd.getFullYear(),dd.getMonth(),dd.getDate());
+}
 function sugerencias(p){
-  const dw=new Date(p.fecha+"T12:00").getDay(), mes=p.fecha.slice(0,7), yaHoy=new Set(postsDelDia(p.cid,p.fecha).map(x=>norm(x.copy)));
-  const todas=[];
-  [HIST[p.cid]||{}, PLAN[p.cid]||{}].forEach(fuente=>Object.entries(fuente).forEach(([ym,ps])=>{ if(ym>=mes) return;
-    Object.values(ps||{}).forEach(x=>{ if((x.copy||"").trim()) todas.push(x); }); }));
-  todas.sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const vistos=new Set(yaHoy), mismas=[], otras=[];
-  todas.forEach(x=>{ const k=norm(x.copy); if(vistos.has(k)) return; vistos.add(k);
-    (!x.aprox && new Date(x.fecha+"T12:00").getDay()===dw ? mismas : otras).push(x); });
-  return mismas.concat(mismas.length ? [] : otras).slice(0,3);
+  const yaHoy=new Set(postsDelDia(p.cid,p.fecha).map(x=>norm(x.copy)));
+  for(const atras of [1,2]){
+    const iso=mismoDiaAntes(p.fecha,atras), ym=iso.slice(0,7), vistos=new Set(yaHoy), out=[];
+    [HIST[p.cid]||{}, PLAN[p.cid]||{}].forEach(f=>Object.values(f[ym]||{}).forEach(x=>{
+      const k=norm(x.copy); if(x.fecha!==iso || x.aprox || !k || vistos.has(k)) return; vistos.add(k); out.push(x); }));
+    if(out.length) return out.slice(0,4);
+  }
+  return [];
 }
 const norm=t=>(t||"").replace(/\s+/g," ").trim().toLowerCase();
 function cuandoTxt(x){ const d=new Date(x.fecha+"T12:00");
@@ -659,7 +666,7 @@ function rapidoEl(p, alaDerecha, antesIn){
   const sug=(p.copy||"").trim() ? [] : sugerencias(p);
   let lista=null;
   if(sug.length){
-    lista=el("span","sug"); lista.appendChild(el("span","suglbl","así salió —"));
+    lista=el("span","sug"); lista.appendChild(el("span","suglbl","este día, "+(sug[0].fecha.slice(0,7)===mismoDiaAntes(p.fecha,1).slice(0,7)?"el mes pasado":"hace dos meses")+" —"));
     sug.forEach(x=>{ const b=el("button","ej"); b.type="button";
       b.append(el("i",null,cuandoTxt(x)), document.createTextNode(x.copy.trim()));
       b.title=x.copy+(x.fuente?"\n— "+x.fuente:"");
