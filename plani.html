@@ -137,6 +137,11 @@ button.lb.mas.solo{opacity:0}
 .edit.rapido{display:block; position:relative; width:100%; min-width:0; padding:0; border:none; background:none; box-shadow:none; margin-left:0}
 .edit.rapido textarea{display:block; width:100%; font-size:11.5px; padding:3px 24px 3px 6px; border-color:var(--c); resize:none}
 .edit.rapido button.masop{position:absolute; top:3px; right:3px; width:18px; height:18px; padding:0; border-radius:4px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:600 13px/1 "Instrument Sans",sans-serif; cursor:pointer}
+.edit.rapido .sug{display:flex; flex-direction:column; gap:3px; margin-top:3px}
+.edit.rapido .suglbl{font-family:"Archivo Narrow",sans-serif; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint)}
+.edit.rapido .ej{font:inherit; font-size:11px; line-height:1.35; text-align:left; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); border-radius:4px; padding:3px 6px; cursor:pointer; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; white-space:pre-line}
+.edit.rapido .ej:hover{color:var(--ink); border-color:var(--muted)}
+.edit.rapido .ej i{font-style:normal; font-family:"Archivo Narrow",sans-serif; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--c); margin-right:5px}
 .edit.rapido button.masop:hover{color:var(--ink); border-color:var(--c)}
 .edit input.nota{font:inherit; font-size:11.5px; width:100%; padding:3px 7px; border-radius:4px; background:transparent; color:var(--ink); border:1px dashed var(--line); outline:none}
 .edit input.nota:focus{border-color:var(--c)}
@@ -347,6 +352,7 @@ const nadaEscrito = p=> !(p.copy||"").trim() && !(p.foto||"").trim() && !(p.piez
 
 /* ---------- estado ---------- */
 let CLIENTS={}, EVENTS={}, PLAN={};          // PLAN[clientId][ym][postId]
+let HIST={};                                 // lo que ya salió (Notion, mesa, Octubre Escrito): HIST[clientId][ym][id], sólo se lee
 let db=null; const refs={};
 let grupo = pref.get("plani.grupo","cami");
 let cur = { y:0, m:0, vista: pref.get("plani.vista","cal") };
@@ -368,6 +374,7 @@ function escuchar(){
     if(refs[c.id]) return;
     refs[c.id]=db.ref("panaDashboard/plani/"+c.id);
     refs[c.id].on("value",s=>{ PLAN[c.id]=s.val()||{}; render(); });
+    db.ref("panaDashboard/plani_historia/"+c.id).once("value").then(s=>{ HIST[c.id]=s.val()||{}; }).catch(()=>{});
   });
 }
 
@@ -427,6 +434,24 @@ function pegar(cid,iso){
   crear(cid,iso,{pieza:porta.pieza, copy:porta.copy, foto:porta.foto, feed:porta.feed, story:porta.story});
   est("Pegada el "+Number(iso.slice(8))+" · podés seguir pegando","ok");
   render();
+}
+// la copia en los meses que vienen (hasta donde llega la tira): si este mes ya está en todos los <día>,
+// va a todos los <día> de cada mes; si no, al mismo número de día
+function repetirMeses(p){
+  const d0=new Date(p.fecha+"T12:00"), dw=d0.getDay(), dia=d0.getDate(), g=nuevoGrupo(), txt=(p.copy||"").trim();
+  const y0=d0.getFullYear(), m0=d0.getMonth(), n0=new Date(y0,m0+1,0).getDate();
+  let semanal=true;
+  for(let d=1; d<=n0; d++) if(new Date(y0,m0,d).getDay()===dw && !postsDelDia(p.cid,ymd(y0,m0,d)).some(x=>(x.copy||"").trim()===txt)) semanal=false;
+  const hoy=new Date(), tope=new Date(hoy.getFullYear(),hoy.getMonth()+7,1);
+  let k=0, meses=0;
+  for(let f=new Date(y0,m0+1,1); f<tope; f=new Date(f.getFullYear(),f.getMonth()+1,1)){
+    const y=f.getFullYear(), m=f.getMonth(), n=new Date(y,m+1,0).getDate(); meses++;
+    const dias = semanal ? [...Array(n).keys()].map(i=>i+1).filter(d=>new Date(y,m,d).getDay()===dw) : (dia<=n ? [dia] : []);
+    dias.forEach(d=>{ const iso=ymd(y,m,d);
+      if(postsDelDia(p.cid,iso).some(x=>(x.copy||"").trim()===txt)) return;
+      crear(p.cid,iso,{pieza:p.pieza||"", copy:p.copy||"", foto:p.foto||"", feed:!!p.feed, story:!!p.story},g); k++; });
+  }
+  est(k ? "Repetida en "+meses+" meses ("+(semanal?"todos los "+DLARGO[dw]:"cada "+dia)+") · Deshacer la saca de todos" : "Ya estaba en los meses que vienen","ok");
 }
 function soltarPorta(){ porta=null; render(); }
 function repetir(p){
@@ -576,7 +601,7 @@ function editorEl(p, alaDerecha, antesIn){
   const abajo=el("span","fila");
   const ac=(txt,fn,cls)=>{ const b=el("button",cls||null,txt); b.type="button"; b.addEventListener("mousedown",sinFoco); b.onclick=()=>terminar(fn); return b; };
   const dw=new Date(p.fecha+"T12:00").getDay();
-  abajo.append(ac("⟳ todos los "+DLARGO[dw],()=>repetir(p),"rep"), ac("⧉ copiar",()=>copiar(p,false)), ac("✂ cortar",()=>copiar(p,true)), el("span","sp"), ac("borrar",()=>{ quitar(p); render(); },"chau"));
+  abajo.append(ac("⟳ todos los "+DLARGO[dw],()=>repetir(p),"rep"), ac("⟳ todos los meses",()=>repetirMeses(p),"rep"), ac("⧉ copiar",()=>copiar(p,false)), ac("✂ cortar",()=>copiar(p,true)), el("span","sp"), ac("borrar",()=>{ quitar(p); render(); },"chau"));
   e.append(arriba,t,nota,abajo);
 
   let antes=antesIn||crudo(p), tm=null, cerrado=false;
@@ -608,6 +633,21 @@ function editorEl(p, alaDerecha, antesIn){
   });
   return e;
 }
+// "así salió": lo que se dijo antes en ese cliente, primero el mismo día de la semana, lo más nuevo arriba
+function sugerencias(p){
+  const dw=new Date(p.fecha+"T12:00").getDay(), mes=p.fecha.slice(0,7), yaHoy=new Set(postsDelDia(p.cid,p.fecha).map(x=>norm(x.copy)));
+  const todas=[];
+  [HIST[p.cid]||{}, PLAN[p.cid]||{}].forEach(fuente=>Object.entries(fuente).forEach(([ym,ps])=>{ if(ym>=mes) return;
+    Object.values(ps||{}).forEach(x=>{ if((x.copy||"").trim()) todas.push(x); }); }));
+  todas.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const vistos=new Set(yaHoy), mismas=[], otras=[];
+  todas.forEach(x=>{ const k=norm(x.copy); if(vistos.has(k)) return; vistos.add(k);
+    (!x.aprox && new Date(x.fecha+"T12:00").getDay()===dw ? mismas : otras).push(x); });
+  return mismas.concat(mismas.length ? [] : otras).slice(0,3);
+}
+const norm=t=>(t||"").replace(/\s+/g," ").trim().toLowerCase();
+function cuandoTxt(x){ const d=new Date(x.fecha+"T12:00");
+  return x.aprox ? "≈ "+MESES[d.getMonth()] : DCORTO[d.getDay()]+" "+d.getDate()+"-"+MESES[d.getMonth()].slice(0,3); }
 // sólo el texto: se escribe y listo. Se cierra al salir; si quedó vacía, desaparece.
 function rapidoEl(p, alaDerecha, antesIn){
   const e=el("span","edit rapido");
@@ -616,10 +656,25 @@ function rapidoEl(p, alaDerecha, antesIn){
   const mas=el("button","masop","+"); mas.type="button"; mas.title="Más opciones: feed, nota o foto, repetir, copiar, cortar, borrar";
   mas.addEventListener("mousedown",ev=>ev.preventDefault());
   e.append(t,mas);
+  const sug=(p.copy||"").trim() ? [] : sugerencias(p);
+  let lista=null;
+  if(sug.length){
+    lista=el("span","sug"); lista.appendChild(el("span","suglbl","así salió —"));
+    sug.forEach(x=>{ const b=el("button","ej"); b.type="button";
+      b.append(el("i",null,cuandoTxt(x)), document.createTextNode(x.copy.trim()));
+      b.title=x.copy+(x.fuente?"\n— "+x.fuente:"");
+      b.addEventListener("mousedown",ev=>ev.preventDefault());
+      b.onclick=()=>{ t.value=x.copy.trim(); t.rows=Math.max(2,t.value.split("\n").length);
+        if(x.feed && !p.feed) guardar(p,{feed:true},false);
+        volcar(); lista.remove(); t.focus(); };
+      lista.appendChild(b); });
+    e.appendChild(lista);
+  }
 
   let antes=antesIn||crudo(p), tm=null, cerrado=false;
   function volcar(){ clearTimeout(tm); if((p.copy||"")!==t.value) guardar(p,{copy:t.value},false); }
-  t.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(volcar,600); t.rows=Math.max(2,t.value.split("\n").length); });
+  t.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(volcar,600); t.rows=Math.max(2,t.value.split("\n").length);
+    if(lista) lista.style.display=t.value.trim()?"none":""; });
   // el +: el mismo rectángulo se abre con todas las opciones, sin perder lo escrito
   mas.onclick=()=>{
     if(cerrado) return; cerrado=true; volcar(); completo=true;
