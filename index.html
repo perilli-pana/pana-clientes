@@ -1033,10 +1033,9 @@
   <div class="gate-box">
     <div class="gate-emoji">🔒</div>
     <b>Pana · pared de clientes</b>
-    <p>Poné la clave para entrar</p>
-    <input type="password" id="gateInput" placeholder="clave" autocomplete="off" />
-    <button id="gateBtn">Entrar</button>
-    <span id="gateErr"></span>
+    <p>Entrá con tu cuenta de Google</p>
+    <button id="gateBtn" data-entrar hidden>Entrar con Google</button>
+    <span id="gateErr" data-aviso></span>
   </div>
 </div>
 <header>
@@ -1236,6 +1235,7 @@
   <button id="fmClear" class="clear">✕ Limpiar</button>
 </div>
 
+<script src="entrar.js"></script>
 <script>
 /* ============================================================
    CONFIG DE FIREBASE  —  para sincronizar entre PCs
@@ -1332,7 +1332,7 @@ function LocalStore(){
 }
 
 function FirebaseStore(){
-  firebase.initializeApp(FIREBASE_CONFIG);
+  if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   const db = firebase.database();
   const root = db.ref("panaDashboard");
   // primera vez: si la nube está vacía, subo lo que tengas en esta compu (o el roster semilla)
@@ -3038,30 +3038,9 @@ function boot(){
   setTab(activeTab);
 }
 
-function startApp(){
-  if(hasFirebase){
-    const s1=document.createElement("script"); s1.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
-    const s2=document.createElement("script"); s2.src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js";
-    s1.onload=()=>document.head.appendChild(s2); s2.onload=boot;
-    document.head.appendChild(s1);
-  }else{ boot(); }
-}
-
-/* ---------------- candado de entrada ---------------- */
-const CLAVE="pana2026";
+/* ---------------- puerta: entrar con Google (ver entrar.js) ---------------- */
 const gate=document.getElementById("gate");
-function unlock(){ gate.remove(); startApp(); }
-if(localStorage.getItem("panaAuth")==="ok"){ unlock(); }
-else{
-  const inp=document.getElementById("gateInput"), btn=document.getElementById("gateBtn"), err=document.getElementById("gateErr");
-  const tryClave=()=>{
-    if(inp.value.trim().toLowerCase()===CLAVE){ localStorage.setItem("panaAuth","ok"); unlock(); }
-    else{ err.innerText="Clave incorrecta"; inp.select(); }
-  };
-  btn.onclick=tryClave;
-  inp.addEventListener("keydown",e=>{ if(e.key==="Enter") tryClave(); });
-  setTimeout(()=>inp.focus(),60);
-}
+panaEntrar(FIREBASE_CONFIG, gate, ()=>{ gate.remove(); boot(); });
 </script>
 </body>
 </html>

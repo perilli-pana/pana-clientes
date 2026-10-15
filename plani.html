@@ -191,6 +191,8 @@ body.solofeed .rrow:not(.esfeed){display:none}
 .puerta{position:fixed; inset:0; display:grid; place-items:center; background:var(--bg); z-index:50}
 .puerta form{display:grid; gap:10px; justify-items:center}
 .puerta b{font-family:"Bricolage Grotesque",sans-serif; font-size:28px}
+.puerta-btn{font:inherit; padding:9px 18px; border-radius:999px; border:1px solid var(--line); background:var(--ink); color:var(--bg); cursor:pointer}
+.puerta small{color:var(--muted); max-width:260px; text-align:center}
 .puerta input{font:inherit; padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--field); color:var(--ink); text-align:center; width:220px}
 
 @media (max-width:900px){
@@ -214,8 +216,9 @@ body.solofeed .rrow:not(.esfeed){display:none}
 <body>
 
 <div class="puerta hidden" id="puerta">
-  <form id="puertaForm"><b>Pana</b>
-    <input id="clave" type="password" placeholder="clave" autocomplete="off" aria-label="Clave">
+  <form id="puertaForm" onsubmit="return false"><b>Pana</b>
+    <button type="button" class="puerta-btn" data-entrar hidden>Entrar con Google</button>
+    <small data-aviso></small>
   </form>
 </div>
 
@@ -251,6 +254,7 @@ body.solofeed .rrow:not(.esfeed){display:none}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="entrar.js"></script>
 <script>
 const EFEM={
   "01-01":[["Año Nuevo","feriado"]],
@@ -296,7 +300,6 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "782717934210",
   appId: "1:782717934210:web:c439e2ca44f9a87942329b",
 };
-const CLAVE = "pana2026";
 
 // nombre en la app → [corto para el calendario, color]
 const CLI = {
@@ -670,18 +673,13 @@ addEventListener("keydown",e=>{
 
 /* ---------- arranque ---------- */
 function arrancar(){
-  firebase.initializeApp(FIREBASE_CONFIG);
+  if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   db=firebase.database();
   db.ref("panaDashboard/clients").on("value",s=>{ CLIENTS=s.val()||{}; escuchar(); render(); });
   db.ref("panaDashboard/events").on("value",s=>{ EVENTS=s.val()||{}; render(); });
 }
-if(pref.get("panaAuth","")==="ok") arrancar();
-else {
-  $("#puerta").classList.remove("hidden");
-  $("#puertaForm").onsubmit=e=>{ e.preventDefault();
-    if($("#clave").value.trim().toLowerCase()===CLAVE){ pref.set("panaAuth","ok"); $("#puerta").classList.add("hidden"); arrancar(); }
-    else { $("#clave").value=""; $("#clave").placeholder="no"; } };
-}
+$("#puerta").classList.remove("hidden");
+panaEntrar(FIREBASE_CONFIG, $("#puerta"), arrancar);
 </script>
 
 </body>
