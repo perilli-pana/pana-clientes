@@ -133,6 +133,11 @@ button.lb.mas.solo{opacity:0}
 .edit.der{margin-left:min(0px, calc(100% - 260px))}
 .edit textarea{font:inherit; font-size:13px; line-height:1.4; width:100%; resize:vertical; padding:5px 7px; border-radius:4px; background:var(--field); color:var(--ink); border:1px solid var(--line); outline:none}
 .edit textarea:focus{border-color:var(--c)}
+/* modo rápido: sólo el texto, en el lugar, como Octubre Escrito; el + abre las opciones */
+.edit.rapido{display:block; position:relative; width:100%; min-width:0; padding:0; border:none; background:none; box-shadow:none; margin-left:0}
+.edit.rapido textarea{display:block; width:100%; font-size:11.5px; padding:3px 24px 3px 6px; border-color:var(--c); resize:none}
+.edit.rapido button.masop{position:absolute; top:3px; right:3px; width:18px; height:18px; padding:0; border-radius:4px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:600 13px/1 "Instrument Sans",sans-serif; cursor:pointer}
+.edit.rapido button.masop:hover{color:var(--ink); border-color:var(--c)}
 .edit input.nota{font:inherit; font-size:11.5px; width:100%; padding:3px 7px; border-radius:4px; background:transparent; color:var(--ink); border:1px dashed var(--line); outline:none}
 .edit input.nota:focus{border-color:var(--c)}
 .edit .fila{display:flex; gap:4px; align-items:center; flex-wrap:wrap}
@@ -515,7 +520,7 @@ function renderMain(){
   if(abierto && enfocar){ const t=w.querySelector(".edit textarea"); if(t){ t.focus(); t.setSelectionRange(t.value.length,t.value.length); } }
   enfocar=false;
 }
-function abrir(id){ abierto=id; enfocar=true; render(); }
+function abrir(id){ abierto=id; completo=false; enfocar=true; render(); }
 function dowEl(){ const d=el("div","dow"); ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"].forEach(t=>d.appendChild(el("div",null,t))); return d; }
 function calEl(){
   const g=el("div","grid"), primero=(new Date(cur.y,cur.m,1).getDay()+6)%7, n=new Date(cur.y,cur.m+1,0).getDate(), hoy=hoyISO();
@@ -553,9 +558,12 @@ function piezaEl(p){
   b.onclick=()=>abrir(p.id);
   return b;
 }
-// el rectángulo para escribir, en el lugar de la pieza (como en Octubre Escrito)
-function editorEl(p, alaDerecha){
-  const e=el("span","edit"+(alaDerecha?" der":"")); 
+// el rectángulo para escribir, en el lugar de la pieza (como en Octubre Escrito).
+// Arranca rápido (sólo el texto, story por defecto); el + lo abre con todas las opciones.
+let completo=false;
+function editorEl(p, alaDerecha, antesIn){
+  if(!completo) return rapidoEl(p, alaDerecha, antesIn);
+  const e=el("span","edit"+(alaDerecha?" der":""));
   const sinFoco=ev=>ev.preventDefault();            // los botones no le roban el foco al texto
   const arriba=el("span","fila");
   const tg=(txt,key)=>{ const b=el("button",null,txt); b.type="button"; b.setAttribute("aria-pressed",String(!!p[key]));
@@ -571,7 +579,7 @@ function editorEl(p, alaDerecha){
   abajo.append(ac("⟳ todos los "+DLARGO[dw],()=>repetir(p),"rep"), ac("⧉ copiar",()=>copiar(p,false)), ac("✂ cortar",()=>copiar(p,true)), el("span","sp"), ac("borrar",()=>{ quitar(p); render(); },"chau"));
   e.append(arriba,t,nota,abajo);
 
-  let antes=crudo(p), tm=null, cerrado=false;
+  let antes=antesIn||crudo(p), tm=null, cerrado=false;
   const pendientes=()=>{ const patch={}; if((p.copy||"")!==t.value) patch.copy=t.value; if((p.foto||"")!==nota.value) patch.foto=nota.value; return patch; };
   function volcar(){ clearTimeout(tm); const patch=pendientes(); if(Object.keys(patch).length) guardar(p,patch,false); }
   [t,nota].forEach(x=>x.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(volcar,600); if(x===t) t.rows=Math.max(3,t.value.split("\n").length+1); }));
@@ -597,6 +605,45 @@ function editorEl(p, alaDerecha){
   e.addEventListener("keydown",ev=>{
     if(ev.key==="Escape"){ ev.preventDefault(); t.value=antes.copy||""; nota.value=antes.foto||""; document.activeElement.blur(); }
     if(ev.key==="Enter" && (ev.metaKey||ev.ctrlKey)){ ev.preventDefault(); document.activeElement.blur(); }
+  });
+  return e;
+}
+// sólo el texto: se escribe y listo. Se cierra al salir; si quedó vacía, desaparece.
+function rapidoEl(p, alaDerecha, antesIn){
+  const e=el("span","edit rapido");
+  const t=el("textarea"); t.value=p.copy||""; t.placeholder="qué dice la story"; t.rows=Math.max(2,(p.copy||"").split("\n").length);
+  t.setAttribute("aria-label","Copy");
+  const mas=el("button","masop","+"); mas.type="button"; mas.title="Más opciones: feed, nota o foto, repetir, copiar, cortar, borrar";
+  mas.addEventListener("mousedown",ev=>ev.preventDefault());
+  e.append(t,mas);
+
+  let antes=antesIn||crudo(p), tm=null, cerrado=false;
+  function volcar(){ clearTimeout(tm); if((p.copy||"")!==t.value) guardar(p,{copy:t.value},false); }
+  t.addEventListener("input",()=>{ clearTimeout(tm); est("Escribiendo…","sucio"); tm=setTimeout(volcar,600); t.rows=Math.max(2,t.value.split("\n").length); });
+  // el +: el mismo rectángulo se abre con todas las opciones, sin perder lo escrito
+  mas.onclick=()=>{
+    if(cerrado) return; cerrado=true; volcar(); completo=true;
+    const grande=editorEl(p, alaDerecha, antes); e.replaceWith(grande);
+    const tt=grande.querySelector("textarea"); tt.focus(); tt.setSelectionRange(tt.value.length,tt.value.length);
+  };
+  function cerrar(){
+    if(cerrado) return; cerrado=true;
+    volcar();
+    if(abierto===p.id) abierto=null;
+    const top=deshacer[deshacer.length-1], recienCreada = top && top.id===p.id && top.antes===null;
+    if(nadaEscrito(p)){
+      if(recienCreada) deshacer.pop();
+      $("#deshacer").disabled=!deshacer.length;
+      quitar(p,null,true);
+    } else if(!recienCreada && (antes.copy||"")!==(p.copy||"")){
+      anotar({cid:p.cid, ym:p.fecha.slice(0,7), id:p.id, antes, g:nuevoGrupo()});
+    }
+    setTimeout(render,0);
+  }
+  e.addEventListener("focusout",()=>setTimeout(()=>{ if(!e.contains(document.activeElement)) cerrar(); },150));
+  t.addEventListener("keydown",ev=>{
+    if(ev.key==="Escape"){ ev.preventDefault(); t.value=antes.copy||""; t.blur(); }
+    if(ev.key==="Enter" && (ev.metaKey||ev.ctrlKey)){ ev.preventDefault(); t.blur(); }
   });
   return e;
 }
