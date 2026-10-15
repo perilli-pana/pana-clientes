@@ -221,6 +221,12 @@ body.solofeed .rrow:not(.esfeed){display:none}
 .savebar .porta button{padding:4px 10px}
 .savebar .est{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+button.lb.fija{border-style:solid; border-color:color-mix(in srgb, var(--c) 45%, var(--line)); background:color-mix(in srgb, var(--c) 8%, transparent)}
+details.franco{margin:0 0 16px; padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); font-size:13px}
+details.franco summary{cursor:pointer; font-family:"Archivo Narrow",sans-serif; font-weight:700; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+details.franco .fr{display:flex; flex-wrap:wrap; gap:4px 10px; margin-top:8px}
+details.franco .fr b{width:100%; font-size:12px}
+details.franco .fr span{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -375,6 +381,7 @@ function escuchar(){
     refs[c.id]=db.ref("panaDashboard/plani/"+c.id);
     refs[c.id].on("value",s=>{ PLAN[c.id]=s.val()||{}; render(); });
     db.ref("panaDashboard/plani_historia/"+c.id).once("value").then(s=>{ HIST[c.id]=s.val()||{}; }).catch(()=>{});
+    db.ref("panaDashboard/fijos/"+c.id).once("value").then(s=>{ FIJOS[c.id]=s.val()||{}; }).catch(()=>{});
   });
 }
 
@@ -466,6 +473,161 @@ function repetir(p){
   est(k ? "Repetida en "+k+" "+DLARGO[dw]+" más · Deshacer la saca de todos" : "Ya estaba en todos los "+DLARGO[dw],"ok");
 }
 
+/* ---------- importar el Excel de Franco (Grupo Co) ----------
+   La misma receta que armó Octubre Escrito (grupo-co-lenguaje/octubre/parse_franco.py + cargar_franco.py):
+   cada cosa que Franco escribió en un día se vuelve una pieza. Los fijos (happy hour, horarios, promos)
+   llegan ya escritos con el último texto que bajó a la mesa (panaDashboard/fijos); lo demás llega con
+   su nombre ("video salón", "reservas") esperando el texto. Donde el día queda corto contra el mes
+   pasado se agregan "— libre —". Sin Excel, el mes queda vacío. */
+const FRANCO_HOJAS = { thunder:/^THUNDER\b/, chinita:/^CHINITA\b/, "parrilla-co":/^PARRILLA\b/, "pasta-co":/^PASTAS?\b/, "bodegon-co":/^BODE(GON)?\b/ };
+const SLUG_NOMBRE = { thunder:"Thunder", "parrilla-co":"Parrilla Co", "bodegon-co":"Bodegón Co", "pasta-co":"Pasta Co", "pasta-mar-y-vino":"Pasta Mar & Vino", chinita:"Chinita" };
+const sinTilde = t => String(t).normalize("NFKD").replace(/[̀-ͯ]/g,"");
+const nrm = t => sinTilde(t).replace(/\s+/g," ").trim().toLowerCase();
+const slugPieza = t => sinTilde(t).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+// [lo que escribe Franco, nombre de la pieza, nota, m = fijo · l = para escribir]
+const VOC_COMUN = [
+  [/horarios semanales/, "HORARIOS DE LA SEMANA", "placa de lunes", "m"],
+  [/horarios fin de semana/, "HORARIOS DEL FINDE", "viernes y sábado", "m"],
+  [/horario de apertura/, "HORARIO DE APERTURA", "", "m"],
+  [/10 am hace tu reserva/, "RESERVAS · 10 AM", "publicar a las 10 de la mañana, para el mediodía", "m"],
+  [/hace tu reserva|^reservas$/, "RESERVAS", "", "m"],
+  [/especial finde|especial de fin/, "ESPECIAL DEL FINDE", "viernes a domingo", "m"],
+  [/pedidos ya/, "PEDIDOS YA", "", "m"],
+  [/^pauta\??$/, "¿PAUTA?", "confirmar con Franco si va plata", "l"],
+  [/^feriado$/, "FERIADO", "confirmar horarios con Franco", "l"],
+  [/foto comida feed|feed comida|feed cocina comida/, "FEED · foto comida", "sube al feed", "l"],
+  [/video salon feed|feed video cocina/, "FEED · video salón", "sube al feed", "l"],
+  [/video \(franco\) comida feed/, "FEED · video Franco comida", "sube al feed", "l"],
+  [/feed fotos joda/, "FEED · fotos joda", "sube al feed", "l"],
+  [/^feed\b/, "", "sube al feed", "l"],                       // cualquier otro feed: queda con lo que escribió Franco
+  [/video salon hist|video de salon/, "video salón", "", "l"],
+  [/video del local/, "video local", "", "l"],
+  [/video de domingo/, "video domingo local", "local lleno, al mediodía", "l"],
+  [/video franco comida/, "video Franco comida", "historia", "l"],
+  [/foto comida hist|foto de platos|^foto comida$/, "foto platos", "", "l"],
+  [/fotos de platos y vid|fotear|filmar/, null, "producción", "m"],
+  [/video de joda$/, "video joda", "", "l"],
+  [/video joda con comida/, "video joda comida", "", "l"],
+  [/historia video all you can eat/, "video all you can eat", "compartir el video a historia", "l"],
+];
+const VOC_MARCA = {
+  thunder: [[/^happy/, "HAPPY HOUR", "", "m"], [/off en tapeo/, "TAPEO % OFF", "", "m"], [/30% off en branca/, "30% OFF BRANCA · 00 AL CIERRE", "", "m"],
+            [/20% off en branca/, "20% OFF BRANCA", "", "m"], [/^dj$/, "DJ SET", "falta el nombre del DJ", "m"], [/all you can eat/, "ALL YOU CAN EAT", "", "m"]],
+  chinita: [[/promocion c1/, "PROMO C1", "", "m"], [/promocion c2/, "PROMO C2", "", "m"], [/^cerrado$/, "MARTES CERRADO", "", "m"], [/^dj$/, "DJ SET", "falta el nombre del DJ", "m"],
+            [/all you can eat placa|placa all you can eat|^sushi all you can eat$/, "SUSHI ALL YOU CAN EAT", "", "m"], [/parrillada/, false]],
+  "parrilla-co": [[/parrillada.*por persona|parrillada 24/, "PARRILLADA POR PERSONA", "", "m"], [/parrillada/, "PARRILLADA", "para dos", "m"], [/flyer precios/, "FLYER DE PRECIOS", "", "m"]],
+  "bodegon-co": [[/pinchos tapas/, "PINCHOS & TAPAS", "", "l"], [/pedidos ya/, false]],
+  "pasta-co": [], "pasta-mar-y-vino": [],
+};
+const VOC_IGNORAR = [/abre mar y vino/, /sujeto a modificaciones/, /tipo de comunicacion/, /ver horarios/, /mirar bien todo el excel/];
+let FIJOS = {}, FRANCO = {};
+
+function leerHoja(ws, y, m){
+  // que la tabla arranque en A1 aunque Franco empiece en la columna B: así las columnas son las de siempre
+  if(ws["!ref"]){ const rg=XLSX.utils.decode_range(ws["!ref"]); rg.s.c=0; rg.s.r=0; ws["!ref"]=XLSX.utils.encode_range(rg); }
+  const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:null });
+  const cab = rows.map((r,i)=> r && String(r[1]??"").trim().toLowerCase()==="lunes" ? i : -1).filter(i=>i>=0);
+  const uno = new Date(y,m,1), lunes0 = new Date(y,m,1-((uno.getDay()+6)%7));
+  const dias = {}, leyenda = [];
+  cab.forEach((ci,w)=>{
+    const fin = w+1<cab.length ? cab[w+1] : rows.length;
+    for(let r=ci+2; r<fin; r++) for(let k=0;k<7;k++){
+      const v = rows[r] && rows[r][k+1]; if(v==null || !String(v).trim()) continue;
+      const f = new Date(lunes0.getFullYear(), lunes0.getMonth(), lunes0.getDate()+7*w+k);
+      if(f.getMonth()!==m) continue;
+      (dias[ymd(f.getFullYear(),f.getMonth(),f.getDate())] ||= []).push(String(v).trim());
+    }
+  });
+  rows.forEach(r=> (r||[]).slice(9).forEach(v=>{ if(v!=null && String(v).trim()) leyenda.push(String(v).trim()); }));
+  return { dias, leyenda };
+}
+function aPiezas(marca, items){
+  const out = [], vistos = new Set();
+  items.forEach(it=>{
+    const t = nrm(it); if(VOC_IGNORAR.some(rx=>rx.test(t))) return;
+    // renglones de detalle (precios, cortes del flyer): van a la nota de la pieza de arriba
+    if(out.length && /^\$?\s*\d[\d.,]*\s*(pesos|\$|por persona|para \d)?\.?$|\+ ?guarnici|^bife de|^(asado|vacio|matambre)\b|pesos para|por persona\.?$/.test(t)){
+      const prev = out[out.length-1]; prev[1] = (prev[1] && prev[1]!=="del Excel de Franco" ? prev[1]+" · " : "") + it.trim(); return; }
+    const r = (VOC_MARCA[marca]||[]).concat(VOC_COMUN).find(x=>x[0].test(t));
+    if(r && r[1]===false) return;                               // se coló de otra marca
+    const nombre = r ? (r[1] || (r[1]==="" ? "FEED · "+it.trim().replace(/^feed\s*/i,"") : it.trim())) : it.trim();
+    if(vistos.has(nombre)) return; vistos.add(nombre);
+    out.push(r ? [nombre, r[2], r[3]] : [nombre, "del Excel de Franco", "l"]);
+  });
+  return out;
+}
+// cuántas piezas tuvo cada marca cada día de la semana el mes pasado (la mediana): es el volumen a sostener
+function cuotaDe(cid, y, m){
+  const prev = ymKey(new Date(y,m-1,1).getFullYear(), new Date(y,m-1,1).getMonth()), cuenta = {};
+  [HIST[cid]||{}, PLAN[cid]||{}].forEach(f=>Object.values(f[prev]||{}).forEach(x=>{ if(!x.aprox) cuenta[x.fecha]=(cuenta[x.fecha]||0)+1; }));
+  const por = [[],[],[],[],[],[],[]];
+  Object.entries(cuenta).forEach(([f,n])=>por[new Date(f+"T12:00").getDay()].push(n));
+  return por.map(a=>{ if(!a.length) return 0; a.sort((x,y)=>x-y); return a[Math.floor(a.length/2)]; });
+}
+function armarDia(marca, items, dw, cuota){
+  const cerrado = marca==="pasta-mar-y-vino" && items.some(i=>/abre mar y vino/.test(nrm(i)));
+  let p = cerrado ? [["CERRADO LOS LUNES", "lo aclara el Excel", "m"]] : aPiezas(marca, items);
+  if(marca==="bodegon-co" && dw>=1 && dw<=5 && !p.some(x=>x[0]==="MENÚ EJECUTIVO")) p.unshift(["MENÚ EJECUTIVO", "lunes a viernes · los platos llegan cada lunes", "m"]);
+  const reserva = p.filter(x=>x[0].startsWith("RESERVAS"));
+  const esStory = x => x[2]==="l" && !x[0].startsWith("FEED") && !x[0].startsWith("RESERVAS");
+  if(marca==="parrilla-co"){
+    // Franco (28-sep): en Parrilla menos historias; la reserva va adentro de la creativa del día
+    p = p.filter(x=>!reserva.includes(x));
+    if(!p.some(esStory)) p.push(["— libre —", "foto / contenido de marca", "l"]);
+    if(reserva.length){ const h = p.find(esStory), diez = reserva.some(x=>x[0].endsWith("10 AM"));
+      h[0] = (h[0]==="— libre —" ? "creativa" : h[0]) + " + reserva"; h[1] = "lleva el link de reserva" + (diez ? " · publicar a las 10 am" : ""); }
+  } else if(!cerrado){
+    // la placa de reservas no se recicla: se escribe ("pocas veces se dice solamente reservas")
+    reserva.forEach(x=>{ x[1] = "escrita, con el link: nunca “reservas” a secas" + (x[0].endsWith("10 AM") ? " · publicar a las 10 am" : ""); x[2] = "l"; });
+    while(!p.some(esStory) || p.length < cuota) p.push(["— libre —", "foto / contenido de marca", "l"]);
+  }
+  return p.sort((a,b)=>(a[2]==="l")-(b[2]==="l") || (!a[0].startsWith("FEED"))-(!b[0].startsWith("FEED")) || (a[0]==="— libre —")-(b[0]==="— libre —"));
+}
+async function importarFranco(file){
+  if(!window.XLSX){ est("Abriendo el Excel…","sucio");
+    await new Promise((ok,mal)=>{ const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload=ok; s.onerror=mal; document.head.appendChild(s); }); }
+  const wb = XLSX.read(await file.arrayBuffer(), { type:"array" });
+  const y=cur.y, m=cur.m, ym=ymKey(y,m), MES=sinTilde(MESES[m]).toUpperCase();
+  const hojas = {}; Object.entries(FRANCO_HOJAS).forEach(([marca,rx])=>{ const h = wb.SheetNames.find(n=>rx.test(sinTilde(n).toUpperCase().trim()) && sinTilde(n).toUpperCase().includes(MES)); if(h) hojas[marca]=h; });
+  if(!Object.keys(hojas).length){ est("El Excel no tiene solapas de "+MESES[m]+": ¿es el de este mes?","sucio"); return; }
+  const leido = {}; Object.entries(hojas).forEach(([marca,h])=>leido[marca]=leerHoja(wb.Sheets[h], y, m));
+  const cl = Object.fromEntries(clientesDelGrupo().map(c=>[c.name, c]));
+  // lo que ya vino del Excel y nadie tocó se rehace; lo que se tocó se deja y no se duplica
+  const g = nuevoGrupo(); let saco=0;
+  Object.values(SLUG_NOMBRE).forEach(n=>{ const c=cl[n]; if(!c) return;
+    postsDe(c.id, ym).forEach(p=>{ if(p.deExcel && (p.updatedAt||0)-(p.createdAt||0)<1000){ quitar(p,g); saco++; } }); });
+  let n=0, fijosEscritos=0, sinTexto=0, raros=0;
+  const nd = new Date(y,m+1,0).getDate();
+  Object.entries(SLUG_NOMBRE).forEach(([marca,nombre])=>{
+    const c = cl[nombre]; const fuente = leido[marca==="pasta-mar-y-vino" ? "pasta-co" : marca]; if(!c || !fuente) return;
+    const cuota = cuotaDe(c.id, y, m);
+    for(let d=1; d<=nd; d++){
+      const iso=ymd(y,m,d), dw=new Date(y,m,d).getDay(), ya=new Set(postsDelDia(c.id,iso).map(x=>x.pieza));
+      armarDia(marca, fuente.dias[iso]||[], dw, cuota[dw]).forEach(([pieza,nota,tipo])=>{
+        if(ya.has(pieza) && pieza!=="— libre —") return;
+        const fijo = tipo==="m" ? (FIJOS[c.id]||{})[slugPieza(pieza)] : null;
+        if(tipo==="m" && nota!=="producción") fijo ? fijosEscritos++ : sinTexto++;
+        if(nota==="del Excel de Franco") raros++;
+        const feed = pieza.startsWith("FEED");
+        crear(c.id, iso, { pieza, copy: fijo ? fijo.copy : "", foto: nota||"", feed, story: !feed, fija: tipo==="m", deExcel: true }, g); n++;
+      });
+    }
+  });
+  const meta = { archivo:file.name, importado:Date.now(), por:quien||"", leyenda:Object.fromEntries(Object.entries(leido).map(([k,v])=>[k,v.leyenda])),
+    comentarios: wb.SheetNames.includes("COMENTARIOS") ? XLSX.utils.sheet_to_json(wb.Sheets.COMENTARIOS,{header:1,defval:null}).map(r=>(r||[]).filter(v=>v!=null).join(" ").trim()).filter(Boolean) : [] };
+  FRANCO[ym]=meta; db.ref("panaDashboard/plani_franco/"+ym).set(meta);
+  est(n+" piezas del Excel · "+fijosEscritos+" fijos ya escritos"+(sinTexto?" · "+sinTexto+" fijos sin texto":"")+(raros?" · "+raros+" cosas nuevas de Franco":"")+(saco?" · se rehicieron las que no habías tocado":""),"ok");
+  render();
+}
+// lo que escribió Franco al costado (precios, promos): se lee de ESTE mes, nunca se hereda
+function francoEl(){
+  const meta = FRANCO[ymKey(cur.y,cur.m)]; if(!meta) return null;
+  const d = el("details","franco"); const s = el("summary",null,"Lo que dice el Excel de Franco este mes ("+meta.archivo+")"); d.appendChild(s);
+  Object.entries(meta.leyenda||{}).forEach(([k,ls])=>{ if(!ls||!ls.length) return; const b=el("div","fr"); b.appendChild(el("b",null,SLUG_NOMBRE[k]||k)); ls.forEach(l=>b.appendChild(el("span",null,l))); d.appendChild(b); });
+  if((meta.comentarios||[]).length){ const b=el("div","fr"); b.appendChild(el("b",null,"Comentarios")); meta.comentarios.forEach(l=>b.appendChild(el("span",null,l))); d.appendChild(b); }
+  return d;
+}
+
 /* ---------- no repintar encima de lo que estás escribiendo ---------- */
 let pendiente=false;
 function escribiendo(){ const a=document.activeElement; return a && (a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="date")) && a.closest(".edit,.rrow,.radd"); }
@@ -528,6 +690,13 @@ function renderBar(){
   const tv=el("button","toggle", cur.vista==="cal"?"Leerlo como lista":"Volver al calendario");
   tv.onclick=()=>{ cur.vista=cur.vista==="cal"?"lista":"cal"; pref.set("plani.vista",cur.vista); abierto=null; render(); };
   w.append(tf,tv);
+  if(grupo==="co"){
+    const fi=el("input"); fi.type="file"; fi.accept=".xlsx,.xls"; fi.hidden=true;
+    fi.onchange=()=>{ const f=fi.files[0]; if(f) importarFranco(f).catch(e=>est("No se pudo leer el Excel: "+(e.message||e),"sucio")); };
+    const bi=el("button","toggle", FRANCO[ym] ? "⬆ Volver a importar el Excel" : "⬆ Importar el Excel de Franco");
+    bi.title="Bajá el Excel de Franco de Drive y elegilo acá: el mes se completa con los fijos ya escritos y los huecos con su nombre";
+    bi.onclick=()=>fi.click(); w.append(bi,fi);
+  }
 }
 function renderPorta(){
   const w=$("#porta");
@@ -541,6 +710,7 @@ let enfocar=false;
 function renderMain(){
   const w=$("#main"); w.innerHTML="";
   if(!clientesDelGrupo().length){ w.appendChild(el("p","nada","Cargando clientes…")); return; }
+  const fr=grupo==="co" && francoEl(); if(fr) w.appendChild(fr);
   if(cur.vista==="cal") w.append(dowEl(), calEl()); else w.appendChild(listaEl());
   if(abierto && enfocar){ const t=w.querySelector(".edit textarea"); if(t){ t.focus(); t.setSelectionRange(t.value.length,t.value.length); } }
   enfocar=false;
@@ -575,9 +745,10 @@ function calEl(){
 function canalTxt(p){ return p.feed&&p.story ? "F+S" : p.feed ? "F" : p.story ? "S" : "—"; }
 function piezaEl(p){
   const copy=(p.copy||"").trim(), pieza=(p.pieza||"").trim();
-  const b=el("button","lb"+(copy?" lleno":"")+(p.feed?" feed":"")+(conFoto(p)?" confoto":"")+(enNotion(p)?" ennotion":""));
+  const b=el("button","lb"+(copy?" lleno":"")+(p.fija?" fija":"")+(p.feed?" feed":"")+(conFoto(p)?" confoto":"")+(enNotion(p)?" ennotion":""));
   b.appendChild(el("span","cn",canalTxt(p)));
-  b.appendChild(document.createTextNode(copy ? copy.split("\n")[0] : (pieza||"sin escribir")));
+  // los fijos se leen por su nombre (HAPPY HOUR), como en Octubre Escrito; lo demás por su texto
+  b.appendChild(document.createTextNode(p.fija && pieza ? pieza : copy ? copy.split("\n")[0] : (pieza||"sin escribir")));
   b.title = (p.feed?"FEED":"")+(p.feed&&p.story?" + ":"")+(p.story?"STORY":"")+"\n"+(pieza?pieza+"\n":"")+(copy||"")+((p.foto||"").trim()?"\nnota: "+p.foto:"")
           + (conFoto(p)?"\n📷 con foto en la mesa":"") + (enNotion(p)?"\n✓ en Notion":"");
   b.onclick=()=>abrir(p.id);
@@ -658,7 +829,7 @@ function cuandoTxt(x){ const d=new Date(x.fecha+"T12:00");
 // sólo el texto: se escribe y listo. Se cierra al salir; si quedó vacía, desaparece.
 function rapidoEl(p, alaDerecha, antesIn){
   const e=el("span","edit rapido");
-  const t=el("textarea"); t.value=p.copy||""; t.placeholder="qué dice la story"; t.rows=Math.max(2,(p.copy||"").split("\n").length);
+  const t=el("textarea"); t.value=p.copy||""; t.placeholder=(p.pieza||"").trim() ? p.pieza+((p.foto||"").trim()?" · "+p.foto:"") : "qué dice la story"; t.rows=Math.max(2,(p.copy||"").split("\n").length);
   t.setAttribute("aria-label","Copy");
   const mas=el("button","masop","+"); mas.type="button"; mas.title="Más opciones: feed, nota o foto, repetir, copiar, cortar, borrar";
   mas.addEventListener("mousedown",ev=>ev.preventDefault());
@@ -786,6 +957,7 @@ function arrancar(){
   db=firebase.database();
   db.ref("panaDashboard/clients").on("value",s=>{ CLIENTS=s.val()||{}; escuchar(); render(); });
   db.ref("panaDashboard/events").on("value",s=>{ EVENTS=s.val()||{}; render(); });
+  db.ref("panaDashboard/plani_franco").on("value",s=>{ FRANCO=s.val()||{}; render(); });
 }
 $("#puerta").classList.remove("hidden");
 panaEntrar(FIREBASE_CONFIG, $("#puerta"), arrancar);
